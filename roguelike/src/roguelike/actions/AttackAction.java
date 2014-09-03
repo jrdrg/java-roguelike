@@ -18,11 +18,11 @@ public class AttackAction extends Action {
 	@Override
 	protected ActionResult onPerform() {
 		if (!actor.isAlive()) {
-			System.out.println("Actor " + actor.getName() + " is dead!");
+			System.out.println(">>> onPerform() >>> Actor " + actor.getName() + " is dead!");
 			return ActionResult.failure().setMessage("Actor " + actor.getName() + " is dead!");
 		}
 		if (!target.isAlive()) {
-			return ActionResult.alternate(new RestAction(actor)).setMessage("Target " + target.getName() + " is dead!");
+			return ActionResult.alternate(new RestAction(actor)).setMessage(">>> onPerform() >>> Target " + target.getName() + " is dead!");
 		}
 
 		Attack attack = actor.getCombatHandler().getAttack(target);

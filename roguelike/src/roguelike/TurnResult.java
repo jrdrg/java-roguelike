@@ -3,12 +3,14 @@ package roguelike;
 import java.util.ArrayList;
 import java.util.List;
 
+import roguelike.ui.windows.Dialog;
 import squidpony.squidcolor.SColor;
 
 public class TurnResult {
 	boolean running;
 	ArrayList<MessageDisplayProperties> messages;
 	ArrayList<TurnEvent> events;
+	Dialog activeWindow;
 
 	public TurnResult(boolean running) {
 		this.running = running;
@@ -34,6 +36,15 @@ public class TurnResult {
 		if (event != null) {
 			events.add(event);
 		}
+		return this;
+	}
+
+	public Dialog getActiveWindow() {
+		return activeWindow;
+	}
+
+	public TurnResult setWindow(Dialog window) {
+		this.activeWindow = window;
 		return this;
 	}
 

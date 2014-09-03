@@ -22,7 +22,6 @@ public class Game {
 
 	public Game(GameLoader gameLoader) {
 		this.player = gameLoader.createPlayer(this);
-		this.player.setPosition(1, 1);
 
 		queuedActions = new LinkedList<Action>();
 		System.out.println("Created Game");
@@ -53,6 +52,7 @@ public class Game {
 			return;
 
 		currentMapArea = mapArea;
+		this.player.setPosition(1, 1);
 	}
 
 	public void initialize() {
@@ -178,15 +178,25 @@ public class Game {
 		ActionResult result = currentAction.perform();
 		turnResult.addMessage(result.getMessage());
 
-		while (result.getAlternateAction() != null) {
-			result = result.getAlternateAction().perform();
-			turnResult.addMessage(result.getMessage());
-		}
+		/*
+		 * if the result is completed we can proceed, else put it back on the
+		 * queue
+		 */
+		if (result.isCompleted()) {
+			while (result.getAlternateAction() != null) {
+				result = result.getAlternateAction().perform();
+				turnResult.addMessage(result.getMessage());
+			}
 
-		Actor currentActor = currentAction.getActor();
-		if (currentActor != null) {// && result.isSuccess()) {
-			currentActor.finishTurn();
-			currentMapArea.nextActor();
+			Actor currentActor = currentAction.getActor();
+			if (currentActor != null) {// && result.isSuccess()) {
+				currentActor.finishTurn();
+				currentMapArea.nextActor();
+			}
+
+		} else {
+			System.out.println("Incomplete action, re-adding on queue...");
+			queuedActions.add(currentAction);
 		}
 
 		/* return when player's actions are performed so we can redraw */

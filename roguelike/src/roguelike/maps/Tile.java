@@ -107,7 +107,7 @@ public class Tile {
 		return wall;
 	}
 
-	public Tile setValues(char symbol, boolean isPassable, SColor color) {
+	Tile setValues(char symbol, boolean isPassable, SColor color) {
 		this.symbol = symbol;
 		this.isPassable = isPassable;
 		this.color = color;
@@ -115,7 +115,7 @@ public class Tile {
 		return this;
 	}
 
-	public Tile setValues(char symbol, boolean isPassable, SColor color, boolean wall) {
+	Tile setValues(char symbol, boolean isPassable, SColor color, boolean wall) {
 		setValues(symbol, isPassable, color);
 		this.wall = wall;
 		if (this.wall)
@@ -124,12 +124,14 @@ public class Tile {
 		return this;
 	}
 
-	public void moveActorTo(Tile newTile) {
+	boolean moveActorTo(Tile newTile) {
 		if (this.actor != null) {
 			newTile.actor = this.actor;
 			this.actor = null;
+			return true;
 		} else {
 			System.out.println("Tried to move a null actor");
+			return false;
 		}
 	}
 

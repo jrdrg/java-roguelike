@@ -21,6 +21,8 @@ public class GameLoader {
 		Game game = new Game(this);
 		Player player = game.getPlayer();
 
+		player.setPosition(1, 1);
+
 		// TODO: make a real map
 		MapArea currentMapArea = new MapArea(100, 100, new MapBuilder());
 		currentMapArea.addActor(player);
@@ -28,7 +30,7 @@ public class GameLoader {
 		NpcBuilder npcBuilder = new NpcBuilder(game);
 
 		for (int x = 0; x < 35; x++) {
-			Actor npc = npcBuilder.buildNpc();
+			Actor npc = npcBuilder.buildNpc(currentMapArea);
 			currentMapArea.addActor(npc);
 		}
 

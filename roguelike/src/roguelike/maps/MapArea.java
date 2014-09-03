@@ -66,6 +66,18 @@ public class MapArea {
 		return true;
 	}
 
+	public boolean moveActor(Actor actor, Coordinate newPosition) {
+		Coordinate pos = actor.getPosition();
+		Tile tile = getTileAt(pos.x, pos.y);
+		if (tile.getActor() != null) {
+			if (tile.moveActorTo(getTileAt(newPosition))) {
+				actor.setPosition(newPosition.x, newPosition.y);
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public boolean removeActor(Actor actor) {
 		System.out.println("Removing actor " + actor.getName());
 
@@ -112,7 +124,7 @@ public class MapArea {
 
 		Tile tile = map[x][y];
 		if (tile.canPass()) {
-			return actor.onMoveAttempting(this);
+			return actor.onMoveAttempting(this, tile);
 		}
 
 		return false;

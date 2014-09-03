@@ -1,10 +1,12 @@
 package roguelike.actors.behaviors;
 
 import roguelike.actions.Action;
+import roguelike.actions.RestAction;
 import roguelike.actions.WalkAction;
 import roguelike.actors.Actor;
 import roguelike.actors.AttackAttempt;
 import roguelike.maps.MapArea;
+import roguelike.util.Coordinate;
 import squidpony.squidgrid.util.DirectionIntercardinal;
 
 public class RandomWalkBehavior extends Behavior {
@@ -17,15 +19,26 @@ public class RandomWalkBehavior extends Behavior {
 	public Action getAction() {
 		MapArea map = actor.getGame().getCurrentMapArea();
 		double rnd = Math.random();
+		DirectionIntercardinal direction;
 		if (rnd < 0.25) {
-			return new WalkAction(actor, map, DirectionIntercardinal.UP);
+			// return new WalkAction(actor, map, DirectionIntercardinal.UP);
+			direction = DirectionIntercardinal.UP;
 		} else if (rnd < 0.5) {
-			return new WalkAction(actor, map, DirectionIntercardinal.LEFT);
+			// return new WalkAction(actor, map, DirectionIntercardinal.LEFT);
+			direction = DirectionIntercardinal.LEFT;
 		} else if (rnd < 0.75) {
-			return new WalkAction(actor, map, DirectionIntercardinal.DOWN);
+			// return new WalkAction(actor, map, DirectionIntercardinal.DOWN);
+			direction = DirectionIntercardinal.DOWN;
 		} else {
-			return new WalkAction(actor, map, DirectionIntercardinal.RIGHT);
+			// return new WalkAction(actor, map, DirectionIntercardinal.RIGHT);
+			direction = DirectionIntercardinal.RIGHT;
 		}
+
+		Coordinate pos = actor.getPosition().createOffsetPosition(direction);
+		if (map.canMoveTo(actor, pos) && map.getActorAt(pos.x, pos.y) == null)
+			return new WalkAction(actor, map, direction);
+
+		return new RestAction(actor);
 	}
 
 	@Override

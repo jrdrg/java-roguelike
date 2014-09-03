@@ -10,6 +10,7 @@ import roguelike.actors.interfaces.Attackable;
 import roguelike.items.Equipment;
 import roguelike.items.Inventory;
 import roguelike.maps.MapArea;
+import roguelike.maps.Tile;
 import roguelike.util.Coordinate;
 import squidpony.squidcolor.SColor;
 
@@ -110,9 +111,10 @@ public abstract class Actor implements Attackable {
 	 * certain tiles or opening doors could be disabled based on the actor type)
 	 * 
 	 * @param mapArea
+	 * @param tile
 	 * @return
 	 */
-	public boolean onMoveAttempting(MapArea mapArea) {
+	public boolean onMoveAttempting(MapArea mapArea, Tile tile) {
 		// TODO: check for things like moving over certain tiles, opening doors
 		return true;
 	}

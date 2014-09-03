@@ -4,7 +4,7 @@ import roguelike.actors.Actor;
 
 public class InventoryBuilder {
 
-	public void getRandomInventory(Actor actor) {
+	public void populateRandomInventory(Actor actor) {
 
 		Inventory inv = actor.getInventory();
 		int itemCount = (int) (Math.random() * 5);

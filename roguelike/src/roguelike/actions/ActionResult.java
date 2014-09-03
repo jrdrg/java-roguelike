@@ -28,6 +28,10 @@ public class ActionResult {
 		return new ActionResult(false, true, action);
 	}
 
+	public static ActionResult incomplete() {
+		return new ActionResult(false, false, null);
+	}
+
 	public boolean isSuccess() {
 		return success;
 	}

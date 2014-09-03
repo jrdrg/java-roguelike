@@ -31,8 +31,15 @@ public class Equipment {
 		if (oldItem != null) {
 			inventory.add(oldItem);
 		} else {
-			inventory.remove(item);
+			// inventory.remove(item);
 		}
+
+		Item existingItem = inventory.getItem(item.itemId());
+		if (existingItem == null) {
+			inventory.add(item);
+		}
+		// TODO: add equipped indicator to items
+
 		return oldItem;
 	}
 }

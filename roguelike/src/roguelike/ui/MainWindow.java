@@ -56,34 +56,52 @@ public class MainWindow {
 	Game game;
 	GameLoader gameLoader;
 	MessageDisplay messageDisplay;
+	StatsDisplay statsDisplay;
+
+	final int FRAMES_PER_SECOND = 35;
+	final int SKIP_TICKS = 1000 / FRAMES_PER_SECOND;
 
 	public MainWindow() {
 		// screenFont = new Font("Lucidia", Font.PLAIN, fontSize);
-		screenFont = new Font("Lucida Sans Typewriter", Font.PLAIN, fontSize);
+		// screenFont = new Font("Lucida Sans Typewriter", Font.PLAIN,
+		// fontSize);
+		screenFont = new Font("Lucidia", Font.PLAIN, fontSize);
 
 		initFrame();
 		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
 
 		messageDisplay = new MessageDisplay(outputPanel, outputLines);
+		statsDisplay = new StatsDisplay(statsPanel);
+
 		gameLoader = new GameLoader(keyListener);
 		game = gameLoader.newGame();
-		game.initialize();
+		statsDisplay.setPlayer(game.getPlayer());
 
+		game.initialize();
+		boolean drawTitle = true;
+
+		long time = 0;
+		long lastFrame = time;
+		long nextTick = System.currentTimeMillis();
 		TurnResult run = game.processTurn();
 		while (run.isRunning()) {
 			if (game.isPlayerDead() || !game.getIsRunning()) {
 
-				boolean drawTitle = true;
 				if (drawTitle) {
 					// TODO: refactor into Screen object
 
 					drawTitleScreen(screenFont);
 					game = gameLoader.newGame();
 
+					statsDisplay.setPlayer(game.getPlayer());
+
 					drawTitle = false;
 				}
 				KeyEvent nextKey = keyListener.next();
+				if (nextKey == null)
+					continue;
+
 				if (nextKey.getKeyCode() == KeyEvent.VK_ENTER) {
 					game.initialize();
 
@@ -91,16 +109,42 @@ public class MainWindow {
 					messageDisplay.clear();
 					run = new TurnResult(true);
 
+					drawTitle = true;
+
 				} else if (nextKey.getKeyCode() == KeyEvent.VK_ESCAPE) {
 					run = new TurnResult(false);
 				}
 
 			} else {
+				// long start = System.currentTimeMillis();
+
 				drawMap();
 				drawEvents(run);
 				drawMessages(run);
 				drawStats();
+
 				run = game.processTurn();
+
+				// nextTick += SKIP_TICKS;
+				// long sleepTime = nextTick - System.currentTimeMillis();
+				// if (sleepTime >= 0) {
+				// try {
+				// Thread.sleep(sleepTime);
+				// } catch (InterruptedException e) {
+				// // TODO Auto-generated catch block
+				// e.printStackTrace();
+				// }
+				// } else {
+				// // Shit, we are running behind!
+				// }
+				//
+				// long end = System.currentTimeMillis();
+				// time = end - start;
+				// time = (long) (time * 0.9 + lastFrame * 0.1);
+				// lastFrame = time;
+				//
+				// statsPanel.put(0, 10, "FPS: " + time);
+
 			}
 		}
 
@@ -109,7 +153,7 @@ public class MainWindow {
 	}
 
 	private void initFrame() {
-		frame = new JFrame("Roguelike");
+		frame = new JFrame("Untitled Roguelike");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		try {
 			frame.setIconImage(ImageIO.read(new File("./icon.png")));
@@ -200,10 +244,10 @@ public class MainWindow {
 	}
 
 	private void drawMap() {
-		doFOV();
-
 		MapArea currentMap = game.getCurrentMapArea();
 		Rectangle screenArea = currentMap.getAreaInTiles(width, height, game.getPlayer().getPosition());
+
+		doFOV(currentMap, screenArea, game.getPlayer().getPosition());
 
 		for (int x = screenArea.x; x < screenArea.getMaxX(); x++) {
 			for (int y = screenArea.y; y < screenArea.getMaxY(); y++) {
@@ -230,16 +274,12 @@ public class MainWindow {
 	/**
 	 * Calculates the Field of View and marks the maps spots seen appropriately.
 	 */
-	private void doFOV() {
-		Coordinate player = game.getPlayer().getPosition();
-		MapArea currentMap = game.getCurrentMapArea();
-		Rectangle screenArea = currentMap.getAreaInTiles(width, height, player);
-	
-		SColorFactory.addPallet("light", SColorFactory.asGradient(SColor.WHITE, SColor.DARK_BROWN));
-	
+	private void doFOV(MapArea currentMap, Rectangle screenArea, Coordinate player) {
+		SColorFactory.addPallet("light", SColorFactory.asGradient(SColor.WHITE, SColor.DARK_SLATE_GRAY));
+
 		boolean[][] walls = new boolean[width][height];
 		float[][] lighting = new float[width][height];
-	
+
 		for (int x = screenArea.x; x < screenArea.getMaxX(); x++) {
 			for (int y = screenArea.y; y < screenArea.getMaxY(); y++) {
 				Tile tile = currentMap.getTileAt(x, y);
@@ -249,20 +289,20 @@ public class MainWindow {
 				}
 			}
 		}
-	
+
 		float lightForce = game.getPlayer().getVisionRadius();
 		float[][] incomingLight = fov.calculateFOV(lighting, player.x - screenArea.x, player.y - screenArea.y, 1f, 1 / lightForce, radiusStrategy);
-	
+
 		// fov.calculateFOV(walls, player.x - screenArea.x, player.y -
 		// screenArea.y, width + height);
 		for (int x = screenArea.x; x < screenArea.getMaxX(); x++) {
 			for (int y = screenArea.y; y < screenArea.getMaxY(); y++) {
 				int cX = x - screenArea.x;
 				int cY = y - screenArea.y;
-	
+
 				Tile tile = currentMap.getTileAt(x, y);
 				tile.setVisible(fov.isLit(cX, cY));
-	
+
 				if (incomingLight[cX][cY] > 0) {
 					float bright = 1 - incomingLight[cX][cY];
 					tile.setLightedColorValue(SColorFactory.fromPallet("light", bright));
@@ -271,36 +311,45 @@ public class MainWindow {
 					tile.setLightedColorValue(SColor.BLACK);
 					// clean[x][y] = false;
 				}
-	
+
 			}
 		}
 	}
 
 	private void drawEvents(TurnResult run) {
+		Rectangle screenArea = game.getCurrentMapArea().getAreaInTiles(width, height, game.getPlayer().getPosition());
 		for (TurnEvent event : run.getEvents()) {
 			if (event.getType() == TurnEvent.ATTACKED) {
 				Actor attacker = event.getInitiator();
 				Actor target = event.getTarget();
 
+				Coordinate attackerPos = attacker.getPosition();
 				Coordinate targetPos = target.getPosition();
-
-				// Coordinate diff =
-				// attacker.getPosition().createOffsetPosition(-targetPos.x,
-				// -targetPos.y);
 				Coordinate diff = attacker.getPosition().createOffsetPosition(-targetPos.x, -targetPos.y);
-				DirectionIntercardinal direction = DirectionIntercardinal.getDirection(diff.x, diff.y);
+				DirectionIntercardinal direction = DirectionIntercardinal.getDirection(-diff.x, -diff.y);
 
 				System.out.println(attacker.getName() + " attacks " + target.getName() + " in direction " + direction.symbol);
-				// TODO: add animations here
 
-				// mapPanel.bump(target.getPosition(), direction);
-				// Point end = new Point(direction.deltaX + targetPos.x,
-				// direction.deltaY + targetPos.y);
-				// mapPanel.slide(targetPos, end, 100);
-				// mapPanel.slide(end, targetPos, 100);
-				// mapPanel.waitForAnimations();
+				// TODO: add animations here
+				if (screenArea.contains(attackerPos) && screenArea.contains(targetPos)) {
+
+					try {
+						bgPanel.put(target.getPosition().x - screenArea.x, target.getPosition().y - screenArea.y, SColorFactory.asSColor(100, 0, 0));
+						bgPanel.bump(attacker.getPosition().createOffsetPosition(-screenArea.x, -screenArea.y), direction);
+					} catch (Exception e) {
+						System.out.println("unable to display " + e);
+						throw e;
+					}
+					// mapPanel.bump(target.getPosition(), direction);
+					// Point end = new Point(direction.deltaX + targetPos.x,
+					// direction.deltaY + targetPos.y);
+					// mapPanel.slide(targetPos, end, 100);
+					// mapPanel.slide(end, targetPos, 100);
+					// mapPanel.waitForAnimations();
+				}
 			}
 		}
+		bgPanel.waitForAnimations();
 	}
 
 	private void drawMessages(TurnResult run) {
@@ -311,11 +360,6 @@ public class MainWindow {
 	}
 
 	private void drawStats() {
-		Player player = game.getPlayer();
-
-		statsPanel.put(0, 4, String.format("Health:%3d", player.getHealth().getCurrent()));
-		statsPanel.put(0, 5, String.format("Energy:%3d", player.getEnergy().getCurrent()));
-
-		statsPanel.refresh();
+		statsDisplay.draw();
 	}
 }

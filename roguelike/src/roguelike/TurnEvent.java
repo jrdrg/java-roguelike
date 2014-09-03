@@ -7,6 +7,7 @@ public class TurnEvent {
 	private Actor target;
 
 	public static int ATTACKED = 1;
+
 	private int type;
 
 	private TurnEvent(Actor initiator, Actor target, int type) {

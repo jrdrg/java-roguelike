@@ -53,23 +53,12 @@ public class WalkAction extends Action {
 		}
 
 		// we can move here
-		moveTo(pos);
+		mapArea.moveActor(actor, pos);
 
 		ActionResult result = ActionResult.success();
 		if (Player.isPlayer(actor)) {
 			result.setMessage("Moving to " + pos.x + ", " + pos.y);
 		}
 		return result;
-	}
-
-	private void moveTo(Coordinate newPosition) {
-		// get position where actor is
-		Tile oldPosition = mapArea.getTileAt(actor.getPosition());
-
-		// move the actor from the old tile to the new one
-		oldPosition.moveActorTo(mapArea.getTileAt(newPosition));
-
-		// set the actor's position to the new position
-		actor.setPosition(newPosition.x, newPosition.y);
 	}
 }

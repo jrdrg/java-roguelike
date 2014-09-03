@@ -17,7 +17,11 @@ public class MeleeWeapon extends Weapon {
 
 	@Override
 	public Attack getAttack() {
-		return new MeleeAttack("uses " + getName() + " on", baseDamage);
+
+		double randomFactor = Math.random() * baseDamage;
+		int totalDamage = (int) (baseDamage + randomFactor / 2);
+
+		return new MeleeAttack("%s swings " + getName() + " at %s", totalDamage);
 	}
 
 	@Override
