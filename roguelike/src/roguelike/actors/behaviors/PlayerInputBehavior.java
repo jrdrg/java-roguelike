@@ -9,21 +9,18 @@ import roguelike.actions.QuitAction;
 import roguelike.actions.RestAction;
 import roguelike.actions.WalkAction;
 import roguelike.actors.Player;
-import squidpony.squidgrid.gui.SGKeyListener;
+import roguelike.ui.windows.InputManager;
 import squidpony.squidgrid.util.DirectionIntercardinal;
 
 public class PlayerInputBehavior extends Behavior {
 
-	private SGKeyListener keyListener;
-
-	public PlayerInputBehavior(Player actor, SGKeyListener keyListener) {
+	public PlayerInputBehavior(Player actor) {
 		super(actor);
-		this.keyListener = keyListener;
 	}
 
 	@Override
 	public Action getAction() {
-		KeyEvent input = keyListener.next();
+		KeyEvent input = InputManager.nextKey();
 		if (input == null)
 			return null;
 
@@ -47,7 +44,7 @@ public class PlayerInputBehavior extends Behavior {
 			return new RestAction(actor);
 
 		case KeyEvent.VK_I:
-			return new InventoryAction(actor, keyListener);
+			return new InventoryAction(actor);
 
 		}
 		return new FailAction(actor);

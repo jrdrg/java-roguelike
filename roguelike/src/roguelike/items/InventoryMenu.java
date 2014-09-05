@@ -25,7 +25,6 @@ public class InventoryMenu {
 				break;
 			}
 		}
-		System.out.println("Active item index: " + activeIndex);
 	}
 
 	public Item getActiveItem() {
@@ -33,5 +32,20 @@ public class InventoryMenu {
 			return inventory.getItem(activeIndex);
 
 		return null;
+	}
+
+	public Item getItemAt(int index) {
+		if (index >= 0)
+			return inventory.getItem(index);
+
+		return null;
+	}
+
+	public int getActiveItemIndex() {
+		return activeIndex;
+	}
+
+	public int totalItems() {
+		return inventory.getCount();
 	}
 }

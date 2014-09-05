@@ -5,17 +5,16 @@ import java.awt.event.KeyEvent;
 import roguelike.actors.Actor;
 import roguelike.items.InventoryMenu;
 import roguelike.items.Item;
-import squidpony.squidgrid.gui.SGKeyListener;
+import roguelike.ui.windows.InputManager;
+import roguelike.ui.windows.InventoryDialog;
 
 public class InventoryAction extends Action {
 
-	private SGKeyListener keyListener;
 	private InventoryMenu menu;
 
-	public InventoryAction(Actor actor, SGKeyListener keyListener) {
+	public InventoryAction(Actor actor) {
 		super(actor);
 
-		this.keyListener = keyListener;
 		this.usesEnergy = false;
 	}
 
@@ -29,8 +28,10 @@ public class InventoryAction extends Action {
 
 			menu = new InventoryMenu(actor.getInventory());
 
+			actor.getGame().setActiveDialog(new InventoryDialog(menu));
+
 		} else {
-			KeyEvent nextKey = keyListener.next();
+			KeyEvent nextKey = InputManager.nextKey();
 			if (nextKey != null) {
 
 				switch (nextKey.getKeyCode()) {

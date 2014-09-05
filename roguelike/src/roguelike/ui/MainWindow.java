@@ -18,15 +18,15 @@ import roguelike.MessageDisplayProperties;
 import roguelike.TurnEvent;
 import roguelike.TurnResult;
 import roguelike.actors.Actor;
-import roguelike.actors.Player;
 import roguelike.maps.MapArea;
 import roguelike.maps.Tile;
+import roguelike.ui.windows.Dialog;
+import roguelike.ui.windows.InputManager;
 import roguelike.util.Coordinate;
 import squidpony.squidcolor.SColor;
 import squidpony.squidcolor.SColorFactory;
 import squidpony.squidgrid.fov.FOVTranslator;
 import squidpony.squidgrid.fov.TranslucenceWrapperFOV;
-import squidpony.squidgrid.gui.SGKeyListener;
 import squidpony.squidgrid.gui.SwingPane;
 import squidpony.squidgrid.gui.TextCellFactory;
 import squidpony.squidgrid.util.BasicRadiusStrategy;
@@ -34,21 +34,23 @@ import squidpony.squidgrid.util.DirectionIntercardinal;
 import squidpony.squidgrid.util.RadiusStrategy;
 
 public class MainWindow {
+	private static final String CHARS_USED = "☃☺.,Xy@";
 
-	private static final int width = 50, height = 30, statWidth = 20, fontSize = 22, outputLines = 5;
+	private static final int screenWidth = 1000;
+	private static final int screenHeight = 700;
+	private static final int cellWidth = 16;
+	private static final int cellHeight = 20;
+
+	private static final int width = screenWidth / cellWidth;
+	private static final int height = screenHeight / cellHeight;
+	private static final int statWidth = 20, fontSize = 22, outputLines = 5;
+
 	private JFrame frame;
-	private SGKeyListener keyListener;
 	private JLayeredPane layeredPane;
 	private JPanel mainWinPanel;
 	private JPanel titlePanel;
-	private int cellWidth = 26;
-	private int cellHeight = 26;
-	private SwingPane fgPanel;
-	private SwingPane bgPanel;
-	private SwingPane windowPanel;
 	private SwingPane statsPanel;
 	private SwingPane outputPanel;
-	private static final String CHARS_USED = "☃☺.,Xy@";
 	private final FOVTranslator fov = new FOVTranslator(new TranslucenceWrapperFOV());
 	private final RadiusStrategy radiusStrategy = BasicRadiusStrategy.CIRCLE;
 	private Font screenFont;
@@ -57,55 +59,66 @@ public class MainWindow {
 	GameLoader gameLoader;
 	MessageDisplay messageDisplay;
 	StatsDisplay statsDisplay;
+	DisplayManager displayManager;
 
-	final int FRAMES_PER_SECOND = 35;
+	final int FRAMES_PER_SECOND = 25;
 	final int SKIP_TICKS = 1000 / FRAMES_PER_SECOND;
 
+	private long nextTick;
+	private long time;
+	private double lastFrame;
+
 	public MainWindow() {
-		// screenFont = new Font("Lucidia", Font.PLAIN, fontSize);
-		// screenFont = new Font("Lucida Sans Typewriter", Font.PLAIN,
-		// fontSize);
-		screenFont = new Font("Lucidia", Font.PLAIN, fontSize);
+
+		System.out.println("SKIP_TICKS: " + SKIP_TICKS);
+
+		displayManager = new DisplayManager(fontSize, cellWidth, cellHeight);
+		displayManager.init(width, height);
+		screenFont = displayManager.screenFont();
 
 		initFrame();
-		frame.setLocationRelativeTo(null);
-		frame.setVisible(true);
 
 		messageDisplay = new MessageDisplay(outputPanel, outputLines);
 		statsDisplay = new StatsDisplay(statsPanel);
 
-		gameLoader = new GameLoader(keyListener);
+		gameLoader = new GameLoader();
+
 		game = gameLoader.newGame();
 		statsDisplay.setPlayer(game.getPlayer());
 
 		game.initialize();
 		boolean drawTitle = true;
+		boolean started = false;
 
-		long time = 0;
-		long lastFrame = time;
-		long nextTick = System.currentTimeMillis();
+		/* used for FOV lighting */
+		SColorFactory.addPallet("light", SColorFactory.asGradient(SColor.WHITE, SColor.DARK_SLATE_GRAY));
+
+		time = 0;
+		lastFrame = time;
+		nextTick = System.currentTimeMillis();
 		TurnResult run = game.processTurn();
-		while (run.isRunning()) {
+		while (run.isRunning() || !started) {
+			started = true;
 			if (game.isPlayerDead() || !game.getIsRunning()) {
 
 				if (drawTitle) {
 					// TODO: refactor into Screen object
 
 					drawTitleScreen(screenFont);
-					game = gameLoader.newGame();
 
+					game = gameLoader.newGame();
 					statsDisplay.setPlayer(game.getPlayer());
 
 					drawTitle = false;
 				}
-				KeyEvent nextKey = keyListener.next();
+				KeyEvent nextKey = InputManager.nextKey();
 				if (nextKey == null)
 					continue;
 
 				if (nextKey.getKeyCode() == KeyEvent.VK_ENTER) {
 					game.initialize();
 
-					initGamePanels(screenFont);
+					initGamePanels();
 					messageDisplay.clear();
 					run = new TurnResult(true);
 
@@ -116,40 +129,51 @@ public class MainWindow {
 				}
 
 			} else {
-				// long start = System.currentTimeMillis();
-
-				drawMap();
-				drawEvents(run);
-				drawMessages(run);
-				drawStats();
-
-				run = game.processTurn();
-
-				// nextTick += SKIP_TICKS;
-				// long sleepTime = nextTick - System.currentTimeMillis();
-				// if (sleepTime >= 0) {
-				// try {
-				// Thread.sleep(sleepTime);
-				// } catch (InterruptedException e) {
-				// // TODO Auto-generated catch block
-				// e.printStackTrace();
-				// }
-				// } else {
-				// // Shit, we are running behind!
-				// }
-				//
-				// long end = System.currentTimeMillis();
-				// time = end - start;
-				// time = (long) (time * 0.9 + lastFrame * 0.1);
-				// lastFrame = time;
-				//
-				// statsPanel.put(0, 10, "FPS: " + time);
+				run = processGameLoop(run);
 
 			}
 		}
 
 		// quit
 		System.exit(0);
+	}
+
+	private TurnResult processGameLoop(TurnResult run) {
+		long start = System.currentTimeMillis();
+
+		if (!drawActiveWindow(run)) {
+			drawMap();
+			drawEvents(run);
+		}
+		drawMessages(run);
+		drawStats();
+
+		/*
+		 * this will only refresh if player input has occurred or something has
+		 * reset the dirty flag
+		 */
+		displayManager.refresh();
+
+		run = game.processTurn();
+
+		nextTick += SKIP_TICKS;
+		long sleepTime = nextTick - System.currentTimeMillis();
+		if (sleepTime >= 0) {
+			try {
+				Thread.sleep(sleepTime);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+
+		long end = System.currentTimeMillis();
+		time = end - start;
+		time = (long) (time * 0.9 + lastFrame * 0.1);
+		lastFrame = time;
+
+		statsPanel.put(0, 10, "FPS: " + time);
+		return run;
 	}
 
 	private void initFrame() {
@@ -162,13 +186,15 @@ public class MainWindow {
 			// used
 		}
 
-		keyListener = new SGKeyListener(true, SGKeyListener.CaptureType.DOWN);
-		frame.addKeyListener(keyListener);
+		InputManager.registerWithFrame(frame);
 
-		initGamePanels(screenFont);
+		initGamePanels();
+
+		frame.setLocationRelativeTo(null);
+		frame.setVisible(true);
 	}
 
-	private void initGamePanels(Font font) {
+	private void initGamePanels() {
 		if (titlePanel != null)
 			frame.remove(titlePanel);
 
@@ -177,37 +203,20 @@ public class MainWindow {
 			mainWinPanel.setBackground(SColor.BLACK);
 			mainWinPanel.setLayout(new BorderLayout());
 
-			TextCellFactory textFactory = new TextCellFactory(font, cellWidth, cellHeight, true, 0, CHARS_USED);
-			fgPanel = new SwingPane(width, height, textFactory, null);
-			fgPanel.put(width / 2 - 4, height / 2, "Loading");
-			fgPanel.refresh();
+			Font font = displayManager.screenFont();
+			TextCellFactory textFactory2 = new TextCellFactory(font, cellWidth / 1, cellHeight, true, 0, CHARS_USED);
 
-			bgPanel = new SwingPane(width, height, textFactory, null);
-			windowPanel = new SwingPane(width, height, textFactory, null);
-
-			layeredPane = new JLayeredPane();
-			layeredPane.setLayer(fgPanel, JLayeredPane.PALETTE_LAYER);
-			layeredPane.setLayer(bgPanel, JLayeredPane.DEFAULT_LAYER);
-			layeredPane.setLayer(windowPanel, JLayeredPane.POPUP_LAYER);
-
-			layeredPane.add(windowPanel);
-			layeredPane.add(fgPanel);
-			layeredPane.add(bgPanel);
-
-			layeredPane.setSize(fgPanel.getPreferredSize());
-			layeredPane.setPreferredSize(fgPanel.getPreferredSize());
-			layeredPane.setMinimumSize(fgPanel.getPreferredSize());
+			layeredPane = displayManager.displayPane();
 
 			mainWinPanel.add(layeredPane, BorderLayout.WEST);
 
-			TextCellFactory textFactory2 = new TextCellFactory(font, cellWidth / 2, cellHeight, true, 0, CHARS_USED);
-			statsPanel = new SwingPane(statWidth, fgPanel.gridHeight(), textFactory2, null);
+			statsPanel = new SwingPane(statWidth, height, textFactory2, null);
 			statsPanel.setDefaultForeground(SColor.WHITE);
 			statsPanel.put(0, 0, "Stats");
 			statsPanel.refresh();
 			mainWinPanel.add(statsPanel, BorderLayout.EAST);
 
-			outputPanel = new SwingPane(fgPanel.gridWidth() + statsPanel.gridWidth(), outputLines, textFactory2, null);
+			outputPanel = new SwingPane(width + statsPanel.gridWidth(), outputLines, textFactory2, null);
 			outputPanel.setDefaultForeground(SColor.AMARANTH);
 			outputPanel.put(0, 0, "Output");
 
@@ -220,7 +229,8 @@ public class MainWindow {
 
 	// TODO: create separate screens
 	private void drawTitleScreen(Font font) {
-		frame.remove(mainWinPanel);
+		if (mainWinPanel != null)
+			frame.remove(mainWinPanel);
 
 		if (titlePanel == null) {
 			titlePanel = new JPanel();
@@ -228,8 +238,10 @@ public class MainWindow {
 			titlePanel.setLayout(new BorderLayout());
 
 			TextCellFactory textFactory = new TextCellFactory(font, cellWidth, cellHeight, true, 0, CHARS_USED);
-			SwingPane pane = new SwingPane(width + statWidth / 2, height + outputLines, textFactory, null);
-
+			// SwingPane pane = new SwingPane(width + statWidth / 2, height +
+			// outputLines, textFactory, null);
+			SwingPane pane = new SwingPane(width + statWidth, height + outputLines, textFactory, null);
+			pane.setDefaultForeground(SColor.WHITE);
 			String title = "Title Screen";
 			int x = (int) ((pane.gridWidth() / 2f) - (title.length() / 2f));
 
@@ -259,24 +271,19 @@ public class MainWindow {
 					color = SColorFactory.lightWith(tile.getColor(), tile.getLightedColorValue());
 					bgColor = SColorFactory.lightWith(tile.getBackground(), tile.getLightedColorValue());
 
-					bgPanel.put(screenX, screenY, bgColor);
-					fgPanel.put(screenX, screenY, tile.getSymbol(), color);
+					displayManager.getTerminal().withColor(color, bgColor).put(screenX, screenY, tile.getSymbol());
 				} else {
-					bgPanel.put(screenX, screenY, tile.getBackground());
-					fgPanel.put(screenX, screenY, tile.getSymbol(), tile.getColor());
+					displayManager.getTerminal().withColor(tile.getColor(), tile.getBackground()).put(screenX, screenY, tile.getSymbol());
+
 				}
 			}
 		}
-		bgPanel.refresh();
-		fgPanel.refresh();
 	}
 
 	/**
 	 * Calculates the Field of View and marks the maps spots seen appropriately.
 	 */
 	private void doFOV(MapArea currentMap, Rectangle screenArea, Coordinate player) {
-		SColorFactory.addPallet("light", SColorFactory.asGradient(SColor.WHITE, SColor.DARK_SLATE_GRAY));
-
 		boolean[][] walls = new boolean[width][height];
 		float[][] lighting = new float[width][height];
 
@@ -293,8 +300,6 @@ public class MainWindow {
 		float lightForce = game.getPlayer().getVisionRadius();
 		float[][] incomingLight = fov.calculateFOV(lighting, player.x - screenArea.x, player.y - screenArea.y, 1f, 1 / lightForce, radiusStrategy);
 
-		// fov.calculateFOV(walls, player.x - screenArea.x, player.y -
-		// screenArea.y, width + height);
 		for (int x = screenArea.x; x < screenArea.getMaxX(); x++) {
 			for (int y = screenArea.y; y < screenArea.getMaxY(); y++) {
 				int cX = x - screenArea.x;
@@ -333,13 +338,17 @@ public class MainWindow {
 				// TODO: add animations here
 				if (screenArea.contains(attackerPos) && screenArea.contains(targetPos)) {
 
-					try {
-						bgPanel.put(target.getPosition().x - screenArea.x, target.getPosition().y - screenArea.y, SColorFactory.asSColor(100, 0, 0));
-						bgPanel.bump(attacker.getPosition().createOffsetPosition(-screenArea.x, -screenArea.y), direction);
-					} catch (Exception e) {
-						System.out.println("unable to display " + e);
-						throw e;
-					}
+					// try {
+					// bgPanel.put(target.getPosition().x - screenArea.x,
+					// target.getPosition().y - screenArea.y,
+					// SColorFactory.asSColor(100, 0, 0));
+					// bgPanel.bump(attacker.getPosition().createOffsetPosition(-screenArea.x,
+					// -screenArea.y), direction);
+					// } catch (Exception e) {
+					// System.out.println("unable to display " + e);
+					// throw e;
+					// }
+
 					// mapPanel.bump(target.getPosition(), direction);
 					// Point end = new Point(direction.deltaX + targetPos.x,
 					// direction.deltaY + targetPos.y);
@@ -349,7 +358,19 @@ public class MainWindow {
 				}
 			}
 		}
-		bgPanel.waitForAnimations();
+		// bgPanel.waitForAnimations();
+	}
+
+	private boolean drawActiveWindow(TurnResult run) {
+		Dialog window = run.getActiveWindow();
+		if (window != null) {
+			window.showInPane(displayManager.getTerminal());
+			window.draw();
+
+			return true;
+		}
+
+		return false;
 	}
 
 	private void drawMessages(TurnResult run) {

@@ -9,6 +9,7 @@ import roguelike.actors.Actor;
 import roguelike.actors.Energy;
 import roguelike.actors.Player;
 import roguelike.maps.MapArea;
+import roguelike.ui.windows.Dialog;
 import squidpony.squidcolor.SColor;
 
 public class Game {
@@ -95,6 +96,10 @@ public class Game {
 		currentTurnResult.addEvent(event);
 	}
 
+	public void setActiveDialog(Dialog dialog) {
+		currentTurnResult.setWindow(dialog);
+	}
+
 	/**
 	 * Processes one turn
 	 * 
@@ -102,6 +107,10 @@ public class Game {
 	 */
 	private TurnResult onProcessing() {
 		TurnResult turnResult = new TurnResult(isRunning);
+		if (currentTurnResult != null && currentTurnResult.activeWindow != null) {
+			turnResult.setWindow(currentTurnResult.getActiveWindow());
+		}
+
 		currentTurnResult = turnResult;
 
 		while (true) {
@@ -183,6 +192,9 @@ public class Game {
 		 * queue
 		 */
 		if (result.isCompleted()) {
+			// clear any dialogs
+			turnResult.setWindow(null);
+
 			while (result.getAlternateAction() != null) {
 				result = result.getAlternateAction().perform();
 				turnResult.addMessage(result.getMessage());
@@ -195,12 +207,13 @@ public class Game {
 			}
 
 		} else {
-			System.out.println("Incomplete action, re-adding on queue...");
+			// System.out.println("Incomplete action, re-adding on queue...");
 			queuedActions.add(currentAction);
 		}
 
 		/* return when player's actions are performed so we can redraw */
 		if (Player.isPlayer(currentAction.getActor())) {
+			turnResult.playerActed();
 			return turnResult;
 		}
 

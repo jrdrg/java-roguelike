@@ -22,7 +22,8 @@ public class TileBuilder {
 			return new Door().setValues(tile, false, SColor.BIRCH_BROWN, true);
 
 		case 'T':
-			t.setValues('♣', true, SColor.KELLY_GREEN).setLighting(0.5f);// .setBackground(SColor.GREEN);
+//			t.setValues('♣', true, SColor.KELLY_GREEN).setLighting(0.5f);// .setBackground(SColor.GREEN);
+			t.setValues('&', true, SColor.KELLY_GREEN).setLighting(0.5f);// .setBackground(SColor.GREEN);
 			break;
 
 		case '=': // floor of building
@@ -33,7 +34,7 @@ public class TileBuilder {
 			// t.setValues('~', false, SColor.AZUL).setLighting(0f);//
 			// .setBackground(SColor.BLUE);
 			// ⏞≈≓≘∴∠∭▄⏕
-			t.setValues('~', false, SColorFactory.asSColor(50, 150, 255)).setLighting(0f).setBackground(SColor.DARK_BLUE);
+			t.setValues('~', false, SColorFactory.asSColor(50, 150, 255)).setLighting(0f);//.setBackground(SColor.DARK_BLUE);
 			// t.setValues(' ', false, SColorFactory.asSColor(50, 170,
 			// 255)).setLighting(0f).setBackground(SColor.AZUL);
 			break;

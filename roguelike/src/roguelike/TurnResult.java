@@ -8,6 +8,7 @@ import squidpony.squidcolor.SColor;
 
 public class TurnResult {
 	boolean running;
+	boolean playerActed;
 	ArrayList<MessageDisplayProperties> messages;
 	ArrayList<TurnEvent> events;
 	Dialog activeWindow;
@@ -16,6 +17,14 @@ public class TurnResult {
 		this.running = running;
 		this.messages = new ArrayList<MessageDisplayProperties>();
 		this.events = new ArrayList<TurnEvent>();
+	}
+
+	public boolean playerActedThisTurn() {
+		return this.playerActed;
+	}
+
+	public void playerActed() {
+		this.playerActed = true;
 	}
 
 	public TurnResult addMessage(String message) {

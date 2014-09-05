@@ -1,6 +1,5 @@
 package roguelike.ui;
 
-import roguelike.Game;
 import roguelike.actors.Player;
 import squidpony.squidgrid.gui.SwingPane;
 

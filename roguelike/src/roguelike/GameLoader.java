@@ -7,14 +7,10 @@ import roguelike.items.Equipment.ItemSlot;
 import roguelike.items.MeleeWeapon;
 import roguelike.maps.MapArea;
 import roguelike.maps.MapBuilder;
-import squidpony.squidgrid.gui.SGKeyListener;
 
 public class GameLoader {
 
-	private SGKeyListener keyListener;
-
-	public GameLoader(SGKeyListener keyListener) {
-		this.keyListener = keyListener;
+	public GameLoader() {
 	}
 
 	public Game newGame() {
@@ -45,9 +41,11 @@ public class GameLoader {
 	}
 
 	public Player createPlayer(Game game) {
-		Player player = new Player(game, keyListener);
+		Player player = new Player(game);
 
 		MeleeWeapon sword = new MeleeWeapon("Sword", "A long sword", 25);
+		MeleeWeapon spear = new MeleeWeapon("Spear", "A spear", 20);
+		player.getInventory().add(spear);
 
 		player.getEquipment().equipItem(ItemSlot.RIGHT_ARM, sword, player.getInventory());
 

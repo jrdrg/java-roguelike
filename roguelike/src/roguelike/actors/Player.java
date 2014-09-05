@@ -6,21 +6,17 @@ import roguelike.actors.behaviors.Behavior;
 import roguelike.actors.behaviors.PlayerInputBehavior;
 import roguelike.actors.interfaces.Attackable;
 import squidpony.squidcolor.SColor;
-import squidpony.squidgrid.gui.SGKeyListener;
 
 public class Player extends Actor implements Attackable {
 
-	private SGKeyListener keyListener;
 	private Behavior behavior;
 
-	public Player(Game game, SGKeyListener keyListener) {
+	public Player(Game game) {
 		super('@', SColor.WHITE, game);
-		this.keyListener = keyListener;
-
 		// TODO: load these during character creation somewhere
 		this.getStatistics().speed.setBase(20);
 
-		this.behavior = new PlayerInputBehavior(this, keyListener);
+		this.behavior = new PlayerInputBehavior(this);
 	}
 
 	public static boolean isPlayer(Actor actor) {
@@ -44,7 +40,7 @@ public class Player extends Actor implements Attackable {
 
 	@Override
 	public int getVisionRadius() {
-		return 25;
+		return 35;
 	}
 
 	@Override
