@@ -1,6 +1,10 @@
 package roguelike.ui.animations;
 
+import java.awt.Point;
+
 import roguelike.ui.windows.Terminal;
+import squidpony.squidcolor.SColor;
+import squidpony.squidcolor.SColorFactory;
 
 public abstract class Animation {
 
@@ -21,5 +25,14 @@ public abstract class Animation {
 	 * @return True if the last frame was just drawn and the animation should be
 	 *         removed.
 	 */
-	public abstract boolean nextFrame(Terminal terminal);
+	public final boolean nextFrame(Terminal terminal) {
+		if (currentFrame < totalFrames) {
+			onNextFrame(terminal);
+		}
+		currentFrame++;
+		boolean finished = currentFrame > totalFrames;
+		return finished;
+	}
+
+	public abstract void onNextFrame(Terminal terminal);
 }

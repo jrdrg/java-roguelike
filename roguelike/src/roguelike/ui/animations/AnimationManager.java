@@ -50,4 +50,8 @@ public class AnimationManager {
 
 		return anyAnimations;
 	}
+
+	public void clear() {
+		animations.clear();
+	}
 }

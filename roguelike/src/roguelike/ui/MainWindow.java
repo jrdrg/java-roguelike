@@ -107,6 +107,8 @@ public class MainWindow {
 				if (drawTitle) {
 					// TODO: refactor into Screen object
 					InputManager.setInputEnabled(true);
+					animationManager.clear();
+
 					drawTitleScreen(screenFont);
 
 					game = gameLoader.newGame();
@@ -155,7 +157,8 @@ public class MainWindow {
 		 * this will only refresh if player input has occurred or something has
 		 * reset the dirty flag
 		 */
-		if (animationManager.nextFrame(displayManager.getTerminal())) {
+		boolean animationProcessed = animationManager.nextFrame(displayManager.getTerminal());
+		if (animationProcessed) {
 			displayManager.setDirty();
 			System.out.println("Set dirty flag");
 		}
