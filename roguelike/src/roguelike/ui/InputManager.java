@@ -1,10 +1,9 @@
-package roguelike.ui.windows;
+package roguelike.ui;
 
 import java.awt.event.KeyEvent;
 
 import javax.swing.JFrame;
 
-import roguelike.ui.DisplayManager;
 import squidpony.squidgrid.gui.SGKeyListener;
 import squidpony.squidgrid.gui.SGKeyListener.CaptureType;
 
@@ -12,8 +11,12 @@ public class InputManager {
 
 	private static SGKeyListener keyListener = new SGKeyListener(false, CaptureType.DOWN);
 	private static boolean inputReceived;
+	private static boolean inputEnabled = true;
 
 	public static KeyEvent nextKey() {
+		if (!inputEnabled)
+			return null;
+
 		KeyEvent key = keyListener.next();
 		if (key != null) {
 			DisplayManager.instance().setDirty();
@@ -29,5 +32,9 @@ public class InputManager {
 		boolean input = inputReceived;
 		inputReceived = !inputReceived;
 		return input;
+	}
+
+	public static void setInputEnabled(boolean enabled) {
+		inputEnabled = enabled;
 	}
 }

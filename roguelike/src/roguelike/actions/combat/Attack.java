@@ -12,5 +12,9 @@ public abstract class Attack {
 		this.baseDamage = baseDamage;
 	}
 
+	public int getDamage() {
+		return baseDamage;
+	}
+
 	public abstract boolean perform(Actor target);
 }

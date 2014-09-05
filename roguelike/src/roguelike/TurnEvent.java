@@ -5,6 +5,7 @@ import roguelike.actors.Actor;
 public class TurnEvent {
 	private Actor initiator;
 	private Actor target;
+	private String message;
 
 	public static int ATTACKED = 1;
 
@@ -16,8 +17,8 @@ public class TurnEvent {
 		this.type = type;
 	}
 
-	public static TurnEvent Attack(Actor initiator, Actor target) {
-		return new TurnEvent(initiator, target, ATTACKED);
+	public static TurnEvent Attack(Actor initiator, Actor target, String message) {
+		return new TurnEvent(initiator, target, ATTACKED).setMessage(message);
 	}
 
 	public int getType() {
@@ -30,5 +31,14 @@ public class TurnEvent {
 
 	public Actor getTarget() {
 		return target;
+	}
+
+	public String getMessage() {
+		return message;
+	}
+
+	private TurnEvent setMessage(String message) {
+		this.message = message;
+		return this;
 	}
 }

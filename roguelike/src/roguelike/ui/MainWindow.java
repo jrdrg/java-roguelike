@@ -20,8 +20,9 @@ import roguelike.TurnResult;
 import roguelike.actors.Actor;
 import roguelike.maps.MapArea;
 import roguelike.maps.Tile;
+import roguelike.ui.animations.AnimationManager;
+import roguelike.ui.animations.AttackAnimation;
 import roguelike.ui.windows.Dialog;
-import roguelike.ui.windows.InputManager;
 import roguelike.util.Coordinate;
 import squidpony.squidcolor.SColor;
 import squidpony.squidcolor.SColorFactory;
@@ -60,8 +61,9 @@ public class MainWindow {
 	MessageDisplay messageDisplay;
 	StatsDisplay statsDisplay;
 	DisplayManager displayManager;
+	AnimationManager animationManager;
 
-	final int FRAMES_PER_SECOND = 25;
+	final int FRAMES_PER_SECOND = 35;
 	final int SKIP_TICKS = 1000 / FRAMES_PER_SECOND;
 
 	private long nextTick;
@@ -72,6 +74,7 @@ public class MainWindow {
 
 		System.out.println("SKIP_TICKS: " + SKIP_TICKS);
 
+		animationManager = new AnimationManager();
 		displayManager = new DisplayManager(fontSize, cellWidth, cellHeight);
 		displayManager.init(width, height);
 		screenFont = displayManager.screenFont();
@@ -103,7 +106,7 @@ public class MainWindow {
 
 				if (drawTitle) {
 					// TODO: refactor into Screen object
-
+					InputManager.setInputEnabled(true);
 					drawTitleScreen(screenFont);
 
 					game = gameLoader.newGame();
@@ -152,6 +155,10 @@ public class MainWindow {
 		 * this will only refresh if player input has occurred or something has
 		 * reset the dirty flag
 		 */
+		if (animationManager.nextFrame(displayManager.getTerminal())) {
+			displayManager.setDirty();
+			System.out.println("Set dirty flag");
+		}
 		displayManager.refresh();
 
 		run = game.processTurn();
@@ -162,7 +169,6 @@ public class MainWindow {
 			try {
 				Thread.sleep(sleepTime);
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -212,7 +218,6 @@ public class MainWindow {
 
 			statsPanel = new SwingPane(statWidth, height, textFactory2, null);
 			statsPanel.setDefaultForeground(SColor.WHITE);
-			statsPanel.put(0, 0, "Stats");
 			statsPanel.refresh();
 			mainWinPanel.add(statsPanel, BorderLayout.EAST);
 
@@ -238,8 +243,6 @@ public class MainWindow {
 			titlePanel.setLayout(new BorderLayout());
 
 			TextCellFactory textFactory = new TextCellFactory(font, cellWidth, cellHeight, true, 0, CHARS_USED);
-			// SwingPane pane = new SwingPane(width + statWidth / 2, height +
-			// outputLines, textFactory, null);
 			SwingPane pane = new SwingPane(width + statWidth, height + outputLines, textFactory, null);
 			pane.setDefaultForeground(SColor.WHITE);
 			String title = "Title Screen";
@@ -337,6 +340,9 @@ public class MainWindow {
 
 				// TODO: add animations here
 				if (screenArea.contains(attackerPos) && screenArea.contains(targetPos)) {
+
+					animationManager.addAnimation(new AttackAnimation(target, event.getMessage()));
+					System.out.println("Added attack animation");
 
 					// try {
 					// bgPanel.put(target.getPosition().x - screenArea.x,

@@ -39,7 +39,7 @@ public class AttackAction extends Action {
 
 			actor.getGame().displayMessage("Target is dead");
 		} else {
-			actor.getGame().addEvent(TurnEvent.Attack(actor, target));
+			actor.getGame().addEvent(TurnEvent.Attack(actor, target, "" + attack.getDamage()));
 		}
 
 		return ActionResult.success();

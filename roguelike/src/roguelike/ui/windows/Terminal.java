@@ -11,8 +11,12 @@ public abstract class Terminal {
 	protected Rectangle size;
 	protected TerminalCursor cursor;
 
-	public Point size() {
+	public Point location() {
 		return this.size.getLocation();
+	}
+
+	public Rectangle size() {
+		return this.size;
 	}
 
 	public abstract Terminal getWindow(int x, int y, int width, int height);
@@ -26,4 +30,8 @@ public abstract class Terminal {
 	public abstract Terminal put(int x, int y, char[][] c);
 
 	public abstract Terminal put(int x, int y, char c);
+
+	public abstract Terminal fill(int x, int y, int width, int height);
+
+	public abstract Terminal fill(int x, int y, int width, int height, char c);
 }

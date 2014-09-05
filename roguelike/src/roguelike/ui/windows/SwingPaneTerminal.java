@@ -34,13 +34,8 @@ public class SwingPaneTerminal extends Terminal {
 			@Override
 			public TerminalCursor put(int x, int y, char c) {
 				data[size.x + x][size.y + y] = c;
-				// if (c != ' ') {
-				foreground.put(size.x + x, size.y + y, c, fgColor);
-				background.put(size.x + x, size.y + y, bgColor);
-				// } else {
-				// foreground.clear(x, y);
-				// background.put(size.x + x, size.y + y, bgColor);
-				// }
+				foreground.put(getX(x), getY(y), c, fgColor);
+				background.put(getX(x), getY(y), bgColor);
 
 				terminalChanged.onChanged();
 				return this;
@@ -54,6 +49,22 @@ public class SwingPaneTerminal extends Terminal {
 					}
 				}
 				return this;
+			}
+
+			@Override
+			public TerminalCursor bg(int x, int y) {
+				background.put(getX(x), getY(y), bgColor);
+
+				terminalChanged.onChanged();
+				return this;
+			}
+
+			private int getX(int x) {
+				return size.x + x;
+			}
+
+			private int getY(int y) {
+				return size.y + y;
 			}
 		};
 	}
@@ -98,6 +109,26 @@ public class SwingPaneTerminal extends Terminal {
 	@Override
 	public Terminal put(int x, int y, char c) {
 		cursor.put(x, y, c);
+		return this;
+	}
+
+	@Override
+	public Terminal fill(int x, int y, int width, int height) {
+		for (int i = 0; i < width; i++) {
+			for (int j = 0; j < height; j++) {
+				cursor.bg(i + x, j + y);
+			}
+		}
+		return this;
+	}
+
+	@Override
+	public Terminal fill(int x, int y, int width, int height, char c) {
+		for (int i = 0; i < width; i++) {
+			for (int j = 0; j < height; j++) {
+				cursor.put(i + x, j + y, c);
+			}
+		}
 		return this;
 	}
 }

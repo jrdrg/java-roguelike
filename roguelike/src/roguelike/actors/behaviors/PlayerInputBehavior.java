@@ -9,7 +9,7 @@ import roguelike.actions.QuitAction;
 import roguelike.actions.RestAction;
 import roguelike.actions.WalkAction;
 import roguelike.actors.Player;
-import roguelike.ui.windows.InputManager;
+import roguelike.ui.InputManager;
 import squidpony.squidgrid.util.DirectionIntercardinal;
 
 public class PlayerInputBehavior extends Behavior {

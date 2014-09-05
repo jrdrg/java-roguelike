@@ -5,7 +5,7 @@ import java.awt.event.KeyEvent;
 import roguelike.actors.Actor;
 import roguelike.items.InventoryMenu;
 import roguelike.items.Item;
-import roguelike.ui.windows.InputManager;
+import roguelike.ui.InputManager;
 import roguelike.ui.windows.InventoryDialog;
 
 public class InventoryAction extends Action {

@@ -22,15 +22,8 @@ public class InventoryDialog extends Dialog {
 		Terminal background = terminal.withColor(menuBgColor, menuBgColor);
 		Terminal text = terminal.withColor(SColor.WHITE, menuBgColor);
 
-		for (int x = 0; x < size.width; x++) {
-			for (int y = 0; y < size.height; y++) {
-				if (y == 0) {
-					border.put(x, y, ' ');
-				} else {
-					background.put(x, y, ' ');
-				}
-			}
-		}
+		background.fill(0, 0, size.width, size.height, ' ');
+		border.fill(0, 0, size.width, 1, ' ');
 
 		border.write(1, 0, "Inventory");
 
