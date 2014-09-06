@@ -7,6 +7,7 @@ import roguelike.items.Equipment.ItemSlot;
 import roguelike.items.MeleeWeapon;
 import roguelike.maps.MapArea;
 import roguelike.maps.MapBuilder;
+import squidpony.squidmath.RNG;
 
 public class GameLoader {
 
@@ -17,10 +18,10 @@ public class GameLoader {
 		Game game = new Game(this);
 		Player player = game.getPlayer();
 
-		player.setPosition(1, 1);
+		// player.setPosition(1, 1);
 
 		// TODO: make a real map
-		MapArea currentMapArea = new MapArea(100, 100, new MapBuilder());
+		MapArea currentMapArea = new MapArea(300, 300, new MapBuilder(game));
 		currentMapArea.addActor(player);
 
 		NpcBuilder npcBuilder = new NpcBuilder(game);
@@ -55,5 +56,9 @@ public class GameLoader {
 	public Player loadPlayer(Game game) {
 		// TODO: load player from file instead
 		return createPlayer(game);
+	}
+
+	public RNG getRandom() {
+		return new RNG();
 	}
 }

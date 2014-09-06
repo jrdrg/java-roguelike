@@ -8,6 +8,7 @@ import roguelike.ui.windows.Terminal;
 public class AnimationManager {
 
 	private ArrayList<Animation> animations;
+	private boolean refresh;
 
 	public AnimationManager() {
 		animations = new ArrayList<Animation>();
@@ -18,6 +19,15 @@ public class AnimationManager {
 
 		if (animation.isBlocking())
 			InputManager.setInputEnabled(false);
+	}
+
+	public boolean shouldRefresh() {
+		if (refresh) {
+			System.out.println("Refresh=true");
+			refresh = false;
+			return true;
+		}
+		return false;
 	}
 
 	/**
@@ -47,6 +57,9 @@ public class AnimationManager {
 
 		if (!anyBlocking)
 			InputManager.setInputEnabled(true);
+
+		if (toRemove.size() > 0)
+			refresh = true;
 
 		return anyAnimations;
 	}

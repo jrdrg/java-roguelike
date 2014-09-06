@@ -2,6 +2,7 @@ package roguelike.actions.combat;
 
 import roguelike.actions.Action;
 import roguelike.actors.Actor;
+import roguelike.actors.Player;
 import roguelike.items.Equipment.ItemSlot;
 import roguelike.items.Weapon;
 import squidpony.squidcolor.SColor;
@@ -75,7 +76,11 @@ public class CombatHandler {
 		String message = String.format("%s for %d damage!", attackDescription, attack.baseDamage);
 		message += "(" + actor.getHealth().getCurrent() + " left)";
 
-		actor.getGame().displayMessage(message, SColor.RED);
+		SColor color = SColor.ORANGE;
+		if (Player.isPlayer(actor))
+			color = SColor.RED;
+
+		actor.getGame().displayMessage(message, color);
 
 		return isDead;
 	}

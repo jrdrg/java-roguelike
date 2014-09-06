@@ -1,6 +1,10 @@
 package roguelike.maps;
 
+import java.util.ArrayList;
+
 import roguelike.actors.Actor;
+import roguelike.items.Inventory;
+import roguelike.items.Item;
 import squidpony.squidcolor.SColor;
 import squidpony.squidcolor.SColorFactory;
 
@@ -10,10 +14,12 @@ public class Tile {
 	protected boolean wall;
 	protected boolean explored;
 	protected float lighting;
-	protected SColor lightValue;
-
 	protected boolean isPassable;
 	protected char symbol;
+
+	protected Inventory items;
+
+	protected SColor lightValue;
 	protected SColor color;
 	protected SColor background;
 	private Actor actor;
@@ -22,12 +28,23 @@ public class Tile {
 		this.visible = false;
 		this.background = SColor.BLACK;
 		this.lightValue = SColor.BLACK;
+		this.items = new Inventory();
 	}
 
+	/**
+	 * Indicates whether this tile has been explored by the player
+	 * 
+	 * @return True if the player has visited this tile
+	 */
 	public boolean isExplored() {
 		return explored;
 	}
 
+	/**
+	 * Indicates this tile's visibility to the player
+	 * 
+	 * @return True if the player can see this tile
+	 */
 	public boolean isVisible() {
 		return this.visible;
 	}
@@ -38,10 +55,22 @@ public class Tile {
 			this.explored = true;
 	}
 
+	/**
+	 * Gets the color that this tile should be drawn in after lighting and
+	 * visibility is taken into account
+	 * 
+	 * @return
+	 */
 	public SColor getLightedColorValue() {
 		return this.lightValue;
 	}
 
+	/**
+	 * Sets the actual color this tile will be drawn in after taking lighting
+	 * and visibility into account
+	 * 
+	 * @param lightValue
+	 */
 	public void setLightedColorValue(SColor lightValue) {
 		this.lightValue = lightValue;
 	}
@@ -56,9 +85,11 @@ public class Tile {
 	}
 
 	public char getSymbol() {
-		if (actor != null && visible) {
+		if (actor != null && visible)
 			return actor.getSymbol();
-		}
+
+		if (items.any())
+			return getTopItem().getSymbol();
 
 		return this.symbol;
 	}
@@ -70,9 +101,13 @@ public class Tile {
 
 			return SColor.BLACK;
 		}
-		if (actor != null) {
+
+		if (actor != null)
 			return actor.getColor();
-		}
+
+		if (items.any())
+			return getTopItem().getColor();
+
 		return this.color;
 	}
 
@@ -135,4 +170,14 @@ public class Tile {
 		}
 	}
 
+	Inventory getItems() {
+		return items;
+	}
+
+	private Item getTopItem() {
+		if (items.any()) {
+			return items.getItem(items.getCount() - 1);
+		}
+		return null;
+	}
 }

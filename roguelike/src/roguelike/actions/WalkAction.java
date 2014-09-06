@@ -1,7 +1,6 @@
 package roguelike.actions;
 
 import roguelike.actors.Actor;
-import roguelike.actors.Player;
 import roguelike.maps.Door;
 import roguelike.maps.MapArea;
 import roguelike.maps.Tile;
@@ -56,9 +55,6 @@ public class WalkAction extends Action {
 		mapArea.moveActor(actor, pos);
 
 		ActionResult result = ActionResult.success();
-		if (Player.isPlayer(actor)) {
-			result.setMessage("Moving to " + pos.x + ", " + pos.y);
-		}
 		return result;
 	}
 }

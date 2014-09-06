@@ -6,7 +6,6 @@ import java.util.Queue;
 import roguelike.Game;
 import roguelike.actions.Action;
 import roguelike.actions.combat.CombatHandler;
-import roguelike.actors.interfaces.Attackable;
 import roguelike.items.Equipment;
 import roguelike.items.Inventory;
 import roguelike.maps.MapArea;
@@ -14,7 +13,7 @@ import roguelike.maps.Tile;
 import roguelike.util.Coordinate;
 import squidpony.squidcolor.SColor;
 
-public abstract class Actor implements Attackable {
+public abstract class Actor {
 
 	protected Coordinate position;
 	protected char symbol;

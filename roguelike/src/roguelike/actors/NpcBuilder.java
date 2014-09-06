@@ -23,7 +23,7 @@ public class NpcBuilder {
 		int x = (int) (Math.random() * 50);
 		int y = (int) (Math.random() * 30);
 
-		Npc npc = new Npc('b', SColor.AMETHYST, game, "Bandit " + x + "," + y);
+		Npc npc = new Npc('b', SColor.BRIGHT_PINK, game, "Bandit " + x + "," + y);
 
 		npc.setPosition(x, y);
 		npc.getStatistics().speed.setBase(10).setBonus(0);

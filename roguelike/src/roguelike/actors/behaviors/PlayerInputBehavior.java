@@ -3,6 +3,7 @@ package roguelike.actors.behaviors;
 import java.awt.event.KeyEvent;
 
 import roguelike.actions.Action;
+import roguelike.actions.CloseDoorAction;
 import roguelike.actions.FailAction;
 import roguelike.actions.InventoryAction;
 import roguelike.actions.QuitAction;
@@ -45,6 +46,9 @@ public class PlayerInputBehavior extends Behavior {
 
 		case KeyEvent.VK_I:
 			return new InventoryAction(actor);
+
+		case KeyEvent.VK_C:
+			return new CloseDoorAction(actor, actor.getGame().getCurrentMapArea());
 
 		}
 		return new FailAction(actor);

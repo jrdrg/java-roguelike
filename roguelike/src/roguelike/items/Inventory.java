@@ -12,6 +12,10 @@ public class Inventory {
 		items = new ArrayList<Item>();
 	}
 
+	public boolean any() {
+		return items.size() > 0;
+	}
+
 	public int getCount() {
 		return items.size();
 	}

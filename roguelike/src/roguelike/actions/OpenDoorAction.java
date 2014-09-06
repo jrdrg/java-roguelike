@@ -19,7 +19,7 @@ public class OpenDoorAction extends Action {
 			return ActionResult.failure();
 
 		Door door = (Door) tile;
-		door.open();
+		door.open(actor.getGame().getCurrentMapArea());
 
 		return ActionResult.success();
 	}

@@ -1,9 +1,12 @@
 package roguelike.maps;
 
 import java.awt.Rectangle;
+import java.util.ArrayList;
 import java.util.List;
 
 import roguelike.actors.Actor;
+import roguelike.items.Inventory;
+import roguelike.items.Item;
 import roguelike.util.Coordinate;
 import roguelike.util.CurrentItemTracker;
 
@@ -11,6 +14,8 @@ public class MapArea {
 
 	private Tile[][] map;
 	private float[][] lightResistances;
+	private boolean[][] walls;
+
 	private CurrentItemTracker<Actor> actors;
 	private int width, height;
 
@@ -22,6 +27,44 @@ public class MapArea {
 		buildMapArea(mapBuilder);
 	}
 
+	public float[][] getLightValues() {
+		return lightResistances;
+	}
+
+	public boolean[][] getWalls() {
+		return walls;
+	}
+
+	/**
+	 * Updates internal arrays tracking light values and walls for FOV
+	 * calculations. This should not change very often.
+	 */
+	public void updateValues() {
+		lightResistances = new float[width][height];
+		walls = new boolean[width][height];
+
+		for (int x = 0; x < width; x++) {
+			for (int y = 0; y < height; y++) {
+				lightResistances[x][y] = map[x][y].getLighting();
+				walls[x][y] = map[x][y].isWall();
+			}
+		}
+	}
+
+	/**
+	 * Determines the location of the upper-left position of the visible area,
+	 * based on the provided screen size and center point (generally the
+	 * player's location).
+	 * 
+	 * @param screenCellsX
+	 *            The width of the screen in cells
+	 * @param screenCellsY
+	 *            The height of the screen in cells
+	 * @param center
+	 *            The point at which the screen should be centered on
+	 * @return The location of the upper left point, in cells, after adjusting
+	 *         for map boundaries
+	 */
 	public Coordinate getUpperLeftScreenTile(int screenCellsX, int screenCellsY, Coordinate center) {
 		int left = (int) Math.round(center.x - (screenCellsX / 2.0));
 		int top = (int) Math.round(center.y - (screenCellsY / 2.0));
@@ -32,6 +75,18 @@ public class MapArea {
 		return new Coordinate(left, top);
 	}
 
+	/**
+	 * Determines the visible screen area, in cells
+	 * 
+	 * @param screenCellsX
+	 *            The width of the screen in cells
+	 * @param screenCellsY
+	 *            The height of the screen in cells
+	 * @param center
+	 *            The point at which the screen is centered on
+	 * @return A Rectangle representing the area that should be drawn to the
+	 *         screen, in cells
+	 */
 	public Rectangle getAreaInTiles(int screenCellsX, int screenCellsY, Coordinate center) {
 		Coordinate upperLeft = getUpperLeftScreenTile(screenCellsX, screenCellsY, center);
 		int w;
@@ -43,18 +98,85 @@ public class MapArea {
 		return new Rectangle(upperLeft.x, upperLeft.y, w, h);
 	}
 
+	/**
+	 * Adds an item to the tile at x,y
+	 * 
+	 * @param item
+	 * @param x
+	 * @param y
+	 */
+	public void addItem(Item item, int x, int y) {
+		Tile tile = getTileAt(x, y);
+		Inventory items = tile.getItems();
+		items.add(item);
+	}
+
+	/**
+	 * Removes an item from the tile at x,y
+	 * 
+	 * @param item
+	 * @param x
+	 * @param y
+	 * @return True if the item was removed, false if there are no items on the
+	 *         tile or the specific item wasn't in the list.
+	 */
+	public boolean removeItem(Item item, int x, int y) {
+		Tile tile = getTileAt(x, y);
+		Inventory items = tile.getItems();
+		if (!items.any()) {
+			System.out.println("Failed! no items at " + x + "," + y);
+			return false;
+		}
+		boolean removed = items.remove(item);
+		return removed;
+	}
+
+	/**
+	 * Returns a list of all actors in this map
+	 * 
+	 * @return
+	 */
 	public List<Actor> getAllActors() {
 		return actors.getAll();
 	}
 
+	/**
+	 * Returns the actor that is currently waiting to act.
+	 * 
+	 * @return
+	 */
 	public Actor getCurrentActor() {
 		return actors.getCurrent();
 	}
 
+	/**
+	 * Advances the current actor to the next in the queue.
+	 */
 	public void nextActor() {
 		actors.advance();
 	}
 
+	/**
+	 * Returns the actor at the given position.
+	 * 
+	 * @param x
+	 * @param y
+	 * @return
+	 */
+	public Actor getActorAt(int x, int y) {
+		if (!isWithinBounds(x, y))
+			return null;
+
+		return getTileAt(x, y).getActor();
+	}
+
+	/**
+	 * Adds an actor to this map.
+	 * 
+	 * @param actor
+	 * @return True if the actor was added, false if there was already an actor
+	 *         at the location specified by actor.getPosition().
+	 */
 	public boolean addActor(Actor actor) {
 		Coordinate pos = actor.getPosition();
 		Tile tile = getTileAt(pos.x, pos.y);
@@ -66,6 +188,13 @@ public class MapArea {
 		return true;
 	}
 
+	/**
+	 * Moves an actor from one tile to another.
+	 * 
+	 * @param actor
+	 * @param newPosition
+	 * @return True if the move was successful, false otherwise.
+	 */
 	public boolean moveActor(Actor actor, Coordinate newPosition) {
 		Coordinate pos = actor.getPosition();
 		Tile tile = getTileAt(pos.x, pos.y);
@@ -78,6 +207,14 @@ public class MapArea {
 		return false;
 	}
 
+	/**
+	 * Removes an actor from the map.
+	 * 
+	 * @param actor
+	 * @return True if the actor could be removed, false otherwise (for
+	 *         instance, if the tile at the actor's position actually has no
+	 *         actor, which probably indicates a bug)
+	 */
 	public boolean removeActor(Actor actor) {
 		System.out.println("Removing actor " + actor.getName());
 
@@ -95,13 +232,12 @@ public class MapArea {
 		return true;
 	}
 
-	public Actor getActorAt(int x, int y) {
-		if (!isWithinBounds(x, y))
-			return null;
-
-		return getTileAt(x, y).getActor();
-	}
-
+	/**
+	 * Returns the tile at the given position.
+	 * 
+	 * @param position
+	 * @return
+	 */
 	public Tile getTileAt(Coordinate position) {
 		return getTileAt(position.x, position.y);
 	}
@@ -113,10 +249,25 @@ public class MapArea {
 		return map[x][y];
 	}
 
+	/**
+	 * Determines if the actor can move to the specified position.
+	 * 
+	 * @param actor
+	 * @param position
+	 * @return True if a move is allowed, false otherwise.
+	 */
 	public boolean canMoveTo(Actor actor, Coordinate position) {
 		return canMoveTo(actor, position.x, position.y);
 	}
 
+	/**
+	 * Determines if the actor can move to the specified position.
+	 * 
+	 * @param actor
+	 * @param x
+	 * @param y
+	 * @return True if a move is allowed, false otherwise.
+	 */
 	public boolean canMoveTo(Actor actor, int x, int y) {
 		// check for out of bounds, etc
 		if (!isWithinBounds(x, y))
@@ -130,6 +281,13 @@ public class MapArea {
 		return false;
 	}
 
+	/**
+	 * Returns true if the given location is within the boundaries of this map.
+	 * 
+	 * @param x
+	 * @param y
+	 * @return
+	 */
 	public boolean isWithinBounds(int x, int y) {
 		if (x < 0 || x >= this.width)
 			return false;
@@ -140,16 +298,16 @@ public class MapArea {
 		return true;
 	}
 
+	/**
+	 * Populates this map's tiles.
+	 * 
+	 * @param mapBuilder
+	 *            The MapBuilder used to construct this map.
+	 */
 	private void buildMapArea(MapBuilder mapBuilder) {
 		map = new Tile[width][height];
 
 		mapBuilder.buildMap(map);
-
-		lightResistances = new float[width][height];
-		for (int x = 0; x < width; x++) {
-			for (int y = 0; y < height; y++) {
-				lightResistances[x][y] = map[x][y].getLighting();
-			}
-		}
+		updateValues();
 	}
 }

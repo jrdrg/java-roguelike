@@ -1,7 +1,6 @@
 package roguelike.ui.windows;
 
 import java.awt.Rectangle;
-
 import squidpony.squidcolor.SColor;
 import squidpony.squidgrid.gui.SwingPane;
 
@@ -9,8 +8,7 @@ public class SwingPaneTerminal extends Terminal {
 
 	private SwingPane foreground;
 	private SwingPane background;
-	private SColor fgColor;
-	private SColor bgColor;
+	private ColorPair colors;
 	private TerminalChangeNotification terminalChanged;
 
 	public SwingPaneTerminal(int width, int height, SwingPane foreground, SwingPane background, TerminalChangeNotification terminalChanged) {
@@ -23,8 +21,7 @@ public class SwingPaneTerminal extends Terminal {
 			final TerminalChangeNotification terminalChanged)
 	{
 		this.terminalChanged = terminalChanged;
-		this.fgColor = SColor.WHITE;
-		this.bgColor = SColor.BLACK;
+		this.colors = new ColorPair(SColor.WHITE, SColor.BLACK);
 		this.foreground = foreground;
 		this.background = background;
 		this.size = area;
@@ -34,8 +31,8 @@ public class SwingPaneTerminal extends Terminal {
 			@Override
 			public TerminalCursor put(int x, int y, char c) {
 				data[size.x + x][size.y + y] = c;
-				foreground.put(getX(x), getY(y), c, fgColor);
-				background.put(getX(x), getY(y), bgColor);
+				foreground.put(getX(x), getY(y), c, colors.foreground());
+				background.put(getX(x), getY(y), colors.background());
 
 				terminalChanged.onChanged();
 				return this;
@@ -53,7 +50,7 @@ public class SwingPaneTerminal extends Terminal {
 
 			@Override
 			public TerminalCursor bg(int x, int y) {
-				background.put(getX(x), getY(y), bgColor);
+				background.put(getX(x), getY(y), colors.background());
 
 				terminalChanged.onChanged();
 				return this;
@@ -78,15 +75,14 @@ public class SwingPaneTerminal extends Terminal {
 	@Override
 	public Terminal withColor(SColor color) {
 		SwingPaneTerminal term = new SwingPaneTerminal(size, foreground, background, data, this.terminalChanged);
-		term.fgColor = color;
+		term.colors = new ColorPair(color);
 		return term;
 	}
 
 	@Override
 	public Terminal withColor(SColor fgColor, SColor bgColor) {
 		SwingPaneTerminal term = new SwingPaneTerminal(size, foreground, background, data, this.terminalChanged);
-		term.fgColor = fgColor;
-		term.bgColor = bgColor;
+		term.colors = new ColorPair(fgColor, bgColor);
 		return term;
 	}
 

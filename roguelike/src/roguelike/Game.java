@@ -11,9 +11,11 @@ import roguelike.actors.Player;
 import roguelike.maps.MapArea;
 import roguelike.ui.windows.Dialog;
 import squidpony.squidcolor.SColor;
+import squidpony.squidmath.RNG;
 
 public class Game {
 
+	private RNG rng;
 	private boolean isRunning;
 	private boolean playerDead;
 	private MapArea currentMapArea;
@@ -25,7 +27,12 @@ public class Game {
 		this.player = gameLoader.createPlayer(this);
 
 		queuedActions = new LinkedList<Action>();
+		rng = gameLoader.getRandom();
 		System.out.println("Created Game");
+	}
+
+	public RNG random() {
+		return rng;
 	}
 
 	public Player getPlayer() {
@@ -53,7 +60,9 @@ public class Game {
 			return;
 
 		currentMapArea = mapArea;
-		this.player.setPosition(1, 1);
+
+		// TODO: set player position somewhere besides 1,1
+		// this.player.setPosition(1, 1);
 	}
 
 	public void initialize() {
@@ -100,17 +109,28 @@ public class Game {
 		currentTurnResult.setWindow(dialog);
 	}
 
+	public void waitingForAction(boolean waiting) {
+		currentTurnResult.setNeedsInput(waiting);
+	}
+
 	/**
 	 * Processes one turn
 	 * 
 	 * @return
 	 */
 	private TurnResult onProcessing() {
-		TurnResult turnResult = new TurnResult(isRunning);
-		if (currentTurnResult != null && currentTurnResult.activeWindow != null) {
-			turnResult.setWindow(currentTurnResult.getActiveWindow());
-		}
+		TurnResult turnResult;
+		// if (currentTurnResult != null && currentTurnResult.isInputRequired())
+		// {
+		// turnResult = currentTurnResult;
+		// } else
+		{
+			turnResult = new TurnResult(isRunning);
+			if (currentTurnResult != null && currentTurnResult.activeWindow != null) {
 
+				turnResult.setWindow(currentTurnResult.getActiveWindow());
+			}
+		}
 		currentTurnResult = turnResult;
 
 		while (true) {

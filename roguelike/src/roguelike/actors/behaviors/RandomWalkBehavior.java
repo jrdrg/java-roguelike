@@ -21,16 +21,12 @@ public class RandomWalkBehavior extends Behavior {
 		double rnd = Math.random();
 		DirectionIntercardinal direction;
 		if (rnd < 0.25) {
-			// return new WalkAction(actor, map, DirectionIntercardinal.UP);
 			direction = DirectionIntercardinal.UP;
 		} else if (rnd < 0.5) {
-			// return new WalkAction(actor, map, DirectionIntercardinal.LEFT);
 			direction = DirectionIntercardinal.LEFT;
 		} else if (rnd < 0.75) {
-			// return new WalkAction(actor, map, DirectionIntercardinal.DOWN);
 			direction = DirectionIntercardinal.DOWN;
 		} else {
-			// return new WalkAction(actor, map, DirectionIntercardinal.RIGHT);
 			direction = DirectionIntercardinal.RIGHT;
 		}
 

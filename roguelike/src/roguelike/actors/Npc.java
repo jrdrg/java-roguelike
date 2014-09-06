@@ -3,6 +3,9 @@ package roguelike.actors;
 import roguelike.Game;
 import roguelike.actions.Action;
 import roguelike.actors.behaviors.Behavior;
+import roguelike.items.Inventory;
+import roguelike.items.Item;
+import roguelike.maps.MapArea;
 import squidpony.squidcolor.SColor;
 
 public class Npc extends Actor {
@@ -35,6 +38,8 @@ public class Npc extends Actor {
 	@Override
 	public void onAttacked(Actor attacker) {
 		attackedBy.add(new AttackAttempt(attacker));
+		if (behavior != null)
+			behavior = behavior.getNextBehavior();
 	}
 
 	@Override
@@ -47,5 +52,21 @@ public class Npc extends Actor {
 	@Override
 	public void onKilled() {
 		behavior = null;
+
+		// chance to drop whatever is in inventory
+		Inventory inventory = this.getInventory();
+		MapArea map = this.getGame().getCurrentMapArea();
+
+		for (int x = 0; x < inventory.getCount(); x++) {
+
+			if (Math.random() < 0.7) {
+
+				Item i = inventory.getItem(x);
+				map.addItem(i, getPosition().x, getPosition().y);
+
+				getGame().displayMessage("Dropped " + i.getName(), SColor.GREEN);
+			}
+
+		}
 	}
 }

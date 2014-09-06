@@ -4,10 +4,9 @@ import roguelike.Game;
 import roguelike.actions.Action;
 import roguelike.actors.behaviors.Behavior;
 import roguelike.actors.behaviors.PlayerInputBehavior;
-import roguelike.actors.interfaces.Attackable;
 import squidpony.squidcolor.SColor;
 
-public class Player extends Actor implements Attackable {
+public class Player extends Actor {
 
 	private Behavior behavior;
 
@@ -25,7 +24,13 @@ public class Player extends Actor implements Attackable {
 
 	@Override
 	public Action getNextAction() {
-		return behavior.getAction();
+		Action action = behavior.getAction();
+		if (action == null) {
+			game.waitingForAction(true);
+		} else {
+			game.waitingForAction(false);
+		}
+		return action;
 	}
 
 	@Override

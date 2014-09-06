@@ -12,6 +12,7 @@ public class TurnResult {
 	ArrayList<MessageDisplayProperties> messages;
 	ArrayList<TurnEvent> events;
 	Dialog activeWindow;
+	boolean needsInput;
 
 	public TurnResult(boolean running) {
 		this.running = running;
@@ -25,6 +26,15 @@ public class TurnResult {
 
 	public void playerActed() {
 		this.playerActed = true;
+	}
+
+	public boolean isInputRequired() {
+		return this.needsInput;
+	}
+
+	public TurnResult setNeedsInput(boolean needsInput) {
+		this.needsInput = needsInput;
+		return this;
 	}
 
 	public TurnResult addMessage(String message) {

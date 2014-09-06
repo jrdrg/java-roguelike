@@ -1,11 +1,26 @@
 package roguelike.maps;
 
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.ArrayList;
 
+import roguelike.Game;
+import roguelike.util.WeightedCollection;
+import squidpony.squidmath.PerlinNoise;
+import squidpony.squidmath.RNG;
+import squidpony.squidutility.SCollections;
+
 public class MapBuilder {
-	TileBuilder tb = new TileBuilder();
-	ArrayList<Rectangle> buildings = new ArrayList<Rectangle>();
+	private TileBuilder tb = new TileBuilder();
+	private ArrayList<Rectangle> buildings = new ArrayList<Rectangle>();
+	private Game game;
+
+	public MapBuilder(Game game) {
+		if (game == null)
+			throw new IllegalArgumentException("game is null");
+
+		this.game = game;
+	}
 
 	public void buildMap(Tile[][] map) {
 		int width = map.length;
@@ -22,41 +37,37 @@ public class MapBuilder {
 			}
 		}
 
+		ArrayList<Point> startingPoints = createLandscape(game.random(), map);
+
+		// for (int i = 0; i < 60; i++) {
+		// int x = (int) Math.floor(Math.random() * width);
+		// int y = (int) Math.floor(Math.random() * height);
+		//
+		// createWater(map, x, y);
+		// }
+		//
+		// for (int i = 0; i < 70; i++) {
+		// int x = (int) Math.floor(Math.random() * width);
+		// int y = (int) Math.floor(Math.random() * height);
+		//
+		// createForest(map, x, y);
+		// }
+
 		for (int i = 0; i < 30; i++) {
-			int x = (int) Math.floor(Math.random() * width);
-			int y = (int) Math.floor(Math.random() * height);
-
-			createWater(map, x, y);
-		}
-
-		for (int i = 0; i < 30; i++) {
-			int x = (int) Math.floor(Math.random() * width);
-			int y = (int) Math.floor(Math.random() * height);
-
-			createForest(map, x, y);
-		}
-
-		for (int i = 0; i < 10; i++) {
 			int x = (int) Math.floor(Math.random() * width);
 			int y = (int) Math.floor(Math.random() * height);
 
 			createBuilding(map, x, y);
 		}
 
-		// // TileBuilder builder = new TileBuilder();
-		// StringMapCreator mapCreator = new
-		// StringMapCreator("..#...#.....TTT..T..TTTTT.....T.............TTTTTTT....#....#....#..####.###+######...");
-		// for (int x = 0; x < width; x++) {
-		// for (int y = 0; y < height; y++) {
-		// map[x][y] = mapCreator.nextTile();
-		// }
-		// }
+		Point playerPos = SCollections.getRandomElement(startingPoints);
 
+		game.getPlayer().setPosition(playerPos.x, playerPos.y);
 	}
 
 	private void createBuilding(Tile[][] map, int x, int y) {
-		int width = (int) Math.ceil(Math.random() * 10) + 3;
-		int height = (int) Math.ceil(Math.random() * 10) + 3;
+		int width = (int) Math.ceil(Math.random() * 40) + 3;
+		int height = (int) Math.ceil(Math.random() * 40) + 3;
 
 		Rectangle mapBounds = new Rectangle(0, 0, map.length, map[0].length);
 		Rectangle buildingBounds = new Rectangle(x, y, width, height);
@@ -97,15 +108,15 @@ public class MapBuilder {
 	}
 
 	private void createForest(Tile[][] map, int x, int y) {
-		int width = (int) Math.ceil(Math.random() * 10);
-		int height = (int) Math.ceil(Math.random() * 10);
+		int width = (int) Math.ceil(Math.random() * 30);
+		int height = (int) Math.ceil(Math.random() * 30);
 
 		Rectangle mapBounds = new Rectangle(0, 0, map.length, map[0].length);
-		Rectangle buildingBounds = new Rectangle(x, y, width, height);
-		if (mapBounds.contains(buildingBounds)) {
+		Rectangle forestBounds = new Rectangle(x, y, width, height);
+		if (mapBounds.contains(forestBounds)) {
 
-			for (int bx = buildingBounds.x; bx < buildingBounds.getMaxX(); bx++) {
-				for (int by = buildingBounds.y; by < buildingBounds.getMaxY(); by++) {
+			for (int bx = forestBounds.x; bx < forestBounds.getMaxX(); bx++) {
+				for (int by = forestBounds.y; by < forestBounds.getMaxY(); by++) {
 					map[bx][by] = tb.buildTile('T');
 				}
 			}
@@ -138,5 +149,57 @@ public class MapBuilder {
 				createWater(map, x, y + 1, recurseCount - 1);
 			}
 		}
+	}
+
+	private ArrayList<Point> createLandscape(RNG rng, Tile[][] map) {
+		// (1/15)(noise(x, y) + (2/15)(noise(2x, 2y) + (4/15)(noise(4x, 4y) +
+		// (8/15)(noise(8x, 8y)
+
+		int width = map.length;
+		int height = map[0].length;
+
+		float z = rng.nextFloat();
+		float factor = (float) rng.between(0.005, 0.03);
+
+		System.out.println("Z=" + z);
+		System.out.println("Factor=" + factor);
+
+		// collection whose max weight should not be greater than 100
+		WeightedCollection<Character> tiles = new WeightedCollection<Character>();
+		tiles.add('~', -50);
+		tiles.add('T', 30);
+		tiles.add('.', 40);
+		tiles.add('*', 50);
+		tiles.add('M', 90);
+
+		ArrayList<Point> validStartingPoints = new ArrayList<Point>();
+
+		for (int x = 0; x < width; x++) {
+			for (int y = 0; y < height; y++) {
+
+				float x1 = x * factor;
+				float y1 = y * factor;
+
+				// double oct1 = PerlinNoise.noise(x1, y1, z);
+				double oct1 = (1 / 15f) * PerlinNoise.noise(x1, y1, z);
+				double oct2 = (2 / 15f) * PerlinNoise.noise(x1 * 2, y1 * 2, z);
+				double oct3 = (4 / 15f) * PerlinNoise.noise(x1 * 4, y1 * 4, z);
+				double oct4 = (8 / 15f) * PerlinNoise.noise(x1 * 8, y1 * 8, z);
+
+				double total = oct1 + oct2 + oct3 + oct4;
+				// double total = oct1;
+
+				float t = ((float) (total) * 100);
+
+				char tileChar = tiles.getItem((int) t);
+
+				if (tileChar != '~') {
+					validStartingPoints.add(new Point(x, y));
+				}
+
+				map[x][y] = tb.buildTile(tileChar);
+			}
+		}
+		return validStartingPoints;
 	}
 }

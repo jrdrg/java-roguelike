@@ -3,6 +3,8 @@ package roguelike.ui;
 import java.awt.BorderLayout;
 import java.awt.Font;
 import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
@@ -11,6 +13,7 @@ import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
+import javax.swing.Timer;
 
 import roguelike.Game;
 import roguelike.GameLoader;
@@ -23,6 +26,7 @@ import roguelike.maps.Tile;
 import roguelike.ui.animations.AnimationManager;
 import roguelike.ui.animations.AttackAnimation;
 import roguelike.ui.windows.Dialog;
+import roguelike.util.ArrayUtils;
 import roguelike.util.Coordinate;
 import squidpony.squidcolor.SColor;
 import squidpony.squidcolor.SColorFactory;
@@ -63,7 +67,7 @@ public class MainWindow {
 	DisplayManager displayManager;
 	AnimationManager animationManager;
 
-	final int FRAMES_PER_SECOND = 35;
+	final int FRAMES_PER_SECOND = 50;
 	final int SKIP_TICKS = 1000 / FRAMES_PER_SECOND;
 
 	private long nextTick;
@@ -96,10 +100,14 @@ public class MainWindow {
 		/* used for FOV lighting */
 		SColorFactory.addPallet("light", SColorFactory.asGradient(SColor.WHITE, SColor.DARK_SLATE_GRAY));
 
+		startGame();
+
 		time = 0;
 		lastFrame = time;
 		nextTick = System.currentTimeMillis();
 		TurnResult run = game.processTurn();
+
+		// runGame();
 		while (run.isRunning() || !started) {
 			started = true;
 			if (game.isPlayerDead() || !game.getIsRunning()) {
@@ -115,6 +123,8 @@ public class MainWindow {
 					statsDisplay.setPlayer(game.getPlayer());
 
 					drawTitle = false;
+					displayManager.setDirty();
+					stopGame();
 				}
 				KeyEvent nextKey = InputManager.nextKey();
 				if (nextKey == null)
@@ -129,8 +139,11 @@ public class MainWindow {
 
 					drawTitle = true;
 
+					startGame();
+
 				} else if (nextKey.getKeyCode() == KeyEvent.VK_ESCAPE) {
 					run = new TurnResult(false);
+					stopGame();
 				}
 
 			} else {
@@ -143,28 +156,100 @@ public class MainWindow {
 		System.exit(0);
 	}
 
-	private TurnResult processGameLoop(TurnResult run) {
+	boolean drawing = true;
+
+	private void startGame() {
+		// drawing = true;
+		// Thread thread = new Thread(new Runnable() {
+		// @Override
+		// public void run() {
+		// runGame();
+		// }
+		// });
+		// thread.start();
+	}
+
+	private void stopGame() {
+		drawing = false;
+	}
+
+	private void runGame() {
+		final Timer t = new Timer(SKIP_TICKS, new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				long durationMs = drawFrame();
+
+				currentTurn = game.processTurn();
+
+				nextTick += SKIP_TICKS;
+				// long sleepTime = nextTick - System.currentTimeMillis();
+				// try {
+				// // Thread.sleep(Math.max(0, SKIP_TICKS - durationMs));
+				// Thread.sleep(Math.max(0, sleepTime));
+				// System.out.println("drawing " + durationMs);
+				// } catch (InterruptedException ex) {
+				// }
+
+				if (!game.getIsRunning()) {
+					System.exit(0);
+				}
+			}
+		});
+		t.start();
+
+		// while (drawing) {
+		// }
+	}
+
+	TurnResult currentTurn;
+
+	private long drawFrame() {
 		long start = System.currentTimeMillis();
 
-		if (!drawActiveWindow(run)) {
-			drawMap();
-			drawEvents(run);
-		}
-		drawMessages(run);
-		drawStats();
+		if (currentTurn == null)
+			return 0;
 
 		/*
 		 * this will only refresh if player input has occurred or something has
 		 * reset the dirty flag
 		 */
 		boolean animationProcessed = animationManager.nextFrame(displayManager.getTerminal());
-		if (animationProcessed) {
+		if (animationProcessed || animationManager.shouldRefresh()) {
 			displayManager.setDirty();
 			System.out.println("Set dirty flag");
 		}
+
+		if (currentTurn.playerActedThisTurn() || animationManager.shouldRefresh()) {
+			if (!drawActiveWindow(currentTurn)) {
+				drawMap();
+			}
+			drawStats();
+		}
+		drawMessages(currentTurn);
+		drawEvents(currentTurn);
+
 		displayManager.refresh();
 
+		long end = System.currentTimeMillis();
+		time = end - start;
+		//
+		// long mtime = (long) (time * 0.9 + lastFrame * 0.1);
+		// lastFrame = mtime;
+		//
+		// statsPanel.put(0, 10, "FPS: " + mtime);
+
+		return time;
+	}
+
+	// TODO: get key update every iteration, but process it on a fixed rate,
+	// i.e. processTurn(keyInput)
+
+	private TurnResult processGameLoop(TurnResult run) {
+		long elapsed = drawFrame();
+
 		run = game.processTurn();
+		currentTurn = run;
 
 		nextTick += SKIP_TICKS;
 		long sleepTime = nextTick - System.currentTimeMillis();
@@ -176,12 +261,6 @@ public class MainWindow {
 			}
 		}
 
-		long end = System.currentTimeMillis();
-		time = end - start;
-		time = (long) (time * 0.9 + lastFrame * 0.1);
-		lastFrame = time;
-
-		statsPanel.put(0, 10, "FPS: " + time);
 		return run;
 	}
 
@@ -262,6 +341,10 @@ public class MainWindow {
 	}
 
 	private void drawMap() {
+		// if ((currentTurn != null && !currentTurn.playerActedThisTurn()) ||
+		// animationManager.shouldRefresh())
+		// return;
+
 		MapArea currentMap = game.getCurrentMapArea();
 		Rectangle screenArea = currentMap.getAreaInTiles(width, height, game.getPlayer().getPosition());
 
@@ -293,15 +376,18 @@ public class MainWindow {
 		boolean[][] walls = new boolean[width][height];
 		float[][] lighting = new float[width][height];
 
-		for (int x = screenArea.x; x < screenArea.getMaxX(); x++) {
-			for (int y = screenArea.y; y < screenArea.getMaxY(); y++) {
-				Tile tile = currentMap.getTileAt(x, y);
-				if (tile != null) {
-					walls[x - screenArea.x][y - screenArea.y] = tile.isWall();
-					lighting[x - screenArea.x][y - screenArea.y] = tile.getLighting();
-				}
-			}
-		}
+		walls = ArrayUtils.getSubArray(currentMap.getWalls(), screenArea);
+		lighting = ArrayUtils.getSubArray(currentMap.getLightValues(), screenArea);
+
+		// for (int x = screenArea.x; x < screenArea.getMaxX(); x++) {
+		// for (int y = screenArea.y; y < screenArea.getMaxY(); y++) {
+		// Tile tile = currentMap.getTileAt(x, y);
+		// if (tile != null) {
+		// walls[x - screenArea.x][y - screenArea.y] = tile.isWall();
+		// lighting[x - screenArea.x][y - screenArea.y] = tile.getLighting();
+		// }
+		// }
+		// }
 
 		float lightForce = game.getPlayer().getVisionRadius();
 		float[][] incomingLight = fov.calculateFOV(lighting, player.x - screenArea.x, player.y - screenArea.y, 1f, 1 / lightForce, radiusStrategy);

@@ -1,10 +1,6 @@
 package roguelike.ui.animations;
 
-import java.awt.Point;
-
 import roguelike.ui.windows.Terminal;
-import squidpony.squidcolor.SColor;
-import squidpony.squidcolor.SColorFactory;
 
 public abstract class Animation {
 
