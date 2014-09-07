@@ -1,5 +1,6 @@
 package roguelike.actions;
 
+import roguelike.Game;
 import roguelike.actors.Actor;
 
 public class QuitAction extends Action {
@@ -11,7 +12,7 @@ public class QuitAction extends Action {
 
 	@Override
 	public ActionResult onPerform() {
-		actor.getGame().stopGame();
+		Game.current().stopGame();
 		return ActionResult.success();
 	}
 

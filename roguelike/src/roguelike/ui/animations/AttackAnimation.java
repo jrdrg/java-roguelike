@@ -59,7 +59,7 @@ public class AttackAnimation extends Animation {
 	}
 
 	private Point getOffsetPosition(Terminal terminal) {
-		Game g = target.getGame();
+		Game g = Game.current();
 		Rectangle termSize = terminal.size();
 		Coordinate playerPos = g.getPlayer().getPosition();
 		Point upperLeft = g.getCurrentMapArea().getUpperLeftScreenTile(termSize.width, termSize.height, playerPos);

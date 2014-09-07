@@ -14,6 +14,7 @@ import squidpony.squidcolor.SColor;
 import squidpony.squidmath.RNG;
 
 public class Game {
+	private static Game currentGame;
 
 	private RNG rng;
 	private boolean isRunning;
@@ -23,12 +24,27 @@ public class Game {
 	private Queue<Action> queuedActions;
 	private TurnResult currentTurnResult;
 
-	public Game(GameLoader gameLoader) {
-		this.player = gameLoader.createPlayer(this);
+	/**
+	 * This should only be called by GameLoader
+	 * 
+	 * @param gameLoader
+	 */
+	Game(GameLoader gameLoader) {
+		this.player = gameLoader.createPlayer();
 
 		queuedActions = new LinkedList<Action>();
 		rng = gameLoader.getRandom();
+		currentGame = this;
 		System.out.println("Created Game");
+	}
+
+	/**
+	 * Always returns the current game
+	 * 
+	 * @return
+	 */
+	public static Game current() {
+		return currentGame;
 	}
 
 	public RNG random() {
@@ -234,6 +250,9 @@ public class Game {
 		/* return when player's actions are performed so we can redraw */
 		if (Player.isPlayer(currentAction.getActor())) {
 			turnResult.playerActed();
+
+			Game.currentGame.currentMapArea.spawnMonsters();
+
 			return turnResult;
 		}
 

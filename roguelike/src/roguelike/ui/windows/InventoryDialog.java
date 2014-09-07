@@ -10,7 +10,7 @@ public class InventoryDialog extends Dialog {
 	private InventoryMenu menu;
 
 	public InventoryDialog(InventoryMenu menu) {
-		super(40, 30);
+		super(40, 10);
 		this.menu = menu;
 	}
 
@@ -30,19 +30,32 @@ public class InventoryDialog extends Dialog {
 		int activeIndex = menu.getActiveItemIndex();
 
 		int totalItems = menu.totalItems();
-		int itemCount = Math.min(5, totalItems);
+		int itemCount = Math.min(this.size.height - 5, totalItems);
+
+		int offset = Math.max(0, activeIndex - (itemCount - 1));
 
 		Terminal activeText = terminal.withColor(SColor.ALIZARIN, menuBgColor);
 		for (int x = 0; x < itemCount; x++) {
-			Item item = menu.getItemAt(x);
+			int itemIdx = x + offset;
+			Item item = menu.getItemAt(itemIdx);
 			if (item == null)
 				break;
 
 			Terminal t = text;
-			if (x == activeIndex) {
+			if (itemIdx == activeIndex) {
 				t = activeText;
 			}
-			t.write(3, 3 + x, item.getName());
+			int displayY = 3 + x;
+			text.write(1, displayY, getCharForIndex(itemIdx) + ")");
+			t.write(4, displayY, item.getName());
 		}
+
+		if (activeIndex < totalItems - 1 && totalItems > itemCount) {
+			text.write(6, itemCount + 4, "- " + (totalItems - itemCount) + " more -");
+		}
+	}
+
+	private char getCharForIndex(int index) {
+		return (char) (index + 65);
 	}
 }

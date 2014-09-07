@@ -21,8 +21,11 @@ public class InventoryMenu {
 				activeIndex = Math.max(0, activeIndex - 1);
 				break;
 			case KeyEvent.VK_DOWN:
-				activeIndex = Math.min(inventory.allItems().size() - 1, activeIndex + 1);
+				activeIndex = Math.min(inventory.getCount() - 1, activeIndex + 1);
 				break;
+
+			default:
+				activeIndex = Math.min(inventory.getCount() - 1, Math.max(0, getIndexOfChar(key)));
 			}
 		}
 	}
@@ -47,5 +50,15 @@ public class InventoryMenu {
 
 	public int totalItems() {
 		return inventory.getCount();
+	}
+
+	private int getIndexOfChar(KeyEvent key) {
+		char keyChar = key.getKeyChar();
+		if (keyChar >= 97 && keyChar <= 122)
+			return keyChar - 97; // a-z, returns 0-26
+		if (keyChar >= 65 && keyChar <= 90)
+			return keyChar - 65; // A-Z, returns 0-26
+
+		return -1; // invalid character pressed
 	}
 }

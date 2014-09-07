@@ -2,9 +2,11 @@ package roguelike.actions;
 
 import java.awt.event.KeyEvent;
 
+import roguelike.Game;
 import roguelike.actors.Actor;
 import roguelike.items.InventoryMenu;
 import roguelike.items.Item;
+import roguelike.items.Equipment.ItemSlot;
 import roguelike.ui.InputManager;
 import roguelike.ui.windows.InventoryDialog;
 
@@ -28,7 +30,7 @@ public class InventoryAction extends Action {
 
 			menu = new InventoryMenu(actor.getInventory());
 
-			actor.getGame().setActiveDialog(new InventoryDialog(menu));
+			Game.current().setActiveDialog(new InventoryDialog(menu));
 
 		} else {
 			KeyEvent nextKey = InputManager.nextKey();
@@ -39,6 +41,10 @@ public class InventoryAction extends Action {
 
 					Item activeItem = menu.getActiveItem();
 					if (activeItem != null) {
+
+						// TODO: change this to something else, equip it for now
+						actor.getEquipment().equipItem(ItemSlot.RIGHT_ARM, activeItem, actor.getInventory());
+
 						return ActionResult.success().setMessage("Selected item: " + activeItem.getName());
 
 					} else {
@@ -49,15 +55,10 @@ public class InventoryAction extends Action {
 				case KeyEvent.VK_ESCAPE:
 					return ActionResult.failure().setMessage("Closed inventory menu");
 
-				default:
-					System.out.println("Pressed key " + nextKey.getKeyCode());
-
 				}
-
 				menu.processKey(nextKey);
 			}
 		}
-
 		return ActionResult.incomplete();
 	}
 }

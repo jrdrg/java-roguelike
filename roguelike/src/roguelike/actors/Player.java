@@ -10,8 +10,8 @@ public class Player extends Actor {
 
 	private Behavior behavior;
 
-	public Player(Game game) {
-		super('@', SColor.WHITE, game);
+	public Player() {
+		super('@', SColor.WHITE);
 		// TODO: load these during character creation somewhere
 		this.getStatistics().speed.setBase(20);
 
@@ -26,9 +26,9 @@ public class Player extends Actor {
 	public Action getNextAction() {
 		Action action = behavior.getAction();
 		if (action == null) {
-			game.waitingForAction(true);
+			Game.current().waitingForAction(true);
 		} else {
-			game.waitingForAction(false);
+			Game.current().waitingForAction(false);
 		}
 		return action;
 	}

@@ -13,6 +13,10 @@ public class CurrentItemTracker<T> {
 		list = new ArrayList<T>();
 	}
 
+	public int count() {
+		return list.size();
+	}
+
 	public void add(T item) {
 		list.add(item);
 	}

@@ -13,14 +13,6 @@ import squidpony.squidutility.SCollections;
 public class MapBuilder {
 	private TileBuilder tb = new TileBuilder();
 	private ArrayList<Rectangle> buildings = new ArrayList<Rectangle>();
-	private Game game;
-
-	public MapBuilder(Game game) {
-		if (game == null)
-			throw new IllegalArgumentException("game is null");
-
-		this.game = game;
-	}
 
 	public void buildMap(Tile[][] map) {
 		int width = map.length;
@@ -37,7 +29,7 @@ public class MapBuilder {
 			}
 		}
 
-		ArrayList<Point> startingPoints = createLandscape(game.random(), map);
+		ArrayList<Point> startingPoints = createLandscape(Game.current().random(), map);
 
 		// for (int i = 0; i < 60; i++) {
 		// int x = (int) Math.floor(Math.random() * width);
@@ -62,7 +54,7 @@ public class MapBuilder {
 
 		Point playerPos = SCollections.getRandomElement(startingPoints);
 
-		game.getPlayer().setPosition(playerPos.x, playerPos.y);
+		Game.current().getPlayer().setPosition(playerPos.x, playerPos.y);
 	}
 
 	private void createBuilding(Tile[][] map, int x, int y) {

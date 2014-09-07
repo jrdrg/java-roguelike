@@ -8,11 +8,19 @@ public class MeleeWeapon extends Weapon {
 	protected int baseDamage;
 	protected String name;
 	protected String description;
+	protected String attackDescription;
 
 	public MeleeWeapon(String name, String description, int baseDamage) {
 		this.name = name;
 		this.description = description;
 		this.baseDamage = baseDamage;
+
+		this.attackDescription = "%s swings " + getName() + " at %s";
+	}
+
+	public MeleeWeapon(String name, String description, int baseDamage, String attackDescription) {
+		this(name, description, baseDamage);
+		this.attackDescription = attackDescription;
 	}
 
 	@Override
@@ -21,7 +29,7 @@ public class MeleeWeapon extends Weapon {
 		double randomFactor = Math.random() * baseDamage;
 		int totalDamage = (int) (baseDamage + randomFactor / 2);
 
-		return new MeleeAttack("%s swings " + getName() + " at %s", totalDamage);
+		return new MeleeAttack(attackDescription, totalDamage);
 	}
 
 	@Override

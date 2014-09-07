@@ -2,6 +2,7 @@ package roguelike.actions;
 
 import java.awt.event.KeyEvent;
 
+import roguelike.Game;
 import roguelike.actors.Actor;
 import roguelike.maps.Door;
 import roguelike.maps.MapArea;
@@ -20,7 +21,7 @@ public class CloseDoorAction extends Action {
 		direction = DirectionIntercardinal.NONE;
 		this.map = map;
 
-		actor.getGame().displayMessage("Direction?");
+		Game.current().displayMessage("Direction?");
 	}
 
 	public CloseDoorAction(Actor actor, MapArea map, DirectionIntercardinal direction) {

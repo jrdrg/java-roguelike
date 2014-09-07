@@ -1,21 +1,18 @@
 package roguelike.actors;
 
-import roguelike.Game;
 import roguelike.actors.behaviors.RandomWalkBehavior;
+import roguelike.items.Equipment.ItemSlot;
 import roguelike.items.InventoryBuilder;
 import roguelike.items.Item;
 import roguelike.items.Weapon;
-import roguelike.items.Equipment.ItemSlot;
 import roguelike.maps.MapArea;
 import squidpony.squidcolor.SColor;
 
 public class NpcBuilder {
 
-	private Game game;
 	private InventoryBuilder inventoryBuilder;
 
-	public NpcBuilder(Game game) {
-		this.game = game;
+	public NpcBuilder() {
 		this.inventoryBuilder = new InventoryBuilder();
 	}
 
@@ -23,7 +20,7 @@ public class NpcBuilder {
 		int x = (int) (Math.random() * 50);
 		int y = (int) (Math.random() * 30);
 
-		Npc npc = new Npc('b', SColor.BRIGHT_PINK, game, "Bandit " + x + "," + y);
+		Npc npc = new Npc('b', SColor.BRIGHT_PINK, "Bandit " + x + "," + y);
 
 		npc.setPosition(x, y);
 		npc.getStatistics().speed.setBase(10).setBonus(0);

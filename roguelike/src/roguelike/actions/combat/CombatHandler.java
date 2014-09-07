@@ -1,5 +1,6 @@
 package roguelike.actions.combat;
 
+import roguelike.Game;
 import roguelike.actions.Action;
 import roguelike.actors.Actor;
 import roguelike.actors.Player;
@@ -80,7 +81,7 @@ public class CombatHandler {
 		if (Player.isPlayer(actor))
 			color = SColor.RED;
 
-		actor.getGame().displayMessage(message, color);
+		Game.current().displayMessage(message, color);
 
 		return isDead;
 	}

@@ -427,29 +427,11 @@ public class MainWindow {
 
 				System.out.println(attacker.getName() + " attacks " + target.getName() + " in direction " + direction.symbol);
 
-				// TODO: add animations here
 				if (screenArea.contains(attackerPos) && screenArea.contains(targetPos)) {
 
 					animationManager.addAnimation(new AttackAnimation(target, event.getMessage()));
 					System.out.println("Added attack animation");
 
-					// try {
-					// bgPanel.put(target.getPosition().x - screenArea.x,
-					// target.getPosition().y - screenArea.y,
-					// SColorFactory.asSColor(100, 0, 0));
-					// bgPanel.bump(attacker.getPosition().createOffsetPosition(-screenArea.x,
-					// -screenArea.y), direction);
-					// } catch (Exception e) {
-					// System.out.println("unable to display " + e);
-					// throw e;
-					// }
-
-					// mapPanel.bump(target.getPosition(), direction);
-					// Point end = new Point(direction.deltaX + targetPos.x,
-					// direction.deltaY + targetPos.y);
-					// mapPanel.slide(targetPos, end, 100);
-					// mapPanel.slide(end, targetPos, 100);
-					// mapPanel.waitForAnimations();
 				}
 			}
 		}

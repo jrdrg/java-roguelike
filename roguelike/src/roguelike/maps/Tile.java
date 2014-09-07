@@ -1,7 +1,5 @@
 package roguelike.maps;
 
-import java.util.ArrayList;
-
 import roguelike.actors.Actor;
 import roguelike.items.Inventory;
 import roguelike.items.Item;

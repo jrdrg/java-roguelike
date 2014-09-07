@@ -21,10 +21,10 @@ public class GameLoader {
 		// player.setPosition(1, 1);
 
 		// TODO: make a real map
-		MapArea currentMapArea = new MapArea(300, 300, new MapBuilder(game));
+		MapArea currentMapArea = new MapArea(300, 300, new MapBuilder());
 		currentMapArea.addActor(player);
 
-		NpcBuilder npcBuilder = new NpcBuilder(game);
+		NpcBuilder npcBuilder = new NpcBuilder();
 
 		for (int x = 0; x < 35; x++) {
 			Actor npc = npcBuilder.buildNpc(currentMapArea);
@@ -41,8 +41,8 @@ public class GameLoader {
 		return newGame();
 	}
 
-	public Player createPlayer(Game game) {
-		Player player = new Player(game);
+	public Player createPlayer() {
+		Player player = new Player();
 
 		MeleeWeapon sword = new MeleeWeapon("Sword", "A long sword", 25);
 		MeleeWeapon spear = new MeleeWeapon("Spear", "A spear", 20);
@@ -53,9 +53,9 @@ public class GameLoader {
 		return player;
 	}
 
-	public Player loadPlayer(Game game) {
+	public Player loadPlayer() {
 		// TODO: load player from file instead
-		return createPlayer(game);
+		return createPlayer();
 	}
 
 	public RNG getRandom() {

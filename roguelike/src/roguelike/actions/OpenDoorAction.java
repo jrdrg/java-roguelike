@@ -1,5 +1,6 @@
 package roguelike.actions;
 
+import roguelike.Game;
 import roguelike.actors.Actor;
 import roguelike.maps.Door;
 import roguelike.maps.Tile;
@@ -19,7 +20,7 @@ public class OpenDoorAction extends Action {
 			return ActionResult.failure();
 
 		Door door = (Door) tile;
-		door.open(actor.getGame().getCurrentMapArea());
+		door.open(Game.current().getCurrentMapArea());
 
 		return ActionResult.success();
 	}

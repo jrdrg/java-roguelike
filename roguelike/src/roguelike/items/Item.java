@@ -8,6 +8,8 @@ public abstract class Item {
 
 	private UUID itemId = UUID.randomUUID();
 
+	protected boolean droppable;
+
 	public final UUID itemId() {
 		return this.itemId;
 	}
@@ -17,6 +19,10 @@ public abstract class Item {
 	public abstract String getDescription();
 
 	public abstract char getSymbol();
-	
+
 	public abstract SColor getColor();
+
+	boolean isDroppable() {
+		return droppable;
+	}
 }

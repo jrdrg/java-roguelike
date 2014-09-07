@@ -1,5 +1,6 @@
 package roguelike.actors.behaviors;
 
+import roguelike.Game;
 import roguelike.actions.Action;
 import roguelike.actions.RestAction;
 import roguelike.actions.WalkAction;
@@ -17,7 +18,7 @@ public class RandomWalkBehavior extends Behavior {
 
 	@Override
 	public Action getAction() {
-		MapArea map = actor.getGame().getCurrentMapArea();
+		MapArea map = Game.current().getCurrentMapArea();
 		double rnd = Math.random();
 		DirectionIntercardinal direction;
 		if (rnd < 0.25) {

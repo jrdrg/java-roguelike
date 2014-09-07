@@ -3,7 +3,6 @@ package roguelike.actors;
 import java.util.LinkedList;
 import java.util.Queue;
 
-import roguelike.Game;
 import roguelike.actions.Action;
 import roguelike.actions.combat.CombatHandler;
 import roguelike.items.Equipment;
@@ -18,7 +17,6 @@ public abstract class Actor {
 	protected Coordinate position;
 	protected char symbol;
 	protected SColor color;
-	protected Game game;
 
 	protected Queue<AttackAttempt> attacked;
 	protected Queue<AttackAttempt> attackedBy;
@@ -30,10 +28,9 @@ public abstract class Actor {
 	private Inventory inventory;
 	private Equipment equipment;
 
-	protected Actor(char symbol, SColor color, Game game) {
+	protected Actor(char symbol, SColor color) {
 		this.symbol = symbol;
 		this.color = color;
-		this.game = game;
 		this.position = new Coordinate();
 
 		this.energy = new Energy();
@@ -45,10 +42,6 @@ public abstract class Actor {
 
 		attacked = new LinkedList<AttackAttempt>();
 		attackedBy = new LinkedList<AttackAttempt>();
-	}
-
-	public Game getGame() {
-		return game;
 	}
 
 	public Energy getEnergy() {

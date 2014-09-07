@@ -13,8 +13,8 @@ public class Npc extends Actor {
 	private Behavior behavior;
 	private String name;
 
-	public Npc(char symbol, SColor color, Game game, String name) {
-		super(symbol, color, game);
+	public Npc(char symbol, SColor color, String name) {
+		super(symbol, color);
 		this.name = name;
 	}
 
@@ -55,7 +55,7 @@ public class Npc extends Actor {
 
 		// chance to drop whatever is in inventory
 		Inventory inventory = this.getInventory();
-		MapArea map = this.getGame().getCurrentMapArea();
+		MapArea map = Game.current().getCurrentMapArea();
 
 		for (int x = 0; x < inventory.getCount(); x++) {
 
@@ -64,7 +64,7 @@ public class Npc extends Actor {
 				Item i = inventory.getItem(x);
 				map.addItem(i, getPosition().x, getPosition().y);
 
-				getGame().displayMessage("Dropped " + i.getName(), SColor.GREEN);
+				Game.current().displayMessage("Dropped " + i.getName(), SColor.GREEN);
 			}
 
 		}

@@ -1,5 +1,6 @@
 package roguelike.actions;
 
+import roguelike.Game;
 import roguelike.TurnEvent;
 import roguelike.actions.combat.Attack;
 import roguelike.actors.Actor;
@@ -31,15 +32,15 @@ public class AttackAction extends Action {
 		if (isTargetDead) {
 			target.onKilled();
 
-			MapArea currentArea = actor.getGame().getCurrentMapArea();
+			MapArea currentArea = Game.current().getCurrentMapArea();
 			if (Player.isPlayer(target)) {
-				target.getGame().reset();
+				Game.current().reset();
 			}
 			currentArea.removeActor(target);
 
-			actor.getGame().displayMessage("Target is dead");
+			Game.current().displayMessage("Target is dead");
 		} else {
-			actor.getGame().addEvent(TurnEvent.Attack(actor, target, "" + attack.getDamage()));
+			Game.current().addEvent(TurnEvent.Attack(actor, target, "" + attack.getDamage()));
 		}
 
 		return ActionResult.success();

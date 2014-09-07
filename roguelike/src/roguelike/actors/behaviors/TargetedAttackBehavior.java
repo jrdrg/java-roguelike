@@ -1,5 +1,6 @@
 package roguelike.actors.behaviors;
 
+import roguelike.Game;
 import roguelike.actions.Action;
 import roguelike.actions.AttackAction;
 import roguelike.actions.WalkAction;
@@ -19,7 +20,7 @@ public class TargetedAttackBehavior extends Behavior {
 	protected TargetedAttackBehavior(Actor actor, Actor target) {
 		super(actor);
 
-		actor.getGame().displayMessage(actor.getName() + " is now attacking " + target.getName(), SColor.PURPLE);
+		Game.current().displayMessage(actor.getName() + " is now attacking " + target.getName(), SColor.PURPLE);
 		this.target = target;
 	}
 
@@ -39,7 +40,7 @@ public class TargetedAttackBehavior extends Behavior {
 		Coordinate diff = actorPos.createOffsetPosition(-targetPos.x, -targetPos.y);
 
 		DirectionIntercardinal direction = DirectionIntercardinal.getDirection(-diff.x, -diff.y);
-		MapArea mapArea = actor.getGame().getCurrentMapArea();
+		MapArea mapArea = Game.current().getCurrentMapArea();
 		return new WalkAction(actor, mapArea, direction);
 	}
 
@@ -51,7 +52,7 @@ public class TargetedAttackBehavior extends Behavior {
 
 			// TODO: figure out what to do when target is dead or out of sight
 			// range
-			actor.getGame().displayMessage(target.getName() + " has gone out of sight range...", SColor.GRAY);
+			Game.current().displayMessage(target.getName() + " has gone out of sight range...", SColor.GRAY);
 			return new RandomWalkBehavior(actor);
 		}
 		return null;

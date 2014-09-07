@@ -1,14 +1,17 @@
 package roguelike.maps;
 
 import java.awt.Rectangle;
-import java.util.ArrayList;
 import java.util.List;
 
+import roguelike.Game;
 import roguelike.actors.Actor;
 import roguelike.items.Inventory;
 import roguelike.items.Item;
+import roguelike.monsters.MonsterFactory;
 import roguelike.util.Coordinate;
 import roguelike.util.CurrentItemTracker;
+import squidpony.squidcolor.SColor;
+import squidpony.squidmath.RNG;
 
 public class MapArea {
 
@@ -25,6 +28,43 @@ public class MapArea {
 		this.height = height;
 
 		buildMapArea(mapBuilder);
+	}
+
+	public void spawnMonsters() {
+		int maxActors = 70;
+		if (actors.count() < maxActors) {
+			/* create a new one somewhere close to the player */
+
+			Coordinate position = findRandomNonVisibleTile();
+			if (position != null) {
+
+				Actor npc = MonsterFactory.createMonster(position.x, position.y);
+
+				if (addActor(npc)) {
+					Game.current().displayMessage(npc.getName() + " created at " + position.x + ", " + position.y, SColor.ALOEWOOD_BROWN);
+				}
+			}
+		}
+	}
+
+	private Coordinate findRandomNonVisibleTile() {
+		Coordinate playerPos = Game.current().getPlayer().getPosition();
+
+		RNG rng = Game.current().random();
+
+		for (int i = 0; i < 5; i++) {
+			int x = rng.between(playerPos.x - 50, playerPos.x + 50);
+			int y = rng.between(playerPos.y - 50, playerPos.y + 50);
+
+			x = Math.max(0, Math.min(x, width - 1));
+			y = Math.max(0, Math.min(y, height - 1));
+
+			Tile tile = getTileAt(x, y);
+			if (!tile.visible) {
+				return new Coordinate(x, y);
+			}
+		}
+		return null;
 	}
 
 	public float[][] getLightValues() {
@@ -106,8 +146,7 @@ public class MapArea {
 	 * @param y
 	 */
 	public void addItem(Item item, int x, int y) {
-		Tile tile = getTileAt(x, y);
-		Inventory items = tile.getItems();
+		Inventory items = getItemsAt(x, y);
 		items.add(item);
 	}
 
@@ -121,14 +160,25 @@ public class MapArea {
 	 *         tile or the specific item wasn't in the list.
 	 */
 	public boolean removeItem(Item item, int x, int y) {
-		Tile tile = getTileAt(x, y);
-		Inventory items = tile.getItems();
+		Inventory items = getItemsAt(x, y);
 		if (!items.any()) {
 			System.out.println("Failed! no items at " + x + "," + y);
 			return false;
 		}
 		boolean removed = items.remove(item);
 		return removed;
+	}
+
+	/**
+	 * Returns an Inventory object with all the items at the specified tile
+	 * 
+	 * @param x
+	 * @param y
+	 * @return
+	 */
+	public Inventory getItemsAt(int x, int y) {
+		Tile tile = getTileAt(x, y);
+		return tile.getItems();
 	}
 
 	/**
