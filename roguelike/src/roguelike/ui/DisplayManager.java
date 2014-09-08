@@ -11,7 +11,6 @@ import javax.swing.JLayeredPane;
 import roguelike.ui.windows.SwingPaneTerminal;
 import roguelike.ui.windows.Terminal;
 import roguelike.ui.windows.TerminalChangeNotification;
-import squidpony.squidcolor.SColor;
 import squidpony.squidgrid.gui.SwingPane;
 import squidpony.squidgrid.gui.TextCellFactory;
 
@@ -20,7 +19,7 @@ public class DisplayManager {
 	// private final String FONT_NAME = "Adore64.ttf";
 	private final String FONT_NAME = "Commodore Pixelized v1.2.ttf";
 	private final String BACKUP_FONT_NAME = "Lucidia";
-	private static final String CHARS_USED = "☃☺.,Xy@";
+	private static final String CHARS_USED = "☃☺.,Xy#@.~M";
 
 	private Font font;
 	private JLayeredPane displayPane;

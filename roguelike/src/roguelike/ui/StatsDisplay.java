@@ -9,7 +9,6 @@ import roguelike.items.Weapon;
 import roguelike.ui.windows.Terminal;
 import squidpony.squidcolor.SColor;
 import squidpony.squidcolor.SColorFactory;
-import squidpony.squidgrid.gui.SwingPane;
 
 public class StatsDisplay {
 

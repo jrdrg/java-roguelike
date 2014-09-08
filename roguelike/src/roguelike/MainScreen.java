@@ -1,6 +1,5 @@
 package roguelike;
 
-import java.awt.Font;
 import java.awt.Rectangle;
 
 import roguelike.actors.Actor;
@@ -25,14 +24,12 @@ import squidpony.squidgrid.util.DirectionIntercardinal;
 import squidpony.squidgrid.util.RadiusStrategy;
 
 public class MainScreen extends Screen {
-	private static final String CHARS_USED = "#@.~M";
-
 	private final FOVTranslator fov = new FOVTranslator(new TranslucenceWrapperFOV());
 	private final RadiusStrategy radiusStrategy = BasicRadiusStrategy.CIRCLE;
-	private Font screenFont;
 
 	Terminal terminal;
 
+	private MainScreen nextScreen;
 	Game game;
 	GameLoader gameLoader;
 	MessageDisplay messageDisplay;
@@ -40,8 +37,11 @@ public class MainScreen extends Screen {
 	DisplayManager displayManager;
 	AnimationManager animationManager;
 
+	TurnResult currentTurn;
+
 	public MainScreen(Terminal terminal) {
 		this.terminal = terminal;
+		this.nextScreen = this;
 
 		/* used for FOV lighting */
 		SColorFactory.addPallet("light",
@@ -49,10 +49,10 @@ public class MainScreen extends Screen {
 
 		animationManager = new AnimationManager();
 		displayManager = DisplayManager.instance();
-		screenFont = displayManager.screenFont();
 
 		Terminal messageTerminal =
 				terminal.getWindow(0, height - outputLines, width, outputLines);
+
 		Terminal statsTerminal =
 				terminal.getWindow(width - MainWindow.statWidth, 0, MainWindow.statWidth, height);
 
@@ -65,6 +65,10 @@ public class MainScreen extends Screen {
 		statsDisplay.setPlayer(game.getPlayer());
 
 		game.initialize();
+
+		drawMap();
+		drawStats();
+		displayManager.setDirty();
 	}
 
 	@Override
@@ -81,46 +85,16 @@ public class MainScreen extends Screen {
 
 	@Override
 	public Screen getScreen() {
-		return this;
+		return nextScreen;
 	}
-
-	// TODO: get key update every iteration, but process it on a fixed rate,
-	// i.e. processTurn(keyInput)
-	/*
-	 * private void initGamePanels() { if (titlePanel != null)
-	 * frame.remove(titlePanel);
-	 * 
-	 * if (mainWinPanel == null) { mainWinPanel = new JPanel();
-	 * mainWinPanel.setBackground(SColor.BLACK); mainWinPanel.setLayout(new
-	 * BorderLayout());
-	 * 
-	 * Font font = displayManager.screenFont(); TextCellFactory textFactory2 =
-	 * new TextCellFactory(font, cellWidth / 1, cellHeight, true, 0,
-	 * CHARS_USED);
-	 * 
-	 * layeredPane = displayManager.displayPane();
-	 * 
-	 * mainWinPanel.add(layeredPane, BorderLayout.WEST);
-	 * 
-	 * statsPanel = new SwingPane(statWidth, height, textFactory2, null);
-	 * statsPanel.setDefaultForeground(SColor.WHITE); statsPanel.refresh();
-	 * mainWinPanel.add(statsPanel, BorderLayout.EAST);
-	 * 
-	 * outputPanel = new SwingPane(width + statsPanel.gridWidth(), outputLines,
-	 * textFactory2, null); outputPanel.setDefaultForeground(SColor.AMARANTH);
-	 * outputPanel.put(0, 0, "Output");
-	 * 
-	 * outputPanel.refresh(); mainWinPanel.add(outputPanel, BorderLayout.SOUTH);
-	 * } frame.add(mainWinPanel); frame.pack(); }
-	 */
-
-	TurnResult currentTurn;
 
 	private long drawFrame() {
 		long start = System.currentTimeMillis();
 
-		if (currentTurn == null)
+		if (currentTurn == null) {
+			System.out.println("No current turn yet");
 			return 0;
+		}
 
 		/*
 		 * this will only refresh if player input has occurred or something has
@@ -155,10 +129,12 @@ public class MainScreen extends Screen {
 		// return;
 
 		MapArea currentMap = game.getCurrentMapArea();
-		Rectangle screenArea = currentMap.getAreaInTiles(width, height, game
-				.getPlayer().getPosition());
+		Coordinate playerPosition = game.getPlayer().getPosition();
 
-		doFOV(currentMap, screenArea, game.getPlayer().getPosition());
+		Rectangle screenArea = currentMap
+				.getAreaInTiles(width, height, playerPosition);
+
+		doFOV(currentMap, screenArea, playerPosition);
 
 		for (int x = screenArea.x; x < screenArea.getMaxX(); x++) {
 			for (int y = screenArea.y; y < screenArea.getMaxY(); y++) {
@@ -167,13 +143,14 @@ public class MainScreen extends Screen {
 				int screenY = y - screenArea.y;
 				if (tile.isVisible()) {
 					SColor color, bgColor;
-					color = SColorFactory.lightWith(tile.getColor(),
-							tile.getLightedColorValue());
-					bgColor = SColorFactory.lightWith(tile.getBackground(),
-							tile.getLightedColorValue());
+					SColor litColor = tile.getLightedColorValue();
+					color = SColorFactory.lightWith(tile.getColor(), litColor);
+					bgColor = SColorFactory.lightWith(tile.getBackground(), litColor);
 
-					displayManager.getTerminal().withColor(color, bgColor)
+					displayManager.getTerminal()
+							.withColor(color, bgColor)
 							.put(screenX, screenY, tile.getSymbol());
+
 				} else {
 					displayManager.getTerminal()
 							.withColor(tile.getColor(), tile.getBackground())
@@ -187,28 +164,20 @@ public class MainScreen extends Screen {
 	/**
 	 * Calculates the Field of View and marks the maps spots seen appropriately.
 	 */
-	private void doFOV(MapArea currentMap, Rectangle screenArea,
-			Coordinate player) {
-		boolean[][] walls = new boolean[width][height];
+	private void doFOV(MapArea currentMap, Rectangle screenArea, Coordinate player) {
+		// boolean[][] walls = new boolean[width][height];
 		float[][] lighting = new float[width][height];
 
-		walls = ArrayUtils.getSubArray(currentMap.getWalls(), screenArea);
-		lighting = ArrayUtils.getSubArray(currentMap.getLightValues(),
-				screenArea);
-
-		// for (int x = screenArea.x; x < screenArea.getMaxX(); x++) {
-		// for (int y = screenArea.y; y < screenArea.getMaxY(); y++) {
-		// Tile tile = currentMap.getTileAt(x, y);
-		// if (tile != null) {
-		// walls[x - screenArea.x][y - screenArea.y] = tile.isWall();
-		// lighting[x - screenArea.x][y - screenArea.y] = tile.getLighting();
-		// }
-		// }
-		// }
+		// walls = ArrayUtils.getSubArray(currentMap.getWalls(), screenArea);
+		lighting = ArrayUtils.getSubArray(currentMap.getLightValues(), screenArea);
 
 		float lightForce = game.getPlayer().getVisionRadius();
-		float[][] incomingLight = fov.calculateFOV(lighting, player.x
-				- screenArea.x, player.y - screenArea.y, 1f, 1 / lightForce,
+		float[][] incomingLight = fov.calculateFOV(
+				lighting,
+				player.x - screenArea.x,
+				player.y - screenArea.y,
+				1f,
+				1 / lightForce,
 				radiusStrategy);
 
 		for (int x = screenArea.x; x < screenArea.getMaxX(); x++) {
@@ -221,8 +190,7 @@ public class MainScreen extends Screen {
 
 				if (incomingLight[cX][cY] > 0) {
 					float bright = 1 - incomingLight[cX][cY];
-					tile.setLightedColorValue(SColorFactory.fromPallet("light",
-							bright));
+					tile.setLightedColorValue(SColorFactory.fromPallet("light", bright));
 					// clean[x][y] = false;
 				} else if (!tile.getLightedColorValue().equals(SColor.BLACK)) {
 					tile.setLightedColorValue(SColor.BLACK);
@@ -234,8 +202,10 @@ public class MainScreen extends Screen {
 	}
 
 	private void drawEvents(TurnResult run) {
-		Rectangle screenArea = game.getCurrentMapArea().getAreaInTiles(width,
-				height, game.getPlayer().getPosition());
+		Rectangle screenArea = game
+				.getCurrentMapArea()
+				.getAreaInTiles(width, height, game.getPlayer().getPosition());
+
 		for (TurnEvent event : run.getEvents()) {
 			if (event.getType() == TurnEvent.ATTACKED) {
 				Actor attacker = event.getInitiator();
@@ -243,8 +213,10 @@ public class MainScreen extends Screen {
 
 				Coordinate attackerPos = attacker.getPosition();
 				Coordinate targetPos = target.getPosition();
-				Coordinate diff = attacker.getPosition().createOffsetPosition(
-						-targetPos.x, -targetPos.y);
+				Coordinate diff = attacker
+						.getPosition()
+						.createOffsetPosition(-targetPos.x, -targetPos.y);
+
 				DirectionIntercardinal direction = DirectionIntercardinal
 						.getDirection(-diff.x, -diff.y);
 
@@ -252,17 +224,14 @@ public class MainScreen extends Screen {
 						+ target.getName() + " in direction "
 						+ direction.symbol);
 
-				if (screenArea.contains(attackerPos)
-						&& screenArea.contains(targetPos)) {
+				if (screenArea.contains(attackerPos) && screenArea.contains(targetPos)) {
 
-					animationManager.addAnimation(new AttackAnimation(target,
-							event.getMessage()));
+					animationManager.addAnimation(new AttackAnimation(target, event.getMessage()));
 					System.out.println("Added attack animation");
 
 				}
 			}
 		}
-		// bgPanel.waitForAnimations();
 	}
 
 	private boolean drawActiveWindow(TurnResult run) {
@@ -273,7 +242,6 @@ public class MainScreen extends Screen {
 
 			return true;
 		}
-
 		return false;
 	}
 
@@ -287,5 +255,4 @@ public class MainScreen extends Screen {
 	private void drawStats() {
 		statsDisplay.draw();
 	}
-
 }

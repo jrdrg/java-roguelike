@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import roguelike.MessageDisplayProperties;
 import roguelike.ui.windows.Terminal;
 import squidpony.squidcolor.SColor;
-import squidpony.squidgrid.gui.SwingPane;
 
 public class MessageDisplay {
 	private Terminal terminal;

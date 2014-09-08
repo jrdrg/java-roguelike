@@ -99,33 +99,33 @@ public class MapBuilder {
 		buildings.add(buildingBounds);
 	}
 
-	private void createWater(Tile[][] map, int x, int y) {
-		if (map[x][y].getSymbol() == '.') {
+//	private void createWater(Tile[][] map, int x, int y) {
+//		if (map[x][y].getSymbol() == '.') {
+//
+//			createWater(map, x, y, (int) (Math.random() * 30));
+//
+//		}
+//	}
 
-			createWater(map, x, y, (int) (Math.random() * 30));
-
-		}
-	}
-
-	private void createWater(Tile[][] map, int x, int y, int recurseCount) {
-		if (recurseCount <= 1)
-			return;
-
-		if (Math.random() < 0.2)
-			return;
-
-		if (map[x][y].getSymbol() == '.') {
-			if (x < map.length - 1 && x > 0 && y < map[0].length - 1 && y > 0) {
-
-				map[x][y] = tb.buildTile('~');
-
-				createWater(map, x - 1, y, recurseCount - 1);
-				createWater(map, x + 1, y, recurseCount - 1);
-				createWater(map, x, y - 1, recurseCount - 1);
-				createWater(map, x, y + 1, recurseCount - 1);
-			}
-		}
-	}
+//	private void createWater(Tile[][] map, int x, int y, int recurseCount) {
+//		if (recurseCount <= 1)
+//			return;
+//
+//		if (Math.random() < 0.2)
+//			return;
+//
+//		if (map[x][y].getSymbol() == '.') {
+//			if (x < map.length - 1 && x > 0 && y < map[0].length - 1 && y > 0) {
+//
+//				map[x][y] = tb.buildTile('~');
+//
+//				createWater(map, x - 1, y, recurseCount - 1);
+//				createWater(map, x + 1, y, recurseCount - 1);
+//				createWater(map, x, y - 1, recurseCount - 1);
+//				createWater(map, x, y + 1, recurseCount - 1);
+//			}
+//		}
+//	}
 
 	private ArrayList<Point> createLandscape(RNG rng, Tile[][] map) {
 		// (1/15)(noise(x, y) + (2/15)(noise(2x, 2y) + (4/15)(noise(4x, 4y) +

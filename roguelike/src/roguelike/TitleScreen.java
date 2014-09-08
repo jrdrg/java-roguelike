@@ -26,6 +26,7 @@ public class TitleScreen extends Screen {
 		int x = (int) ((terminal.size().width / 2f) - (title.length() / 2f));
 
 		terminal.write(x, 10, "Title Screen");
+		terminal.write(x, 15, "<press Enter>");
 
 		long end = System.currentTimeMillis() - start;
 		return end;
@@ -39,7 +40,7 @@ public class TitleScreen extends Screen {
 
 			case KeyEvent.VK_ENTER:
 				nextScreen = new MainScreen(terminal);
-
+				break;
 			}
 		}
 	}
