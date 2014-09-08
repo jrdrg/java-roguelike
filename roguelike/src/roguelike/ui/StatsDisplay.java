@@ -6,17 +6,18 @@ import roguelike.actors.Player;
 import roguelike.items.Equipment;
 import roguelike.items.Equipment.ItemSlot;
 import roguelike.items.Weapon;
+import roguelike.ui.windows.Terminal;
 import squidpony.squidcolor.SColor;
 import squidpony.squidcolor.SColorFactory;
 import squidpony.squidgrid.gui.SwingPane;
 
 public class StatsDisplay {
 
-	private SwingPane pane;
+	private Terminal terminal;
 	private Player player;
 
-	public StatsDisplay(SwingPane pane) {
-		this.pane = pane;
+	public StatsDisplay(Terminal terminal) {
+		this.terminal = terminal;
 	}
 
 	public void setPlayer(Player player) {
@@ -28,19 +29,18 @@ public class StatsDisplay {
 			return;
 		}
 
-		pane.put(0, 0, String.format("P:%3d,%3d", player.getPosition().x, player.getPosition().y));
-		pane.put(0, 1, String.format("E:%3d", player.getEnergy().getCurrent()));
+		terminal.write(0, 0, String.format("P:%3d,%3d", player.getPosition().x, player.getPosition().y));
+		terminal.write(0, 1, String.format("E:%3d", player.getEnergy().getCurrent()));
 
 		drawHealth();
 		drawEquipped();
-
-		pane.refresh();
 	}
 
 	private void drawHealth() {
+		Terminal bracketTerm = terminal.withColor(SColor.WHITE);
 
-		pane.put(0, 4, "[", SColor.WHITE);
-		pane.put(10, 4, "]", SColor.WHITE);
+		bracketTerm.put(0, 4, '[');
+		bracketTerm.put(10, 4, ']');
 
 		float floatPct = player.getHealth().getCurrent() / (float) player.getHealth().getMaximum();
 		int pct = (int) (floatPct * 9);
@@ -49,30 +49,33 @@ public class StatsDisplay {
 		Arrays.fill(bar, '*');
 		String result = new String(bar);
 
-		String blank = "         ";
-		pane.put(1, 4, blank, SColor.BLACK);
-		pane.put(1, 4, result, SColorFactory.blend(SColor.RED, SColor.GREEN, floatPct));
+		Terminal barTerm = terminal.withColor(SColorFactory.blend(SColor.RED, SColor.GREEN, floatPct));
 
-		pane.put(0, 3, String.format("H: %3d/%3d", player.getHealth().getCurrent(), player.getHealth().getMaximum()));
+		String blank = "         ";
+		barTerm.withColor(SColor.BLACK).write(1, 4, blank);
+		barTerm.write(1, 4, result);
+
+		bracketTerm.write(0, 3, String.format("H: %3d/%3d", player.getHealth().getCurrent(), player.getHealth().getMaximum()));
 	}
 
 	private void drawEquipped() {
 
 		SColor headerColor = SColor.BLOOD;
+		Terminal headerTerm = terminal.withColor(headerColor);
 
-		pane.put(0, 7, "L  ", headerColor);
-		pane.put(0, 8, "R  ", headerColor);
-		pane.put(0, 9, "Ar ", headerColor);
+		headerTerm.write(0, 7, "L  ");
+		headerTerm.write(0, 8, "R  ");
+		headerTerm.write(0, 9, "Ar ");
 
 		Equipment eq = player.getEquipment();
 		Weapon left = eq.getEquippedWeapon(ItemSlot.LEFT_ARM);
 		Weapon right = eq.getEquippedWeapon(ItemSlot.RIGHT_ARM);
 
 		if (left != null)
-			pane.put(3, 7, String.format("%1$-15s", left.getName()));
+			terminal.write(3, 7, String.format("%1$-15s", left.getName()));
 
 		if (right != null)
-			pane.put(3, 8, String.format("%1$-15s", right.getName()));
+			terminal.write(3, 8, String.format("%1$-15s", right.getName()));
 
 	}
 }

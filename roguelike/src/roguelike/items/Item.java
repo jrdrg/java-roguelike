@@ -7,6 +7,9 @@ import squidpony.squidcolor.SColor;
 public abstract class Item {
 
 	private UUID itemId = UUID.randomUUID();
+	protected String name;
+	protected char symbol;
+	protected SColor color;
 
 	protected boolean droppable;
 
@@ -14,15 +17,31 @@ public abstract class Item {
 		return this.itemId;
 	}
 
-	public abstract String getName();
+	public String getName() {
+		return this.name;
+	}
+
+	public char getSymbol() {
+		return this.symbol;
+	}
+
+	public SColor getColor() {
+		return this.color;
+	}
 
 	public abstract String getDescription();
 
-	public abstract char getSymbol();
-
-	public abstract SColor getColor();
-
 	boolean isDroppable() {
 		return droppable;
+	}
+
+	protected Item() {
+		this.droppable = true;
+	}
+
+	protected Item(ItemData data) {
+		this.droppable = data.droppable;
+		this.symbol = data.symbol;
+		this.name = data.name;
 	}
 }

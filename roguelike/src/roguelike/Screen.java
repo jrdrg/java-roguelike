@@ -2,13 +2,25 @@ package roguelike;
 
 import javax.swing.JPanel;
 
-public abstract class Screen {
+import roguelike.ui.MainWindow;
 
-	private JPanel panel;
+public abstract class Screen {
+	int fontSize = MainWindow.fontSize;
+	int cellWidth = MainWindow.cellWidth;
+	int cellHeight = MainWindow.cellHeight;
+	int width = MainWindow.width;
+	int height = MainWindow.height;
+	int outputLines = MainWindow.outputLines;
+
+	protected JPanel panel;
 
 	public Screen() {
 		this.panel = new JPanel();
 	}
 
+	public abstract long draw();
+
 	public abstract void process();
+
+	public abstract Screen getScreen();
 }

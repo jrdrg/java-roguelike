@@ -11,6 +11,7 @@ public class MeleeWeapon extends Weapon {
 	protected String attackDescription;
 
 	public MeleeWeapon(String name, String description, int baseDamage) {
+		super();
 		this.name = name;
 		this.description = description;
 		this.baseDamage = baseDamage;

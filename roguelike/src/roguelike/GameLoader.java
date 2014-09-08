@@ -1,7 +1,5 @@
 package roguelike;
 
-import roguelike.actors.Actor;
-import roguelike.actors.NpcBuilder;
 import roguelike.actors.Player;
 import roguelike.items.Equipment.ItemSlot;
 import roguelike.items.MeleeWeapon;
@@ -23,13 +21,6 @@ public class GameLoader {
 		// TODO: make a real map
 		MapArea currentMapArea = new MapArea(300, 300, new MapBuilder());
 		currentMapArea.addActor(player);
-
-		NpcBuilder npcBuilder = new NpcBuilder();
-
-		for (int x = 0; x < 35; x++) {
-			Actor npc = npcBuilder.buildNpc(currentMapArea);
-			currentMapArea.addActor(npc);
-		}
 
 		game.setCurrentMapArea(currentMapArea);
 

@@ -1,11 +1,14 @@
 package roguelike.actors;
 
+import java.util.List;
+
 import roguelike.Game;
 import roguelike.actions.Action;
 import roguelike.actors.behaviors.Behavior;
 import roguelike.items.Inventory;
 import roguelike.items.Item;
 import roguelike.maps.MapArea;
+import roguelike.monsters.MonsterData;
 import squidpony.squidcolor.SColor;
 
 public class Npc extends Actor {
@@ -16,6 +19,12 @@ public class Npc extends Actor {
 	public Npc(char symbol, SColor color, String name) {
 		super(symbol, color);
 		this.name = name;
+	}
+
+	public Npc(MonsterData data) {
+		super(data.symbol, data.color);
+		this.name = data.name;
+		this.getStatistics().speed.setBase(data.speed);
 	}
 
 	public void setBehavior(Behavior behavior) {
@@ -57,11 +66,13 @@ public class Npc extends Actor {
 		Inventory inventory = this.getInventory();
 		MapArea map = Game.current().getCurrentMapArea();
 
-		for (int x = 0; x < inventory.getCount(); x++) {
+		List<Item> droppableItems = inventory.getDroppableItems();
+
+		for (int x = 0; x < droppableItems.size(); x++) {
 
 			if (Math.random() < 0.7) {
 
-				Item i = inventory.getItem(x);
+				Item i = droppableItems.get(x);
 				map.addItem(i, getPosition().x, getPosition().y);
 
 				Game.current().displayMessage("Dropped " + i.getName(), SColor.GREEN);

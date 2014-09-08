@@ -99,22 +99,6 @@ public class MapBuilder {
 		buildings.add(buildingBounds);
 	}
 
-	private void createForest(Tile[][] map, int x, int y) {
-		int width = (int) Math.ceil(Math.random() * 30);
-		int height = (int) Math.ceil(Math.random() * 30);
-
-		Rectangle mapBounds = new Rectangle(0, 0, map.length, map[0].length);
-		Rectangle forestBounds = new Rectangle(x, y, width, height);
-		if (mapBounds.contains(forestBounds)) {
-
-			for (int bx = forestBounds.x; bx < forestBounds.getMaxX(); bx++) {
-				for (int by = forestBounds.y; by < forestBounds.getMaxY(); by++) {
-					map[bx][by] = tb.buildTile('T');
-				}
-			}
-		}
-	}
-
 	private void createWater(Tile[][] map, int x, int y) {
 		if (map[x][y].getSymbol() == '.') {
 

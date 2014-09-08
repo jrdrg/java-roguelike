@@ -5,6 +5,10 @@ import squidpony.squidcolor.SColor;
 
 public abstract class Weapon extends Item {
 
+	protected Weapon() {
+		super();
+	}
+
 	public abstract Attack getAttack();
 
 	@Override

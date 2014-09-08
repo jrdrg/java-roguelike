@@ -32,6 +32,16 @@ public class Inventory {
 		return null;
 	}
 
+	public List<Item> getDroppableItems() {
+		ArrayList<Item> droppable = new ArrayList<>();
+		for (Item i : items) {
+			if (i.isDroppable()) {
+				droppable.add(i);
+			}
+		}
+		return droppable;
+	}
+
 	public List<Item> allItems() {
 		return items;
 	}

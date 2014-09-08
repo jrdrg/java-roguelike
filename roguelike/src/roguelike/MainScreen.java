@@ -1,21 +1,12 @@
 package roguelike;
 
-import java.awt.BorderLayout;
 import java.awt.Font;
 import java.awt.Rectangle;
-import java.io.File;
-import java.io.IOException;
-
-import javax.imageio.ImageIO;
-import javax.swing.JFrame;
-import javax.swing.JLayeredPane;
-import javax.swing.JPanel;
 
 import roguelike.actors.Actor;
 import roguelike.maps.MapArea;
 import roguelike.maps.Tile;
 import roguelike.ui.DisplayManager;
-import roguelike.ui.InputManager;
 import roguelike.ui.MainWindow;
 import roguelike.ui.MessageDisplay;
 import roguelike.ui.StatsDisplay;
@@ -29,8 +20,6 @@ import squidpony.squidcolor.SColor;
 import squidpony.squidcolor.SColorFactory;
 import squidpony.squidgrid.fov.FOVTranslator;
 import squidpony.squidgrid.fov.TranslucenceWrapperFOV;
-import squidpony.squidgrid.gui.SwingPane;
-import squidpony.squidgrid.gui.TextCellFactory;
 import squidpony.squidgrid.util.BasicRadiusStrategy;
 import squidpony.squidgrid.util.DirectionIntercardinal;
 import squidpony.squidgrid.util.RadiusStrategy;
@@ -38,11 +27,6 @@ import squidpony.squidgrid.util.RadiusStrategy;
 public class MainScreen extends Screen {
 	private static final String CHARS_USED = "#@.~M";
 
-	private JLayeredPane layeredPane;
-	private JPanel mainWinPanel;
-	private JPanel titlePanel;
-	private SwingPane statsPanel;
-	private SwingPane outputPanel;
 	private final FOVTranslator fov = new FOVTranslator(new TranslucenceWrapperFOV());
 	private final RadiusStrategy radiusStrategy = BasicRadiusStrategy.CIRCLE;
 	private Font screenFont;
@@ -64,15 +48,13 @@ public class MainScreen extends Screen {
 				SColorFactory.asGradient(SColor.WHITE, SColor.DARK_SLATE_GRAY));
 
 		animationManager = new AnimationManager();
-
-		displayManager = new DisplayManager(fontSize, cellWidth, cellHeight);
-		displayManager.init(width, height);
+		displayManager = DisplayManager.instance();
 		screenFont = displayManager.screenFont();
 
 		Terminal messageTerminal =
-				terminal.getWindow(0, height, width, outputLines);
+				terminal.getWindow(0, height - outputLines, width, outputLines);
 		Terminal statsTerminal =
-				terminal.getWindow(width, 0, MainWindow.statWidth, height);
+				terminal.getWindow(width - MainWindow.statWidth, 0, MainWindow.statWidth, height);
 
 		messageDisplay = new MessageDisplay(messageTerminal, outputLines);
 		statsDisplay = new StatsDisplay(statsTerminal);

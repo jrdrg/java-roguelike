@@ -11,6 +11,7 @@ import javax.swing.JLayeredPane;
 import roguelike.ui.windows.SwingPaneTerminal;
 import roguelike.ui.windows.Terminal;
 import roguelike.ui.windows.TerminalChangeNotification;
+import squidpony.squidcolor.SColor;
 import squidpony.squidgrid.gui.SwingPane;
 import squidpony.squidgrid.gui.TextCellFactory;
 
@@ -73,7 +74,7 @@ public class DisplayManager {
 
 						@Override
 						public void onChanged() {
-//							dirty = true;
+							// dirty = true;
 						}
 					});
 		}
@@ -103,6 +104,8 @@ public class DisplayManager {
 		displayPane.setSize(foreground.getPreferredSize());
 		displayPane.setPreferredSize(foreground.getPreferredSize());
 		displayPane.setMinimumSize(foreground.getPreferredSize());
+
+		System.out.println("Added SwingPanes:" + width + "," + height);
 	}
 
 	private Font getFont(String name) {

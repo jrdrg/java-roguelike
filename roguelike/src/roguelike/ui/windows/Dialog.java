@@ -47,20 +47,8 @@ public abstract class Dialog {
 		for (int x = 0; x < width; x++) {
 			for (int y = 0; y < height; y++) {
 				char c = ' ';
-
-				// if (x == 0 && y == 0)
-				// c = '┏';
-				// else if (x == 0 && y == height - 1)
-				// c = '┗';
-				// else if (x == width - 1 && y == 0)
-				// c = '┓';
-				// else if (x == width - 1 && y == height - 1)
-				// c = '┛';
-				// // else if (x == 0 || x == width - 1)
-				// // c = '┃';
-				// else if (y == 0 || y == height - 1)
 				if (y == 0 || y == height - 1)
-					c = '━';
+					c = '-';
 
 				else
 					c = ' ';

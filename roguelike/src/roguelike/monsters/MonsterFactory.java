@@ -6,24 +6,20 @@ import java.util.Map;
 import roguelike.Game;
 import roguelike.actors.Actor;
 import roguelike.actors.Npc;
-import roguelike.actors.NpcBuilder;
 import roguelike.actors.behaviors.RandomWalkBehavior;
 import roguelike.items.InventoryBuilder;
 import roguelike.items.Item;
 import roguelike.items.MeleeWeapon;
 import roguelike.items.Weapon;
 import roguelike.items.Equipment.ItemSlot;
+import roguelike.util.Factory;
 import squidpony.squidcolor.SColor;
 import squidpony.squidmath.RNG;
 
 public class MonsterFactory {
 
 	private static InventoryBuilder inventoryBuilder = new InventoryBuilder();
-	private Map<Character, Actor> monsterData;
-
-	public MonsterFactory() {
-		this.monsterData = new HashMap<Character, Actor>();
-	}
+	private static Map<String, MonsterData> monsterData;
 
 	public static Actor createMonster(int x, int y) {
 		Npc npc = getRandomMonster();
@@ -43,8 +39,19 @@ public class MonsterFactory {
 		return npc;
 	}
 
+	private static Map<String, MonsterData> getMonsterData() {
+		if (monsterData == null) {
+			MonsterFactory.monsterData = new HashMap<String, MonsterData>();
+			initMonsterData();
+		}
+		return monsterData;
+	}
+
 	private static Npc getRandomMonster() {
 		RNG rng = Game.current().random();
+		MonsterData data = null;
+
+		String key = "";
 
 		int type = rng.between(0, 3);
 		switch (type) {
@@ -53,26 +60,68 @@ public class MonsterFactory {
 			inventoryBuilder.populateRandomInventory(bandit);
 			return bandit;
 		case 1:
-			Npc fireAnt = new Npc('a', SColor.RED, "Fire ant");
-			Weapon mandibles = new MeleeWeapon("Mandibles", "Vicious ant-like jaws", 10, "%s snaps its mandibles at %s");
-			fireAnt.getInventory().add(mandibles);
-			return fireAnt;
+			key = "fireAnt";
+
 		case 2:
 		default:
-			Npc wolf = new Npc('w', SColor.LIGHT_GRAY, "Wolf");
-			Weapon bite = new MeleeWeapon("Bite", "The bite of a wolf", 10, "%s bites %s");
-			wolf.getInventory().add(bite);
-			return wolf;
+			key = "wolf";
 		}
+
+		data = getMonsterData().get(key);
+		Npc monster = createMonster(data);
+		return monster;
 	}
 
-	private void initMonsterData() {
+	private static Npc createMonster(MonsterData data) {
+		Npc monster = new Npc(data.symbol, data.color, data.name);
+		monster.setBehavior(data.defaultBehavior.create(monster));
+		if (data.defaultWeapon != null) {
+			Weapon defWpn = data.defaultWeapon.create(monster);
+			monster.getInventory().add(defWpn);
+		}
+		return monster;
+	}
 
-		Npc bandit = new Npc('b', SColor.BRIGHT_PINK, "Bandit");
+	private static void initMonsterData() {
 
-		Npc wolf = new Npc('w', SColor.LIGHT_GRAY, "Wolf");
+		MonsterData bandit = new MonsterData('b', SColor.BRIGHT_PINK, "Bandit");
+		bandit.behavior = "RandomWalk";
+		bandit.speed = 10;
+		getMonsterData().put("bandit", bandit);
 
-		Npc fireAnt = new Npc('a', SColor.RED, "Fire ant");
+		/***************/
+
+		MonsterData wolf = new MonsterData('w', SColor.LIGHT_GRAY, "Wolf");
+		wolf.behavior = "RandomWalk";
+		wolf.speed = 20;
+		wolf.defaultWeapon = new Factory<Weapon>() {
+
+			@Override
+			public Weapon create(Actor actor) {
+				Weapon bite = new MeleeWeapon(
+						"Bite", "The bite of a wolf", 10, "%s bites %s");
+				return bite;
+			}
+		};
+		getMonsterData().put("wolf", wolf);
+
+		/***************/
+
+		MonsterData fireAnt = new MonsterData('a', SColor.RED, "Fire ant");
+		fireAnt.behavior = "RandomWalk";
+		fireAnt.speed = 15;
+		fireAnt.defaultWeapon = new Factory<Weapon>() {
+
+			@Override
+			public Weapon create(Actor actor) {
+				Weapon mandibles = new MeleeWeapon(
+						"Mandibles", "Vicious ant-like jaws", 10, "%s snaps its mandibles at %s");
+
+				return mandibles;
+			}
+		};
+		getMonsterData().put("fireAnt", fireAnt);
 
 	}
+
 }
