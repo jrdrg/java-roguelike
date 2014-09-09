@@ -25,7 +25,7 @@ public class MainWindow {
 
 	private JFrame frame;
 
-	final int FRAMES_PER_SECOND = 30;
+	final int FRAMES_PER_SECOND = 50;
 	final int SKIP_TICKS = 1000 / FRAMES_PER_SECOND;
 
 	private Screen currentScreen;
@@ -41,7 +41,6 @@ public class MainWindow {
 		initFrame();
 
 		currentScreen = new TitleScreen(displayManager.getTerminal());
-		// currentScreen = new MainScreen(displayManager.getTerminal());
 
 		long nextTick = System.currentTimeMillis();
 		while (true) {
@@ -75,13 +74,11 @@ public class MainWindow {
 
 		InputManager.registerWithFrame(frame);
 
-		// initGamePanels();
 		displayManager.init(width, height);
-
-		JPanel mainWinPanel = new JPanel();
 
 		layeredPane = displayManager.displayPane();
 
+		JPanel mainWinPanel = new JPanel();
 		mainWinPanel.setBackground(SColor.BLACK);
 		mainWinPanel.setLayout(new BorderLayout());
 		mainWinPanel.add(layeredPane, BorderLayout.WEST);

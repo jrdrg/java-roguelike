@@ -2,12 +2,11 @@ package roguelike.ui;
 
 import java.awt.Font;
 import java.awt.GraphicsEnvironment;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.InputStream;
 
 import javax.swing.JLayeredPane;
 
+import roguelike.TitleScreen;
 import roguelike.ui.windows.SwingPaneTerminal;
 import roguelike.ui.windows.Terminal;
 import roguelike.ui.windows.TerminalChangeNotification;
@@ -111,7 +110,7 @@ public class DisplayManager {
 		Font font = null;
 		String fName = "./assets/" + name;
 		try {
-			InputStream is = new FileInputStream(new File(fName));
+			InputStream is = TitleScreen.class.getResourceAsStream("/resources/assets/" + name);
 			font = Font.createFont(Font.TRUETYPE_FONT, is);
 
 			System.out.println("Loaded " + fName);

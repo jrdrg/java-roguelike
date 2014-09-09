@@ -13,8 +13,11 @@ public class TitleScreen extends Screen {
 	private Screen nextScreen;
 
 	public TitleScreen(Terminal terminal) {
-		this.terminal = terminal.withColor(SColor.WHITE);
+		this.terminal = terminal.withColor(SColor.WHITE, SColor.BLACK);
 		this.nextScreen = this;
+
+		terminal.fill(0, 0, terminal.size().width, terminal.size().height, ' ');
+
 		DisplayManager.instance().setDirty();
 	}
 
@@ -41,6 +44,9 @@ public class TitleScreen extends Screen {
 			case KeyEvent.VK_ENTER:
 				nextScreen = new MainScreen(terminal);
 				break;
+
+			case KeyEvent.VK_ESCAPE:
+				System.exit(0);
 			}
 		}
 	}

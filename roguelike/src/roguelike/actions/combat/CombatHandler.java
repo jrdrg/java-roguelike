@@ -8,6 +8,25 @@ import roguelike.items.Equipment.ItemSlot;
 import roguelike.items.Weapon;
 import squidpony.squidcolor.SColor;
 
+/**
+ * Handles combat
+ * 
+ * some ideas: weapon reach should factor into this
+ * 
+ * for example, using a short weapon against a longer one should incur penalties
+ * (amount of dice to roll, etc)
+ * 
+ * conversely, a shorter weapon might increase the action speed of the user
+ * 
+ * weapons with a reach greater than 1 suffer penalties when used at closer
+ * range, i.e. polearms
+ * 
+ * when comparing i.e. a sword to a dagger, both have a reach of 1 square but
+ * the sword is obviously longer, need to find a way to model that
+ * 
+ * @author john
+ * 
+ */
 public class CombatHandler {
 	private Actor actor;
 

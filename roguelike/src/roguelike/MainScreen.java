@@ -27,9 +27,13 @@ public class MainScreen extends Screen {
 	private final FOVTranslator fov = new FOVTranslator(new TranslucenceWrapperFOV());
 	private final RadiusStrategy radiusStrategy = BasicRadiusStrategy.CIRCLE;
 
+	private final int windowWidth = width - MainWindow.statWidth;
+	private final int windowHeight = height - outputLines;
+
+	Terminal fullTerminal;
 	Terminal terminal;
 
-	private MainScreen nextScreen;
+	private Screen nextScreen;
 	Game game;
 	GameLoader gameLoader;
 	MessageDisplay messageDisplay;
@@ -39,8 +43,9 @@ public class MainScreen extends Screen {
 
 	TurnResult currentTurn;
 
-	public MainScreen(Terminal terminal) {
-		this.terminal = terminal;
+	public MainScreen(Terminal fullTerminal) {
+		this.fullTerminal = fullTerminal;
+		this.terminal = fullTerminal.getWindow(0, 0, windowWidth, windowHeight);
 		this.nextScreen = this;
 
 		/* used for FOV lighting */
@@ -51,10 +56,10 @@ public class MainScreen extends Screen {
 		displayManager = DisplayManager.instance();
 
 		Terminal messageTerminal =
-				terminal.getWindow(0, height - outputLines, width, outputLines);
+				fullTerminal.getWindow(0, height - outputLines, width, outputLines);
 
 		Terminal statsTerminal =
-				terminal.getWindow(width - MainWindow.statWidth, 0, MainWindow.statWidth, height);
+				fullTerminal.getWindow(width - MainWindow.statWidth, 0, MainWindow.statWidth, height);
 
 		messageDisplay = new MessageDisplay(messageTerminal, outputLines);
 		statsDisplay = new StatsDisplay(statsTerminal);
@@ -81,6 +86,10 @@ public class MainScreen extends Screen {
 		TurnResult run;
 		run = game.processTurn();
 		currentTurn = run;
+
+		if (!run.isRunning()) {
+			nextScreen = new TitleScreen(fullTerminal);
+		}
 	}
 
 	@Override
@@ -101,7 +110,7 @@ public class MainScreen extends Screen {
 		 * reset the dirty flag
 		 */
 		boolean animationProcessed = animationManager
-				.nextFrame(displayManager.getTerminal());
+				.nextFrame(terminal);
 
 		if (animationProcessed || animationManager.shouldRefresh()) {
 			displayManager.setDirty();
@@ -132,7 +141,7 @@ public class MainScreen extends Screen {
 		Coordinate playerPosition = game.getPlayer().getPosition();
 
 		Rectangle screenArea = currentMap
-				.getAreaInTiles(width, height, playerPosition);
+				.getAreaInTiles(windowWidth, windowHeight, playerPosition);
 
 		doFOV(currentMap, screenArea, playerPosition);
 
@@ -147,13 +156,11 @@ public class MainScreen extends Screen {
 					color = SColorFactory.lightWith(tile.getColor(), litColor);
 					bgColor = SColorFactory.lightWith(tile.getBackground(), litColor);
 
-					displayManager.getTerminal()
-							.withColor(color, bgColor)
+					terminal.withColor(color, bgColor)
 							.put(screenX, screenY, tile.getSymbol());
 
 				} else {
-					displayManager.getTerminal()
-							.withColor(tile.getColor(), tile.getBackground())
+					terminal.withColor(tile.getColor(), tile.getBackground())
 							.put(screenX, screenY, tile.getSymbol());
 
 				}
@@ -237,7 +244,7 @@ public class MainScreen extends Screen {
 	private boolean drawActiveWindow(TurnResult run) {
 		Dialog window = run.getActiveWindow();
 		if (window != null) {
-			window.showInPane(displayManager.getTerminal());
+			window.showInPane(terminal);
 			window.draw();
 
 			return true;
@@ -255,4 +262,5 @@ public class MainScreen extends Screen {
 	private void drawStats() {
 		statsDisplay.draw();
 	}
+
 }

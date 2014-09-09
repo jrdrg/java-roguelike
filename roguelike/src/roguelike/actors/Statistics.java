@@ -33,7 +33,36 @@ public class Statistics {
 		}
 	}
 
+	/**
+	 * How fast the character's turn occurs
+	 */
 	public final Statistic speed = new Statistic(0, 0);
-	public final Statistic strength = new Statistic(0, 0);
-	public final Statistic agility = new Statistic(0, 0);
+
+	/**
+	 * The amount of damage done in melee, carrying capacity, ability to resist
+	 * poison and disease, etc
+	 */
+	public final Statistic toughness = new Statistic(0, 0);
+
+	/**
+	 * Determines how quickly the character gets tired, hungry, thirsty
+	 */
+	public final Statistic conditioning = new Statistic(0, 0);
+
+	/**
+	 * Affects the vision radius, as well as the ability to exploit weak spots,
+	 * pick locks, and spot traps and other hidden things
+	 */
+	public final Statistic perception = new Statistic(0, 0);
+
+	/**
+	 * The ability to dodge attacks
+	 */
+	public final Statistic quickness = new Statistic(0, 0);
+
+	/**
+	 * Determines how the character resists various conditions, as well as
+	 * resistance to sorcery
+	 */
+	public final Statistic willpower = new Statistic(0, 0);
 }

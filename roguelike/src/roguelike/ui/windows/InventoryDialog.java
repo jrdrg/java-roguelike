@@ -51,7 +51,8 @@ public class InventoryDialog extends Dialog {
 		}
 
 		if (activeIndex < totalItems - 1 && totalItems > itemCount) {
-			text.write(6, itemCount + 4, "- " + (totalItems - itemCount) + " more -");
+			int remainingCount = Math.min((totalItems - activeIndex - 1), (totalItems - itemCount));
+			text.write(6, itemCount + 4, "- " + remainingCount + " more -");
 		}
 	}
 

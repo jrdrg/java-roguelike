@@ -1,0 +1,37 @@
+[
+	{
+		"name": "monsters",
+		"records": [
+			{
+				"name": "fire ant",
+				"symbol": "f",
+				"color": "Red",
+				"speed": 15,
+				"behavior": "RandomWalk",
+				"weapon": "Mandibles"
+			},
+			{
+				"name": "wolf",
+				"symbol": "w",
+				"color": "Light Gray",
+				"speed": 30,
+				"behavior": "RandomWalk",
+				"weapon": "Bite"
+			},
+			{
+				"name": "bandit",
+				"symbol": "b",
+				"color": "Bright Pink",
+				"speed": 10,
+				"behavior": "RandomWalk",
+				"weapon": "Random"
+			}
+		]
+	}
+	,
+	{
+		"name": "weapons",
+		"records": [
+		]
+	}
+]

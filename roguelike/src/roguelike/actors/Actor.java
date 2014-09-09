@@ -11,6 +11,8 @@ import roguelike.maps.MapArea;
 import roguelike.maps.Tile;
 import roguelike.util.Coordinate;
 import squidpony.squidcolor.SColor;
+import squidpony.squidgrid.los.BresenhamLOS;
+import squidpony.squidgrid.los.LOSSolver;
 
 public abstract class Actor {
 
@@ -28,6 +30,8 @@ public abstract class Actor {
 	private Inventory inventory;
 	private Equipment equipment;
 
+	protected LOSSolver losSolver;
+
 	protected Actor(char symbol, SColor color) {
 		this.symbol = symbol;
 		this.color = color;
@@ -42,6 +46,8 @@ public abstract class Actor {
 
 		attacked = new LinkedList<AttackAttempt>();
 		attackedBy = new LinkedList<AttackAttempt>();
+
+		losSolver = new BresenhamLOS();
 	}
 
 	public Energy getEnergy() {
