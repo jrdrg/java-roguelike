@@ -1,11 +1,14 @@
 package roguelike.actions.combat;
 
 import roguelike.Game;
+import roguelike.TurnEvent;
 import roguelike.actions.Action;
 import roguelike.actors.Actor;
 import roguelike.actors.Player;
+import roguelike.actors.Statistics;
 import roguelike.items.Equipment.ItemSlot;
 import roguelike.items.Weapon;
+import roguelike.util.DiceRolls;
 import squidpony.squidcolor.SColor;
 
 /**
@@ -71,11 +74,34 @@ public class CombatHandler {
 	public Attack defend(Actor attacker, Attack attack) {
 		// TODO: implement defending behavior, resistances, etc
 
+		int weaponProficiency = 10;
+		int attackManeuver = 0; // modifier for different attack types, etc
+		int armorValue = 0; // armor value defender is wearing
+		int defenseManeuver = 0; // modifier for defense like evade, dodge, etc
+
+		Statistics attackerStats = attacker.getStatistics();
+		Statistics defenderStats = actor.getStatistics();
+		int attackSuccessPool = attackerStats.perception.getTotalValue() + weaponProficiency + attackManeuver;
+		int defendSuccessPool = defenderStats.conditioning.getTotalValue() + defenderStats.quickness.getTotalValue()
+				+ armorValue + defenseManeuver;
+
 		// this will be based on some kind of successes method, where a number
 		// of rolls are made against a target number (i.e. 1-10, target number
 		// 6) and the number of successes are compared between the attacker and
 		// defender, modified by anything applicable
-		return attack;
+
+		int attackerSuccesses = DiceRolls.roll(attackSuccessPool);
+		int defenderSuccesses = DiceRolls.roll(defendSuccessPool);
+
+		int total = defenderSuccesses - attackerSuccesses;
+		System.out.println("S (A): " + attackerSuccesses);
+		System.out.println("S (D): " + defenderSuccesses);
+		if (total < 0) {
+			return attack;
+		}
+		else {
+			return new MeleeAttack("%s misses %s!", 0);
+		}
 	}
 
 	/**
@@ -89,8 +115,17 @@ public class CombatHandler {
 	 */
 	public boolean processAttack(Action action, Attack attack, Actor target) {
 		attack = target.getCombatHandler().defend(actor, attack);
-		boolean isDead = target.getCombatHandler().onDamaged(attack, actor);
+		boolean isDead;
+		if (attack.baseDamage > 0) {
+			isDead = target.getCombatHandler().onDamaged(attack, actor);
 
+			/* add an event so we can show an animation */
+			Game.current().addEvent(TurnEvent.Attack(actor, target, "" + attack.getDamage()));
+
+		} else {
+			isDead = false;
+			Game.current().displayMessage(actor.getName() + " missed " + target.getName() + "!", SColor.DARK_TAN);
+		}
 		target.onAttacked(actor);
 
 		// return true if this attack killed the target

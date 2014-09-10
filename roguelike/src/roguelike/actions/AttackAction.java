@@ -28,6 +28,7 @@ public class AttackAction extends Action {
 
 		Attack attack = actor.getCombatHandler().getAttack(target);
 		boolean isTargetDead = actor.getCombatHandler().processAttack(this, attack, target);
+		// boolean isTargetDead = attack.perform(target);
 
 		if (isTargetDead) {
 			target.onKilled();
@@ -39,8 +40,6 @@ public class AttackAction extends Action {
 			currentArea.removeActor(target);
 
 			Game.current().displayMessage("Target is dead");
-		} else {
-			Game.current().addEvent(TurnEvent.Attack(actor, target, "" + attack.getDamage()));
 		}
 
 		return ActionResult.success();

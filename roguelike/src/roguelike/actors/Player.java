@@ -16,9 +16,6 @@ public class Player extends Actor {
 		this.getStatistics().speed.setBase(20);
 
 		this.behavior = new PlayerInputBehavior(this);
-
-		// TODO: delete
-		this.getHealth().setMaximum(10, true);
 	}
 
 	public static boolean isPlayer(Actor actor) {

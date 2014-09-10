@@ -1,5 +1,6 @@
 package roguelike.actions.combat;
 
+import roguelike.Game;
 import roguelike.actors.Actor;
 
 public class MeleeAttack extends Attack {
@@ -13,8 +14,10 @@ public class MeleeAttack extends Attack {
 
 		// if we miss, return false
 		// TODO: need to make this take stats into account, etc
-		if (Math.random() > 0.6)
+		if (Math.random() > 0.6) {
+			Game.current().displayMessage("Missed!");
 			return false;
+		}
 
 		// TODO: make damage also take stats into account
 		return target.getCombatHandler().processAttack(null, this, target);

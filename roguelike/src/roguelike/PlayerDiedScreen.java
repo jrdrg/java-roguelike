@@ -58,7 +58,6 @@ public class PlayerDiedScreen extends Screen {
 				System.exit(0);
 			}
 		}
-		System.out.println("process");
 	}
 
 	@Override
