@@ -1,6 +1,7 @@
 package roguelike;
 
 import roguelike.actors.Player;
+import roguelike.data.DataFactory;
 import roguelike.items.Equipment.ItemSlot;
 import roguelike.items.MeleeWeapon;
 import roguelike.maps.MapArea;
@@ -9,11 +10,23 @@ import squidpony.squidmath.RNG;
 
 public class GameLoader {
 
-	public GameLoader() {
+	private static GameLoader gameLoader = new GameLoader();
+
+	/**
+	 * Singleton DataFactory
+	 */
+	final DataFactory dataFactory;
+
+	private GameLoader() {
+		dataFactory = DataFactory.instance();
+	}
+
+	public static GameLoader instance() {
+		return gameLoader;
 	}
 
 	public Game newGame() {
-		Game game = new Game(this);
+		Game game = new Game();
 		Player player = game.getPlayer();
 
 		// player.setPosition(1, 1);

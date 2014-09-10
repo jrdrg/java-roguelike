@@ -5,10 +5,10 @@ import java.util.List;
 import roguelike.Game;
 import roguelike.actions.Action;
 import roguelike.actors.behaviors.Behavior;
+import roguelike.data.MonsterData;
 import roguelike.items.Inventory;
 import roguelike.items.Item;
 import roguelike.maps.MapArea;
-import roguelike.monsters.MonsterData;
 import squidpony.squidcolor.SColor;
 
 public class Npc extends Actor {
@@ -45,8 +45,7 @@ public class Npc extends Actor {
 	}
 
 	@Override
-	public void onAttacked(Actor attacker) {
-		attackedBy.add(new AttackAttempt(attacker));
+	public void onAttackedInternal(Actor attacker) {
 		if (behavior != null)
 			behavior = behavior.getNextBehavior();
 	}

@@ -14,6 +14,8 @@ public abstract class Screen {
 
 	protected JPanel panel;
 
+	protected Screen nextScreen;
+
 	public Screen() {
 		this.panel = new JPanel();
 	}

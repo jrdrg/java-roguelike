@@ -152,6 +152,10 @@ public abstract class Actor {
 
 	public abstract Action getNextAction();
 
-	public abstract void onAttacked(Actor attacker);
+	public final void onAttacked(Actor attacker) {
+		attackedBy.add(new AttackAttempt(attacker));
+		onAttackedInternal(attacker);
+	}
 
+	protected abstract void onAttackedInternal(Actor attacker);
 }

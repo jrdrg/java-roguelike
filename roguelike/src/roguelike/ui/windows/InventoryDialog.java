@@ -25,6 +25,8 @@ public class InventoryDialog extends Dialog {
 		background.fill(0, 0, size.width, size.height, ' ');
 		border.fill(0, 0, size.width, 1, ' ');
 
+		// drawBoxShape(border);
+
 		border.write(1, 0, "Inventory");
 
 		int activeIndex = menu.getActiveItemIndex();

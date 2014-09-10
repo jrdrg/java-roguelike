@@ -8,6 +8,7 @@ import roguelike.actions.ActionResult;
 import roguelike.actors.Actor;
 import roguelike.actors.Energy;
 import roguelike.actors.Player;
+import roguelike.data.DataFactory;
 import roguelike.maps.MapArea;
 import roguelike.ui.windows.Dialog;
 import squidpony.squidcolor.SColor;
@@ -24,18 +25,23 @@ public class Game {
 	private Queue<Action> queuedActions;
 	private TurnResult currentTurnResult;
 
+	final DataFactory dataFactory;
+
 	/**
 	 * This should only be called by GameLoader
 	 * 
 	 * @param gameLoader
 	 */
-	Game(GameLoader gameLoader) {
+	Game() {
+		GameLoader gameLoader = GameLoader.instance();
 		this.player = gameLoader.createPlayer();
 
 		queuedActions = new LinkedList<Action>();
 		rng = gameLoader.getRandom();
 		currentGame = this;
 		System.out.println("Created Game");
+
+		this.dataFactory = gameLoader.dataFactory;
 	}
 
 	/**

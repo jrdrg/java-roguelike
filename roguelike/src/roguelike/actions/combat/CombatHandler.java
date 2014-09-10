@@ -18,11 +18,21 @@ import squidpony.squidcolor.SColor;
  * 
  * conversely, a shorter weapon might increase the action speed of the user
  * 
- * weapons with a reach greater than 1 suffer penalties when used at closer
- * range, i.e. polearms
+ * reach can be a number from 1-5, where 1:fists, 2:daggers, 3:swords,
+ * 4:spears/polearms, 5: extra long weapons
  * 
- * when comparing i.e. a sword to a dagger, both have a reach of 1 square but
- * the sword is obviously longer, need to find a way to model that
+ * the attack can hit a number of squares away equal to reach/2, rounded down,
+ * with minimum of 1 - so reach 1-3 can hit the adjacent square, and 4-5 can hit
+ * one square away
+ * 
+ * weapons with a reach greater than 1 square suffer penalties when used at
+ * closer range (reach of 4 or 5)
+ * 
+ * when combatants use weapons of different reaches but the same number of
+ * squares, the last weapon to cause damage inflicts penalties on the opponent
+ * until the opponent causes damage (so polearms incur double penalties once the
+ * user of the shorter weapon scores a hit)
+ * 
  * 
  * @author john
  * 
@@ -60,6 +70,11 @@ public class CombatHandler {
 	 */
 	public Attack defend(Actor attacker, Attack attack) {
 		// TODO: implement defending behavior, resistances, etc
+
+		// this will be based on some kind of successes method, where a number
+		// of rolls are made against a target number (i.e. 1-10, target number
+		// 6) and the number of successes are compared between the attacker and
+		// defender, modified by anything applicable
 		return attack;
 	}
 

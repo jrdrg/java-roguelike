@@ -3,9 +3,12 @@ package roguelike;
 import java.awt.Rectangle;
 
 import roguelike.actors.Actor;
+import roguelike.actors.AttackAttempt;
+import roguelike.actors.Player;
 import roguelike.maps.MapArea;
 import roguelike.maps.Tile;
 import roguelike.ui.DisplayManager;
+import roguelike.ui.InputManager;
 import roguelike.ui.MainWindow;
 import roguelike.ui.MessageDisplay;
 import roguelike.ui.StatsDisplay;
@@ -33,7 +36,6 @@ public class MainScreen extends Screen {
 	Terminal fullTerminal;
 	Terminal terminal;
 
-	private Screen nextScreen;
 	Game game;
 	GameLoader gameLoader;
 	MessageDisplay messageDisplay;
@@ -64,7 +66,7 @@ public class MainScreen extends Screen {
 		messageDisplay = new MessageDisplay(messageTerminal, outputLines);
 		statsDisplay = new StatsDisplay(statsTerminal);
 
-		gameLoader = new GameLoader();
+		gameLoader = GameLoader.instance();
 
 		game = gameLoader.newGame();
 		statsDisplay.setPlayer(game.getPlayer());
@@ -73,6 +75,8 @@ public class MainScreen extends Screen {
 
 		drawMap();
 		drawStats();
+
+		InputManager.setInputEnabled(true);
 		displayManager.setDirty();
 	}
 
@@ -83,12 +87,31 @@ public class MainScreen extends Screen {
 
 	@Override
 	public void process() {
-		TurnResult run;
-		run = game.processTurn();
-		currentTurn = run;
 
-		if (!run.isRunning()) {
-			nextScreen = new TitleScreen(fullTerminal);
+		if (game.isPlayerDead()) {
+			System.out.println("You died");
+
+			Player player = game.getPlayer();
+			AttackAttempt killedBy = player.getLastAttackedBy();
+
+			// KeyEvent nextKey = InputManager.nextKey();
+			// if (nextKey != null) {
+			System.out.println("Switching to game over screen");
+			nextScreen = new PlayerDiedScreen(killedBy.getActor(), this.fullTerminal);
+			// }
+			// else {
+			// System.out.println("waiting for input");
+			// }
+
+		} else {
+
+			TurnResult run;
+			run = game.processTurn();
+			currentTurn = run;
+
+			if (!run.isRunning()) {
+				nextScreen = new TitleScreen(fullTerminal);
+			}
 		}
 	}
 

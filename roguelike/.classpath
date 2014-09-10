@@ -6,6 +6,7 @@
 			<attribute name="javadoc_location" value="jar:file:/Users/john/Documents/Dev%20Resources/Squidlib/SquidLib-javadoc.jar!/"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="/Users/john/Documents/Dev Resources/json-20140107.jar" sourcepath="/Users/john/.m2/repository/org/json/json/20140107/json-20140107-sources.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/Java SE 8"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

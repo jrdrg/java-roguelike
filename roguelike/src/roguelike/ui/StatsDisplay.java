@@ -42,7 +42,7 @@ public class StatsDisplay {
 		bracketTerm.put(10, 4, ']');
 
 		float floatPct = player.getHealth().getCurrent() / (float) player.getHealth().getMaximum();
-		int pct = (int) (floatPct * 9);
+		int pct = Math.max(0, (int) (floatPct * 9));
 
 		char[] bar = new char[pct];
 		Arrays.fill(bar, '*');

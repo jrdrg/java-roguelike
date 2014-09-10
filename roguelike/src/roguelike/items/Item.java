@@ -8,10 +8,10 @@ public abstract class Item {
 
 	private UUID itemId = UUID.randomUUID();
 	protected String name;
-	protected char symbol;
-	protected SColor color;
+	protected char symbol = '?';
+	protected SColor color = SColor.WHITE;
 
-	protected boolean droppable;
+	boolean droppable;
 
 	public final UUID itemId() {
 		return this.itemId;

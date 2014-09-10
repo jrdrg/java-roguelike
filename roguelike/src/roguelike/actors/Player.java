@@ -16,6 +16,9 @@ public class Player extends Actor {
 		this.getStatistics().speed.setBase(20);
 
 		this.behavior = new PlayerInputBehavior(this);
+
+		// TODO: delete
+		this.getHealth().setMaximum(10, true);
 	}
 
 	public static boolean isPlayer(Actor actor) {
@@ -49,7 +52,9 @@ public class Player extends Actor {
 	}
 
 	@Override
-	public void onAttacked(Actor attacker) {
+	public void onAttackedInternal(Actor attacker) {
+		System.out.println("Player attacked by " + attacker.getName());
+		System.out.println("AttackedBy count=" + attackedBy.size());
 	}
 
 	@Override

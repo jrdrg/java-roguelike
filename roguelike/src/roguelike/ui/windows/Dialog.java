@@ -3,8 +3,6 @@ package roguelike.ui.windows;
 import java.awt.Point;
 import java.awt.Rectangle;
 
-import squidpony.squidgrid.gui.SwingPane;
-
 public abstract class Dialog {
 	// Box drawing tiles: "┻┗┛┫┳┣┃━┏┓╋"
 
@@ -43,25 +41,14 @@ public abstract class Dialog {
 		int width = size.width;
 		int height = size.height;
 
-		char[][] boxBg = new char[width][height];
 		for (int x = 0; x < width; x++) {
 			for (int y = 0; y < height; y++) {
-				char c = ' ';
 				if (y == 0 || y == height - 1)
-					c = '-';
-
-				else
-					c = ' ';
-
-				boxBg[x][y] = c;
+					term.put(x, y, '-');
+				else if (x == 0 || x == width - 1)
+					term.put(x, y, '|');
 			}
 		}
-
-		term.put(0, 0, boxBg);
-	}
-
-	protected void drawBoxShape(SwingPane pane, String title) {
-
 	}
 
 	protected abstract void onDraw();
