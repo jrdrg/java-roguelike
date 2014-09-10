@@ -81,9 +81,8 @@ public class CombatHandler {
 
 		Statistics attackerStats = attacker.getStatistics();
 		Statistics defenderStats = actor.getStatistics();
-		int attackSuccessPool = attackerStats.perception.getTotalValue() + weaponProficiency + attackManeuver;
-		int defendSuccessPool = defenderStats.conditioning.getTotalValue() + defenderStats.quickness.getTotalValue()
-				+ armorValue + defenseManeuver;
+		int attackSuccessPool = attackerStats.getBaseAttackPool() + weaponProficiency + attackManeuver;
+		int defendSuccessPool = defenderStats.getBaseDefensePool() + armorValue + defenseManeuver;
 
 		// this will be based on some kind of successes method, where a number
 		// of rolls are made against a target number (i.e. 1-10, target number
@@ -120,11 +119,13 @@ public class CombatHandler {
 			isDead = target.getCombatHandler().onDamaged(attack, actor);
 
 			/* add an event so we can show an animation */
-			Game.current().addEvent(TurnEvent.Attack(actor, target, "" + attack.getDamage()));
+			Game.current().addEvent(TurnEvent.attack(actor, target, "" + attack.getDamage()));
 
 		} else {
 			isDead = false;
 			Game.current().displayMessage(actor.getName() + " missed " + target.getName() + "!", SColor.DARK_TAN);
+
+			Game.current().addEvent(TurnEvent.attackMissed(actor, target, "Missed"));
 		}
 		target.onAttacked(actor);
 

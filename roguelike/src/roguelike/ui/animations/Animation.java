@@ -1,6 +1,12 @@
 package roguelike.ui.animations;
 
+import java.awt.Point;
+import java.awt.Rectangle;
+
+import roguelike.Game;
+import roguelike.actors.Actor;
 import roguelike.ui.windows.Terminal;
+import roguelike.util.Coordinate;
 
 public abstract class Animation {
 
@@ -28,6 +34,20 @@ public abstract class Animation {
 		currentFrame++;
 		boolean finished = currentFrame > totalFrames;
 		return finished;
+	}
+
+	protected Point getOffsetPosition(Terminal terminal, Actor target) {
+		Game g = Game.current();
+		Rectangle termSize = terminal.size();
+		Point upperLeft = g
+				.getCurrentMapArea()
+				.getUpperLeftScreenTile(termSize.width, termSize.height, g.getPlayer().getPosition());
+
+		Coordinate targetPos = target.getPosition();
+
+		Point ret = new Point(targetPos.x - upperLeft.x, targetPos.y - upperLeft.y);
+
+		return ret;
 	}
 
 	public abstract void onNextFrame(Terminal terminal);

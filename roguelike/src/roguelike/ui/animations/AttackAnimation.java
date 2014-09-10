@@ -1,13 +1,10 @@
 package roguelike.ui.animations;
 
 import java.awt.Point;
-import java.awt.Rectangle;
 
-import roguelike.Game;
 import roguelike.actors.Actor;
 import roguelike.actors.Player;
 import roguelike.ui.windows.Terminal;
-import roguelike.util.Coordinate;
 import squidpony.squidcolor.SColor;
 import squidpony.squidcolor.SColorFactory;
 
@@ -29,7 +26,7 @@ public class AttackAnimation extends Animation {
 
 	@Override
 	public void onNextFrame(Terminal terminal) {
-		Point offsetPos = getOffsetPosition(terminal);
+		Point offsetPos = getOffsetPosition(terminal, target);
 		int x = offsetPos.x;
 		int y = offsetPos.y;
 		int width = 1 + ((currentFrame / 4) * 2);
@@ -58,15 +55,4 @@ public class AttackAnimation extends Animation {
 		System.out.println("AttackAnimation: frame " + currentFrame + ", x=" + x + ", y=" + y);
 	}
 
-	private Point getOffsetPosition(Terminal terminal) {
-		Game g = Game.current();
-		Rectangle termSize = terminal.size();
-		Coordinate playerPos = g.getPlayer().getPosition();
-		Point upperLeft = g.getCurrentMapArea().getUpperLeftScreenTile(termSize.width, termSize.height, playerPos);
-		Coordinate targetPos = target.getPosition();
-
-		Point ret = new Point(targetPos.x - upperLeft.x, targetPos.y - upperLeft.y);
-
-		return ret;
-	}
 }

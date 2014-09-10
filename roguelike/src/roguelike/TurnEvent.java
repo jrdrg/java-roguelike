@@ -3,11 +3,12 @@ package roguelike;
 import roguelike.actors.Actor;
 
 public class TurnEvent {
+	public static final int ATTACKED = 1;
+	public static final int ATTACK_MISSED = 2;
+
 	private Actor initiator;
 	private Actor target;
 	private String message;
-
-	public static int ATTACKED = 1;
 
 	private int type;
 
@@ -17,8 +18,12 @@ public class TurnEvent {
 		this.type = type;
 	}
 
-	public static TurnEvent Attack(Actor initiator, Actor target, String message) {
+	public static TurnEvent attack(Actor initiator, Actor target, String message) {
 		return new TurnEvent(initiator, target, ATTACKED).setMessage(message);
+	}
+
+	public static TurnEvent attackMissed(Actor initiator, Actor target, String message) {
+		return new TurnEvent(initiator, target, ATTACK_MISSED).setMessage(message);
 	}
 
 	public int getType() {

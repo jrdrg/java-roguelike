@@ -14,6 +14,7 @@ import roguelike.ui.MessageDisplay;
 import roguelike.ui.StatsDisplay;
 import roguelike.ui.animations.AnimationManager;
 import roguelike.ui.animations.AttackAnimation;
+import roguelike.ui.animations.AttackMissedAnimation;
 import roguelike.ui.windows.Dialog;
 import roguelike.ui.windows.Terminal;
 import roguelike.util.ArrayUtils;
@@ -237,30 +238,54 @@ public class MainScreen extends Screen {
 				.getAreaInTiles(width, height, game.getPlayer().getPosition());
 
 		for (TurnEvent event : run.getEvents()) {
-			if (event.getType() == TurnEvent.ATTACKED) {
-				Actor attacker = event.getInitiator();
-				Actor target = event.getTarget();
+			Actor initiator = event.getInitiator();
+			Actor target = event.getTarget();
 
-				Coordinate attackerPos = attacker.getPosition();
-				Coordinate targetPos = target.getPosition();
-				Coordinate diff = attacker
+			Coordinate initiatorPos = initiator.getPosition();
+			Coordinate targetPos, diff;
+			DirectionIntercardinal direction;
+
+			switch (event.getType()) {
+
+			case TurnEvent.ATTACKED:
+				targetPos = target.getPosition();
+				diff = initiator
 						.getPosition()
 						.createOffsetPosition(-targetPos.x, -targetPos.y);
 
-				DirectionIntercardinal direction = DirectionIntercardinal
+				direction = DirectionIntercardinal
 						.getDirection(-diff.x, -diff.y);
 
-				System.out.println(attacker.getName() + " attacks "
+				System.out.println(initiator.getName() + " attacks "
 						+ target.getName() + " in direction "
 						+ direction.symbol);
 
-				if (screenArea.contains(attackerPos) && screenArea.contains(targetPos)) {
+				if (screenArea.contains(initiatorPos) && screenArea.contains(targetPos)) {
 
 					animationManager.addAnimation(new AttackAnimation(target, event.getMessage()));
 					System.out.println("Added attack animation");
 
 				}
+				break;
+
+			case TurnEvent.ATTACK_MISSED:
+				targetPos = target.getPosition();
+				diff = initiator
+						.getPosition()
+						.createOffsetPosition(-targetPos.x, -targetPos.y);
+
+				direction = DirectionIntercardinal
+						.getDirection(-diff.x, -diff.y);
+
+				if (screenArea.contains(initiatorPos) && screenArea.contains(targetPos)) {
+
+					animationManager.addAnimation(new AttackMissedAnimation(target));
+					System.out.println("Added attack missed animation");
+
+				}
+				break;
 			}
+
 		}
 	}
 

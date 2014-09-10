@@ -71,4 +71,12 @@ public class Statistics {
 	 * bribe and intimidate, anything having to do with social interaction
 	 */
 	public final Statistic presence = new Statistic(10, 0);
+
+	public int getBaseAttackPool() {
+		return perception.getTotalValue();
+	}
+
+	public int getBaseDefensePool() {
+		return conditioning.getTotalValue() + quickness.getTotalValue();
+	}
 }
