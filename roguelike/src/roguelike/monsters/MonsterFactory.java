@@ -71,7 +71,7 @@ public class MonsterFactory {
 	}
 
 	private static Npc createMonster(MonsterData data) {
-		Npc monster = new Npc(data.symbol, data.color, data.name);
+		Npc monster = new Npc(data);
 		Behavior behavior = DataFactory.createBehavior(data.behavior, monster);
 		monster.setBehavior(behavior);
 

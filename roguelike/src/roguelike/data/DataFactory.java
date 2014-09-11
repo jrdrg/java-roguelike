@@ -15,8 +15,6 @@ import roguelike.MainScreen;
 import roguelike.actors.Actor;
 import roguelike.actors.behaviors.Behavior;
 import roguelike.util.FileUtils;
-import squidpony.squidcolor.SColor;
-import squidpony.squidcolor.SColorFactory;
 
 /**
  * Loads all config data from JSON file and provides a central repository
@@ -36,6 +34,7 @@ public class DataFactory {
 
 		init();
 		initWeapons();
+		initMonsters();
 	}
 
 	public static DataFactory instance() {
@@ -105,9 +104,9 @@ public class DataFactory {
 
 			JSONArray jData = jtable.getJSONArray("records");
 
-			if (tableName.equals("monsters")) {
-				readMonsters(jData);
-			}
+			// if (tableName.equals("monsters")) {
+			// readMonsters(jData);
+			// }
 		}
 	}
 
@@ -118,25 +117,10 @@ public class DataFactory {
 		}
 	}
 
-	private void readMonsters(JSONArray jData) {
-		for (int x = 0; x < jData.length(); x++) {
-			JSONObject dataObj = jData.getJSONObject(x);
-
-			String name = dataObj.getString("name");
-			char symbol = dataObj.getString("symbol").charAt(0);
-			SColor color = SColorFactory.colorForName(dataObj.getString("color"));
-			color = color == null ? SColor.WHITE : color;
-			int speed = dataObj.getInt("speed");
-			String weapon = dataObj.getString("weapon");
-
-			MonsterData data = new MonsterData(symbol, color, name);
-			data.behavior = dataObj.getString("behavior");
-			data.speed = speed;
-			data.weapon = weapon;
-
-			monsterData.put(name, data);
-			System.out.println("     " + name);
+	private void initMonsters() {
+		List<MonsterData> monsters = MonsterData.create();
+		for (MonsterData data : monsters) {
+			monsterData.put(data.name, data);
 		}
 	}
-
 }

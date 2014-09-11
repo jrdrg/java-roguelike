@@ -95,9 +95,9 @@ public class CombatHandler {
 		int defendingReach = defendingWeapon == null ? 0 : defendingWeapon.reach;
 		int reachDiff = attack.getWeapon().reach - defendingReach;
 		if (reachDiff > 0) {
-			attackSuccessPool += 1;
+			attackSuccessPool += reachDiff;
 		} else if (reachDiff < 0) {
-			defendSuccessPool += 1;
+			defendSuccessPool += -reachDiff;
 		}
 
 		// this will be based on some kind of successes method, where a number
@@ -109,8 +109,8 @@ public class CombatHandler {
 		int defenderSuccesses = DiceRolls.roll(defendSuccessPool, defendWeaponTN);
 
 		int total = attackerSuccesses - defenderSuccesses;
-		System.out.println("S (A): " + attackerSuccesses);
-		System.out.println("S (D): " + defenderSuccesses);
+		System.out.println("S (A): " + attackerSuccesses + ", TN=" + attackWeaponTN);
+		System.out.println("S (D): " + defenderSuccesses + ", TN=" + defendWeaponTN);
 
 		String attackMsg = String.format("%s successes: %d", attacker.getName(), total);
 

@@ -22,7 +22,7 @@ public class Npc extends Actor {
 	}
 
 	public Npc(MonsterData data) {
-		super(data.symbol, data.color);
+		super(data.symbol(), data.color());
 		this.name = data.name;
 		this.getStatistics().speed.setBase(data.speed);
 	}

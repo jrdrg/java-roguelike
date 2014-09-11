@@ -72,6 +72,10 @@ public class Statistics {
 	 */
 	public final Statistic presence = new Statistic(10, 0);
 
+	public int reflexBonus;
+
+	public int aimingBonus;
+
 	/**
 	 * Determines how difficult it is to knock the character down
 	 * 
@@ -89,7 +93,7 @@ public class Statistics {
 	 * @return
 	 */
 	public int reflexes() {
-		return (perception.getTotalValue() + quickness.getTotalValue()) / 2;
+		return ((perception.getTotalValue() + quickness.getTotalValue()) / 2) + reflexBonus;
 	}
 
 	/**
@@ -100,7 +104,7 @@ public class Statistics {
 	 * @return
 	 */
 	public int aiming() {
-		return (perception.getTotalValue() + willpower.getTotalValue()) / 2;
+		return ((perception.getTotalValue() + willpower.getTotalValue()) / 2) + aimingBonus;
 	}
 
 	public int baseMeleePool(int weaponProficiency) {

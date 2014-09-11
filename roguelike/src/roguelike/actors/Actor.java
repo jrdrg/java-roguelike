@@ -1,7 +1,5 @@
 package roguelike.actors;
 
-import java.util.LinkedList;
-import java.util.Queue;
 import java.util.Stack;
 
 import roguelike.actions.Action;

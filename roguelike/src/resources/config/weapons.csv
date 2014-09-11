@@ -1,7 +1,7 @@
-name,description,symbol,color,type,baseDamage,reach,attackDescription,droppable,cutTN,cutDR,pierceTN,pierceDR,bluntTN,bluntDR,rangedTN,rangedDR,requiresAmmo,ammoType
-bite,Bite,b,Red,pierce,10,,%s bites %s,false,,,7,1,,,,,,
-mandibles,Vicious insectoid mandibles,m,Red,slash,15,,%s slices %s with its mandibles,false,,,7,1,,,,,,
-axe,A sturdy axe,a,Gray,slash,15,,,true,7,1,,,9,1,,,,
-dagger,An ordinary dagger,d,Gray,pierce,10,,,true,8,1,7,1,,,,,,
-sword,An ordinary short sword,s,Gray,slash,25,,,true,7,1,7,1,8,1,,,,
-spear,A medium length spear,s,Gray,pierce,20,,,true,,,7,1,9,1,,,,
+name,description,symbol,color,type,baseDamage,reach,attackDescription,droppable,cutTN,cutDR,pierceTN,pierceDR,bluntTN,bluntDR,rangedTN,rangedDR,requiresAmmo,ammoType,quality
+bite,A strong bite,b,Red,pierce,10,,%s bites %s,false,,,7,1,,,,,,,1
+mandibles,Vicious insectoid mandibles,m,Red,slash,15,,%s slices %s with its mandibles,false,,,7,1,,,,,,,1
+axe,A sturdy axe,a,Gray,slash,15,,,true,7,1,,,9,1,,,,,1
+dagger,An ordinary dagger,d,Gray,pierce,10,,,true,8,1,7,1,,,,,,,1
+sword,An ordinary short sword,s,Gray,slash,25,,,true,7,1,7,1,8,1,,,,,1
+spear,A medium length spear,s,Gray,pierce,20,,,true,,,7,1,9,1,,,,,1
