@@ -100,11 +100,7 @@ public class CombatHandler {
 			defendSuccessPool += -reachDiff;
 		}
 
-		// this will be based on some kind of successes method, where a number
-		// of rolls are made against a target number (i.e. 1-10, target number
-		// 6) and the number of successes are compared between the attacker and
-		// defender, modified by anything applicable
-
+		// This determines whether the attack landed or not
 		int attackerSuccesses = DiceRolls.roll(attackSuccessPool, attackWeaponTN);
 		int defenderSuccesses = DiceRolls.roll(defendSuccessPool, defendWeaponTN);
 
@@ -118,6 +114,8 @@ public class CombatHandler {
 
 		if (total > 0) {
 
+			// Currently just return the original unmodified attack - need to
+			// take other stuff into account later
 			return attack;
 		}
 		else {

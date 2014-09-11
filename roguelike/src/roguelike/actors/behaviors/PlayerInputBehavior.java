@@ -27,21 +27,30 @@ public class PlayerInputBehavior extends Behavior {
 		if (input == null)
 			return null;
 
+		// use CMD+up/right/down/left for up-left, up-right,down-right,down-left
+
+		boolean useDiagonals = input.isMetaDown();
+		DirectionIntercardinal direction;
+
 		switch (input.getKeyCode()) {
 		case KeyEvent.VK_ESCAPE:
 			return new QuitAction(actor);
 
 		case KeyEvent.VK_LEFT:
-			return new WalkAction(actor, Game.current().getCurrentMapArea(), DirectionIntercardinal.LEFT);
+			direction = useDiagonals ? DirectionIntercardinal.DOWN_LEFT : DirectionIntercardinal.LEFT;
+			return new WalkAction(actor, Game.current().getCurrentMapArea(), direction);
 
 		case KeyEvent.VK_RIGHT:
-			return new WalkAction(actor, Game.current().getCurrentMapArea(), DirectionIntercardinal.RIGHT);
+			direction = useDiagonals ? DirectionIntercardinal.UP_RIGHT : DirectionIntercardinal.RIGHT;
+			return new WalkAction(actor, Game.current().getCurrentMapArea(), direction);
 
 		case KeyEvent.VK_UP:
-			return new WalkAction(actor, Game.current().getCurrentMapArea(), DirectionIntercardinal.UP);
+			direction = useDiagonals ? DirectionIntercardinal.UP_LEFT : DirectionIntercardinal.UP;
+			return new WalkAction(actor, Game.current().getCurrentMapArea(), direction);
 
 		case KeyEvent.VK_DOWN:
-			return new WalkAction(actor, Game.current().getCurrentMapArea(), DirectionIntercardinal.DOWN);
+			direction = useDiagonals ? DirectionIntercardinal.DOWN_RIGHT : DirectionIntercardinal.DOWN;
+			return new WalkAction(actor, Game.current().getCurrentMapArea(), direction);
 
 		case KeyEvent.VK_PERIOD:
 			return new RestAction(actor);
