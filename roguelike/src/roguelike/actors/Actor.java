@@ -2,6 +2,7 @@ package roguelike.actors;
 
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.Stack;
 
 import roguelike.actions.Action;
 import roguelike.actions.combat.CombatHandler;
@@ -20,8 +21,8 @@ public abstract class Actor {
 	protected char symbol;
 	protected SColor color;
 
-	protected Queue<AttackAttempt> attacked;
-	protected Queue<AttackAttempt> attackedBy;
+	protected Stack<AttackAttempt> attacked;
+	protected Stack<AttackAttempt> attackedBy;
 
 	private Energy energy;
 	private Statistics statistics;
@@ -33,6 +34,9 @@ public abstract class Actor {
 	protected LOSSolver losSolver;
 
 	protected Actor(char symbol, SColor color) {
+		if (color == null)
+			throw new IllegalArgumentException("color cannot be null");
+
 		this.symbol = symbol;
 		this.color = color;
 		this.position = new Coordinate();
@@ -44,8 +48,8 @@ public abstract class Actor {
 		this.inventory = new Inventory();
 		this.equipment = new Equipment();
 
-		attacked = new LinkedList<AttackAttempt>();
-		attackedBy = new LinkedList<AttackAttempt>();
+		attacked = new Stack<AttackAttempt>();
+		attackedBy = new Stack<AttackAttempt>();
 
 		losSolver = new BresenhamLOS();
 	}
@@ -126,18 +130,18 @@ public abstract class Actor {
 	}
 
 	public AttackAttempt getLastAttacked() {
-		return attacked.poll();
+		return attacked.size() > 0 ? attacked.pop() : null;
 	}
 
 	public AttackAttempt getLastAttackedBy() {
-		return attackedBy.poll();
+		return attackedBy.size() > 0 ? attackedBy.pop() : null;
 	}
 
 	public final void finishTurn() {
 		if (attacked.size() > 5)
-			((LinkedList<AttackAttempt>) attacked).removeLast();
+			((Stack<AttackAttempt>) attacked).remove(0);
 		if (attackedBy.size() > 5)
-			((LinkedList<AttackAttempt>) attackedBy).removeLast();
+			((Stack<AttackAttempt>) attackedBy).remove(0);
 
 		onTurnFinished();
 	}

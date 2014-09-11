@@ -26,21 +26,30 @@ public class AttackAction extends Action {
 		}
 
 		Attack attack = actor.getCombatHandler().getAttack(target);
-		boolean isTargetDead = actor.getCombatHandler().processAttack(this, attack, target);
-		// boolean isTargetDead = attack.perform(target);
+		if (attack != null) {
+			boolean isTargetDead = attack.perform(this, target);
 
-		if (isTargetDead) {
-			target.onKilled();
+			if (isTargetDead) {
+				target.onKilled();
 
-			MapArea currentArea = Game.current().getCurrentMapArea();
-			if (Player.isPlayer(target)) {
-				Game.current().reset();
+				MapArea currentArea = Game.current().getCurrentMapArea();
+				if (Player.isPlayer(target)) {
+					target.finishTurn();
+					Game.current().reset();
+				}
+				currentArea.removeActor(target);
+
+				Game.current().displayMessage("Target is dead");
 			}
-			currentArea.removeActor(target);
 
-			Game.current().displayMessage("Target is dead");
+			return ActionResult.success();
 		}
-
-		return ActionResult.success();
+		else {
+			/*
+			 * we can't attack but success the action anyway so it causes the
+			 * actor to lose energy and advance to the next actor
+			 */
+			return ActionResult.success().setMessage("No weapon");
+		}
 	}
 }

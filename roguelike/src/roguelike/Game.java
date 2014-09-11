@@ -14,6 +14,16 @@ import roguelike.ui.windows.Dialog;
 import squidpony.squidcolor.SColor;
 import squidpony.squidmath.RNG;
 
+/**
+ * Setting - sword and sorcery version of 17th century caribbean/pirate setting.
+ * port towns, swashbucklers, black powder weapons, jungle temples, fanatical
+ * cultists, lost treasures, etc
+ * 
+ * win condition - leaving the island alive with as much wealth as you can carry
+ * 
+ * @author john
+ * 
+ */
 public class Game {
 	private static Game currentGame;
 
@@ -243,9 +253,16 @@ public class Game {
 			}
 
 			Actor currentActor = currentAction.getActor();
-			if (currentActor != null) {// && result.isSuccess()) {
+			if (currentActor != null && !currentActor.getEnergy().canAct()) {
+				// if (result.isSuccess()) {
 				currentActor.finishTurn();
 				currentMapArea.nextActor();
+				// }
+			} else {
+				System.out.println("Actor=" + currentActor.getName());
+				System.out.println("Energy=" + currentActor.isAlive());
+				System.out.println("Remaining energy: " + currentActor.getEnergy().getCurrent() + " Result=" + result);
+				System.out.println(result.getMessage() + ", " + result.isSuccess() + ", " + result.isCompleted());
 			}
 
 		} else {

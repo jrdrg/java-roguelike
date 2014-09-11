@@ -2,6 +2,7 @@ package roguelike.items;
 
 import roguelike.actions.combat.Attack;
 import roguelike.actions.combat.MeleeAttack;
+import roguelike.data.WeaponData;
 
 public class MeleeWeapon extends Weapon {
 
@@ -10,18 +11,21 @@ public class MeleeWeapon extends Weapon {
 	protected String description;
 	protected String attackDescription;
 
-	public MeleeWeapon(String name, String description, int baseDamage) {
-		super();
-		this.name = name;
-		this.description = description;
-		this.baseDamage = baseDamage;
+	public MeleeWeapon(WeaponData data) {
+		super(data);
+		this.name = data.name;
+		this.description = data.description;
+		this.baseDamage = data.baseDamage;
 
-		this.attackDescription = "%s swings " + getName() + " at %s";
-	}
+		this.droppable = data.droppable;
+		this.symbol = data.symbol();
+		this.color = data.color();
 
-	public MeleeWeapon(String name, String description, int baseDamage, String attackDescription) {
-		this(name, description, baseDamage);
-		this.attackDescription = attackDescription;
+		if (data.attackDescription == null || data.attackDescription.length() == 0) {
+			this.attackDescription = "%s swings " + getName() + " at %s";
+		} else {
+			this.attackDescription = data.attackDescription;
+		}
 	}
 
 	@Override
@@ -30,7 +34,7 @@ public class MeleeWeapon extends Weapon {
 		double randomFactor = Math.random() * baseDamage;
 		int totalDamage = (int) (baseDamage + randomFactor / 2);
 
-		return new MeleeAttack(attackDescription, totalDamage);
+		return new MeleeAttack(attackDescription, totalDamage, this);
 	}
 
 	@Override

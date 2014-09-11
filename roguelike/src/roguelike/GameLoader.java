@@ -4,6 +4,7 @@ import roguelike.actors.Player;
 import roguelike.data.DataFactory;
 import roguelike.items.Equipment.ItemSlot;
 import roguelike.items.MeleeWeapon;
+import roguelike.items.WeaponFactory;
 import roguelike.maps.MapArea;
 import roguelike.maps.MapBuilder;
 import squidpony.squidmath.RNG;
@@ -48,8 +49,12 @@ public class GameLoader {
 	public Player createPlayer() {
 		Player player = new Player();
 
-		MeleeWeapon sword = new MeleeWeapon("Sword", "A long sword", 25);
-		MeleeWeapon spear = new MeleeWeapon("Spear", "A spear", 20);
+		// MeleeWeapon sword = new MeleeWeapon("Sword", "A long sword", 25);
+		// MeleeWeapon spear = new MeleeWeapon("Spear", "A spear", 20);
+
+		MeleeWeapon sword = (MeleeWeapon) WeaponFactory.create("sword");
+		MeleeWeapon spear = (MeleeWeapon) WeaponFactory.create("spear");
+
 		player.getInventory().add(spear);
 
 		player.getEquipment().equipItem(ItemSlot.RIGHT_ARM, sword, player.getInventory());

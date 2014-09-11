@@ -56,16 +56,16 @@ public class CombatHandler {
 	public Attack getAttack(Actor target) {
 		// TODO: implement attack choosing behavior, etc
 		// TODO: dual wielding should return 1 attack dependent on skill
-		Weapon weapon = actor.getEquipment().getEquippedWeapon(ItemSlot.RIGHT_ARM);
-		if (weapon != null) {
-			return weapon.getAttack();
+		Weapon[] weapon = actor.getEquipment().getEquippedWeapons();
+		if (weapon[0] != null) {
+			return weapon[0].getAttack();
 		}
-		return new MeleeAttack("%s punches %s", 10);
+		return null;
 	}
 
 	/**
-	 * Allows the defender to modify the attack depending on armor, stats,
-	 * effects, etc
+	 * Resolves the attack, and returns either the original attack or a modified
+	 * attack taking into account the defender's stats, resistances, etc
 	 * 
 	 * @param attacker
 	 * @param attack
@@ -74,32 +74,54 @@ public class CombatHandler {
 	public Attack defend(Actor attacker, Attack attack) {
 		// TODO: implement defending behavior, resistances, etc
 
-		int weaponProficiency = 10;
+		int aWeaponProficiency = 3;
+		int dWeaponProficiency = 3;
 		int attackManeuver = 0; // modifier for different attack types, etc
 		int armorValue = 0; // armor value defender is wearing
 		int defenseManeuver = 0; // modifier for defense like evade, dodge, etc
 
+		int attackWeaponTN = 7; // TODO: get these from weapon data or maneuver
+		int defendWeaponTN = 7;
+
 		Statistics attackerStats = attacker.getStatistics();
 		Statistics defenderStats = actor.getStatistics();
-		int attackSuccessPool = attackerStats.getBaseAttackPool() + weaponProficiency + attackManeuver;
-		int defendSuccessPool = defenderStats.getBaseDefensePool() + armorValue + defenseManeuver;
+
+		int attackSuccessPool = attackerStats.baseMeleePool(aWeaponProficiency) + attackManeuver;
+		int defendSuccessPool = defenderStats.baseMeleePool(dWeaponProficiency) + defenseManeuver;
+
+		// TODO: need to switch this penalty to the combatant who was damaged
+		// most recently
+		Weapon defendingWeapon = actor.getEquipment().getEquippedWeapon(ItemSlot.RIGHT_ARM);
+		int defendingReach = defendingWeapon == null ? 0 : defendingWeapon.reach;
+		int reachDiff = attack.getWeapon().reach - defendingReach;
+		if (reachDiff > 0) {
+			attackSuccessPool += 1;
+		} else if (reachDiff < 0) {
+			defendSuccessPool += 1;
+		}
 
 		// this will be based on some kind of successes method, where a number
 		// of rolls are made against a target number (i.e. 1-10, target number
 		// 6) and the number of successes are compared between the attacker and
 		// defender, modified by anything applicable
 
-		int attackerSuccesses = DiceRolls.roll(attackSuccessPool);
-		int defenderSuccesses = DiceRolls.roll(defendSuccessPool);
+		int attackerSuccesses = DiceRolls.roll(attackSuccessPool, attackWeaponTN);
+		int defenderSuccesses = DiceRolls.roll(defendSuccessPool, defendWeaponTN);
 
-		int total = defenderSuccesses - attackerSuccesses;
+		int total = attackerSuccesses - defenderSuccesses;
 		System.out.println("S (A): " + attackerSuccesses);
 		System.out.println("S (D): " + defenderSuccesses);
-		if (total < 0) {
+
+		String attackMsg = String.format("%s successes: %d", attacker.getName(), total);
+
+		Game.current().displayMessage(attackMsg);
+
+		if (total > 0) {
+
 			return attack;
 		}
 		else {
-			return new MeleeAttack("%s misses %s!", 0);
+			return new MeleeAttack("%s misses %s!", 0, attack.getWeapon());
 		}
 	}
 
@@ -112,7 +134,7 @@ public class CombatHandler {
 	 * @return The result from onDamaged() - true if the attack killed the
 	 *         target
 	 */
-	public boolean processAttack(Action action, Attack attack, Actor target) {
+	boolean processAttack(Action action, Attack attack, Actor target) {
 		attack = target.getCombatHandler().defend(actor, attack);
 		boolean isDead;
 		if (attack.baseDamage > 0) {

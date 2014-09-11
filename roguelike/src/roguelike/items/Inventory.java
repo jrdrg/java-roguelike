@@ -47,10 +47,16 @@ public class Inventory {
 	}
 
 	public void add(Item item) {
+		if (item == null)
+			throw new IllegalArgumentException("item cannot be null");
+
 		items.add(item);
 	}
 
 	public boolean remove(Item item) {
+		if (item == null)
+			throw new IllegalArgumentException("item cannot be null");
+
 		return items.remove(item);
 	}
 }

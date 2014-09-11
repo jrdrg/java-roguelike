@@ -177,6 +177,10 @@ public class MainScreen extends Screen {
 				if (tile.isVisible()) {
 					SColor color, bgColor;
 					SColor litColor = tile.getLightedColorValue();
+					if (tile.getColor() == null)
+						throw new IllegalArgumentException("null tile color");
+					if (litColor == null)
+						throw new IllegalArgumentException("null lit color");
 					color = SColorFactory.lightWith(tile.getColor(), litColor);
 					bgColor = SColorFactory.lightWith(tile.getBackground(), litColor);
 

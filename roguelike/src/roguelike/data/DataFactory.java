@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.json.JSONArray;
@@ -34,6 +35,7 @@ public class DataFactory {
 		weaponData = new HashMap<String, WeaponData>();
 
 		init();
+		initWeapons();
 	}
 
 	public static DataFactory instance() {
@@ -46,6 +48,14 @@ public class DataFactory {
 
 	public Map<String, WeaponData> getWeapons() {
 		return weaponData;
+	}
+
+	public MonsterData getMonster(String key) {
+		return monsterData.get(key);
+	}
+
+	public WeaponData getWeapon(String key) {
+		return weaponData.get(key);
 	}
 
 	public static Behavior createBehavior(String behavior, Actor actor) {
@@ -98,9 +108,13 @@ public class DataFactory {
 			if (tableName.equals("monsters")) {
 				readMonsters(jData);
 			}
-			else if (tableName.equals("weapons")) {
-				readWeapons(jData);
-			}
+		}
+	}
+
+	private void initWeapons() {
+		List<WeaponData> weapons = WeaponData.create();
+		for (WeaponData data : weapons) {
+			weaponData.put(data.name, data);
 		}
 	}
 
@@ -125,26 +139,4 @@ public class DataFactory {
 		}
 	}
 
-	private void readWeapons(JSONArray jData) {
-		for (int x = 0; x < jData.length(); x++) {
-			JSONObject dataObj = jData.getJSONObject(x);
-
-			String name = dataObj.getString("name");
-			char symbol = dataObj.getString("symbol").charAt(0);
-			SColor color = SColorFactory.colorForName(dataObj.getString("color"));
-			color = color == null ? SColor.WHITE : color;
-			int baseDamage = dataObj.getInt("baseDamage");
-			int reach = dataObj.getInt("reach");
-			boolean droppable = dataObj.getString("droppable").equals("1") ? true : false;
-			String type = dataObj.getString("type");
-			String attackDescription = dataObj.getString("attackDescription");
-
-			WeaponData data = new WeaponData(name, baseDamage, reach, droppable, type, attackDescription);
-			data.symbol = symbol;
-			data.color = color;
-
-			weaponData.put(name, data);
-			System.out.println("     " + name);
-		}
-	}
 }

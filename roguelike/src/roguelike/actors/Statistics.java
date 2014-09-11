@@ -72,11 +72,42 @@ public class Statistics {
 	 */
 	public final Statistic presence = new Statistic(10, 0);
 
-	public int getBaseAttackPool() {
-		return perception.getTotalValue();
+	/**
+	 * Determines how difficult it is to knock the character down
+	 * 
+	 * @return
+	 */
+	public int knockdown() {
+		return (toughness.getTotalValue() + conditioning.getTotalValue()) / 2;
 	}
 
-	public int getBaseDefensePool() {
-		return conditioning.getTotalValue() + quickness.getTotalValue();
+	/**
+	 * Determines how quickly the character can respond to an attack - this is
+	 * the base number of dice that will be rolled to determine successes for a
+	 * melee attack
+	 * 
+	 * @return
+	 */
+	public int reflexes() {
+		return (perception.getTotalValue() + quickness.getTotalValue()) / 2;
+	}
+
+	/**
+	 * Determines how effective the character is at aiming ranged weapons - this
+	 * is the base number of dice that will be rolled to determine successes for
+	 * a ranged attack
+	 * 
+	 * @return
+	 */
+	public int aiming() {
+		return (perception.getTotalValue() + willpower.getTotalValue()) / 2;
+	}
+
+	public int baseMeleePool(int weaponProficiency) {
+		return reflexes() + weaponProficiency;
+	}
+
+	public int baseRangedPool(int weaponProficiency) {
+		return aiming() + weaponProficiency;
 	}
 }

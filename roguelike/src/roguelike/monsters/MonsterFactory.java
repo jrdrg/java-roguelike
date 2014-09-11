@@ -9,7 +9,6 @@ import roguelike.actors.behaviors.Behavior;
 import roguelike.actors.behaviors.RandomWalkBehavior;
 import roguelike.data.DataFactory;
 import roguelike.data.MonsterData;
-import roguelike.data.WeaponData;
 import roguelike.items.Equipment.ItemSlot;
 import roguelike.items.InventoryBuilder;
 import roguelike.items.Item;
@@ -81,8 +80,7 @@ public class MonsterFactory {
 				/* create random weapon(s) */
 
 			} else {
-				WeaponData wData = DataFactory.instance().getWeapons().get(data.weapon);
-				Weapon defWpn = WeaponFactory.create(wData);
+				Weapon defWpn = WeaponFactory.create(data.weapon);
 
 				if (defWpn != null) {
 					monster.getInventory().add(defWpn);

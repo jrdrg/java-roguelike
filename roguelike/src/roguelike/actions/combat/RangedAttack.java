@@ -1,23 +1,18 @@
 package roguelike.actions.combat;
 
+import roguelike.actions.Action;
 import roguelike.actors.Actor;
+import roguelike.items.Weapon;
 
 public class RangedAttack extends Attack {
 
-	protected RangedAttack(String description, int baseDamage) {
-		super(description, baseDamage);
+	protected RangedAttack(String description, int baseDamage, Weapon weapon) {
+		super(description, baseDamage, weapon);
 	}
 
 	@Override
-	public boolean perform(Actor target) {
-
-		// if we miss, return false
-		// TODO: need to make this take stats into account, etc
-		if (Math.random() > 0.6)
-			return false;
-
-		// TODO: make damage also take stats into account
-		return target.getCombatHandler().processAttack(null, this, target);
+	public boolean perform(Action action, Actor target) {
+		return action.getActor().getCombatHandler().processAttack(action, this, target);
 	}
 
 }

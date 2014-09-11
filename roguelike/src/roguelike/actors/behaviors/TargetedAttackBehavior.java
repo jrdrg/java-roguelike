@@ -47,9 +47,13 @@ public class TargetedAttackBehavior extends Behavior {
 	@Override
 	public Behavior getNextBehavior() {
 		if (actor.isAlive()) {
-			if (target.isAlive() && isTargetVisible())
-				return this;
-
+			if (target.isAlive() && isTargetVisible()) {
+				if (actor.getEquipment().getEquippedWeapons()[0] != null)
+					return this;
+				else {
+					System.out.println(String.format("%s has no weapon!", actor.getName()));
+				}
+			}
 			// TODO: figure out what to do when target is dead or out of sight
 			// range
 			Game.current().displayMessage(target.getName() + " has gone out of sight range...", SColor.GRAY);

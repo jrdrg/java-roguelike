@@ -1,26 +1,35 @@
 package roguelike.actions.combat;
 
+import roguelike.actions.Action;
 import roguelike.actors.Actor;
+import roguelike.items.Weapon;
 
 public abstract class Attack {
 
 	protected String description;
 	protected int baseDamage;
+	private Weapon weapon;
 
-	protected Attack(String description, int baseDamage) {
+	protected Attack(String description, int baseDamage, Weapon weapon) {
 		this.description = description;
 		this.baseDamage = baseDamage;
+		this.weapon = weapon;
 	}
 
 	public int getDamage() {
 		return baseDamage;
 	}
 
-	public abstract boolean perform(Actor target);
+	public Weapon getWeapon() {
+		return weapon;
+	}
+
+	public abstract boolean perform(Action action, Actor target);
 
 	// TODO: implement various types of attacks
 	/*
-	 * BEAT - removes a shield/defensive weapon
+	 * BEAT - removes a shield/defensive weapon - makes weaponProficiency 0 for
+	 * purposes of determining defense pool
 	 * 
 	 * WIDE SWING - hits area in 180 degrees toward target
 	 * 

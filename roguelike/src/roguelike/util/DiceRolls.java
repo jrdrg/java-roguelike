@@ -13,13 +13,17 @@ public class DiceRolls {
 	 * @param poolSize
 	 */
 	public static int roll(int poolSize) {
+		return roll(poolSize, TARGET_NUMBER);
+	}
+
+	public static int roll(int poolSize, int targetNumber) {
 		RNG rng = Game.current().random();
 
 		int successes = 0;
 		for (int x = 0; x < poolSize; x++) {
 			int result = rng.between(1, DICE_TYPE + 1); // +1 because max is
 														// exclusive
-			if (result > TARGET_NUMBER) {
+			if (result > targetNumber) {
 				successes++;
 			}
 		}
