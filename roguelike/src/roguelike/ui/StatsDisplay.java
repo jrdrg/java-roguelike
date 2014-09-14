@@ -3,7 +3,6 @@ package roguelike.ui;
 import java.util.Arrays;
 
 import roguelike.actors.Player;
-import roguelike.items.Equipment;
 import roguelike.items.Equipment.ItemSlot;
 import roguelike.items.Weapon;
 import roguelike.ui.windows.Terminal;
@@ -17,6 +16,8 @@ public class StatsDisplay {
 
 	public StatsDisplay(Terminal terminal) {
 		this.terminal = terminal;
+
+		System.out.println("Stats display: " + terminal.size().width + "x" + terminal.size().height);
 	}
 
 	public void setPlayer(Player player) {
@@ -33,6 +34,7 @@ public class StatsDisplay {
 
 		drawHealth();
 		drawEquipped();
+		drawStats();
 	}
 
 	private void drawHealth() {
@@ -62,13 +64,12 @@ public class StatsDisplay {
 		SColor headerColor = SColor.BLOOD;
 		Terminal headerTerm = terminal.withColor(headerColor);
 
-		headerTerm.write(0, 7, "L  ");
-		headerTerm.write(0, 8, "R  ");
-		headerTerm.write(0, 9, "Ar ");
+		headerTerm.write(1, 7, "L  ");
+		headerTerm.write(1, 8, "R  ");
+		headerTerm.write(1, 9, "Ar ");
 
-		Equipment eq = player.getEquipment();
-		Weapon left = eq.getEquippedWeapon(ItemSlot.LEFT_ARM);
-		Weapon right = eq.getEquippedWeapon(ItemSlot.RIGHT_ARM);
+		Weapon left = ItemSlot.LEFT_ARM.getEquippedWeapon(player);
+		Weapon right = ItemSlot.RIGHT_ARM.getEquippedWeapon(player);
 
 		if (left != null)
 			terminal.write(3, 7, String.format("%1$-15s", left.getName()));
@@ -76,5 +77,33 @@ public class StatsDisplay {
 		if (right != null)
 			terminal.write(3, 8, String.format("%1$-15s", right.getName()));
 
+		headerTerm.write(1, 14, "MP");
+		int weaponProficiency = 0; // TODO: calculate this
+		terminal.write(3, 14, String.format("%3d", player.getStatistics().baseMeleePool(weaponProficiency)));
+
+		headerTerm.write(1, 15, "RP");
+		int rangedProficiency = 0; // TODO: calculate this
+		terminal.write(3, 15, String.format("%3d", player.getStatistics().baseMeleePool(rangedProficiency)));
+	}
+
+	private void drawStats() {
+
+		SColor headerColor = SColor.BRONZE;
+		Terminal headerTerm = terminal.withColor(headerColor);
+		Terminal displayTerm = terminal;
+		// toughness conditioning perception quickness willpower presence
+		headerTerm.write(1, 11, "To");
+		displayTerm.write(3, 11, String.format("%3d", player.getStatistics().toughness.getTotalValue()));
+		headerTerm.write(7, 11, "Co");
+		displayTerm.write(9, 11, String.format("%3d", player.getStatistics().conditioning.getTotalValue()));
+		headerTerm.write(13, 11, "Pe");
+		displayTerm.write(15, 11, String.format("%3d", player.getStatistics().perception.getTotalValue()));
+
+		headerTerm.write(1, 12, "Qu");
+		displayTerm.write(3, 12, String.format("%3d", player.getStatistics().quickness.getTotalValue()));
+		headerTerm.write(7, 12, "Wi");
+		displayTerm.write(9, 12, String.format("%3d", player.getStatistics().willpower.getTotalValue()));
+		headerTerm.write(13, 12, "Pr");
+		displayTerm.write(15, 12, String.format("%3d", player.getStatistics().presence.getTotalValue()));
 	}
 }

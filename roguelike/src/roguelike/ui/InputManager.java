@@ -47,12 +47,11 @@ public class InputManager {
 	 * 
 	 * s: slash
 	 * 
-	 * p: pierce
+	 * t: thrust
 	 * 
 	 * b: blunt
 	 * 
-	 * a / <move into opponent>: use attack type with lowest TN of equipped
-	 * weapon
+	 * a / <move into opponent>: use attack type with lowest TN of equipped weapon
 	 * 
 	 * r: ranged attack
 	 * 
@@ -86,5 +85,7 @@ public class InputManager {
 	 * c: character info
 	 * 
 	 * i: inventory
+	 * 
+	 * T: talk
 	 */
 }

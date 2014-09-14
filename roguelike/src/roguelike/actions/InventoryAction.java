@@ -23,8 +23,7 @@ public class InventoryAction extends Action {
 	@Override
 	protected ActionResult onPerform() {
 		/*
-		 * if we don't have a menu drawn yet then just return incomplete to give
-		 * the UI a chance to show it
+		 * if we don't have a menu drawn yet then just return incomplete to give the UI a chance to show it
 		 */
 		if (menu == null) {
 
@@ -43,7 +42,7 @@ public class InventoryAction extends Action {
 					if (activeItem != null) {
 
 						// TODO: change this to something else, equip it for now
-						actor.getEquipment().equipItem(ItemSlot.RIGHT_ARM, activeItem, actor.getInventory());
+						ItemSlot.RIGHT_ARM.equipItem(actor, activeItem);
 
 						return ActionResult.success().setMessage("Selected item: " + activeItem.getName());
 

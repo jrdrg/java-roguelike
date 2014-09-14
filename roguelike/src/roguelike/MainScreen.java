@@ -74,6 +74,7 @@ public class MainScreen extends Screen {
 
 		game.initialize();
 
+		doFOV();
 		drawMap();
 		drawStats();
 
@@ -95,14 +96,8 @@ public class MainScreen extends Screen {
 			Player player = game.getPlayer();
 			AttackAttempt killedBy = player.getLastAttackedBy();
 
-			// KeyEvent nextKey = InputManager.nextKey();
-			// if (nextKey != null) {
 			System.out.println("Switching to game over screen");
 			nextScreen = new PlayerDiedScreen(killedBy.getActor(), this.fullTerminal);
-			// }
-			// else {
-			// System.out.println("waiting for input");
-			// }
 
 		} else {
 
@@ -112,6 +107,11 @@ public class MainScreen extends Screen {
 
 			if (!run.isRunning()) {
 				nextScreen = new TitleScreen(fullTerminal);
+			}
+
+			/* recalculate FOV if player moved/acted */
+			if (run.playerActedThisTurn()) {
+				doFOV();
 			}
 		}
 	}
@@ -130,8 +130,7 @@ public class MainScreen extends Screen {
 		}
 
 		/*
-		 * this will only refresh if player input has occurred or something has
-		 * reset the dirty flag
+		 * this will only refresh if player input has occurred or something has reset the dirty flag
 		 */
 		boolean animationProcessed = animationManager
 				.nextFrame(terminal);
@@ -167,8 +166,8 @@ public class MainScreen extends Screen {
 		Rectangle screenArea = currentMap
 				.getAreaInTiles(windowWidth, windowHeight, playerPosition);
 
-		doFOV(currentMap, screenArea, playerPosition);
-
+		// doFOV(currentMap, screenArea, playerPosition);
+		//
 		for (int x = screenArea.x; x < screenArea.getMaxX(); x++) {
 			for (int y = screenArea.y; y < screenArea.getMaxY(); y++) {
 				Tile tile = currentMap.getTileAt(x, y);
@@ -181,6 +180,7 @@ public class MainScreen extends Screen {
 						throw new IllegalArgumentException("null tile color");
 					if (litColor == null)
 						throw new IllegalArgumentException("null lit color");
+
 					color = SColorFactory.lightWith(tile.getColor(), litColor);
 					bgColor = SColorFactory.lightWith(tile.getBackground(), litColor);
 
@@ -199,6 +199,16 @@ public class MainScreen extends Screen {
 	/**
 	 * Calculates the Field of View and marks the maps spots seen appropriately.
 	 */
+	private void doFOV() {
+		MapArea currentMap = game.getCurrentMapArea();
+		Coordinate playerPosition = game.getPlayer().getPosition();
+
+		Rectangle screenArea = currentMap
+				.getAreaInTiles(windowWidth, windowHeight, playerPosition);
+
+		doFOV(currentMap, screenArea, playerPosition);
+	}
+
 	private void doFOV(MapArea currentMap, Rectangle screenArea, Coordinate player) {
 		// boolean[][] walls = new boolean[width][height];
 		float[][] lighting = new float[width][height];

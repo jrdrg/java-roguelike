@@ -1,16 +1,18 @@
 package roguelike.items;
 
+import roguelike.Game;
 import roguelike.actors.Actor;
+import squidpony.squidmath.RNG;
 
 public class InventoryBuilder {
 
 	public void populateRandomInventory(Actor actor) {
-
+		RNG random = Game.current().random();
 		Inventory inv = actor.getInventory();
-		int itemCount = (int) (Math.random() * 5);
+		int itemCount = (int) (random.between(1, 5));
 
 		for (int x = 0; x < itemCount; x++) {
-			double f = Math.random();
+			double f = random.nextDouble();
 			if (f < 0.1) {
 				MeleeWeapon sword = (MeleeWeapon) WeaponFactory.create("sword");
 				inv.add(sword);

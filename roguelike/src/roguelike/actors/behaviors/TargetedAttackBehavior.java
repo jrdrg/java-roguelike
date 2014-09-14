@@ -33,7 +33,10 @@ public class TargetedAttackBehavior extends Behavior {
 		float radius = radiusStrategy.radius(actorPos.x, actorPos.y, targetPos.x, targetPos.y);
 
 		if (canAttackTarget(radius)) {
-			return new AttackAction(actor, target);
+			if (actor.canSee(target, Game.current().getCurrentMapArea()))
+				return new AttackAction(actor, target);
+			else
+				Game.current().displayMessage(target.getName() + "is no longer in sight range.");
 		}
 
 		// walk towards the target
@@ -56,7 +59,7 @@ public class TargetedAttackBehavior extends Behavior {
 			}
 			// TODO: figure out what to do when target is dead or out of sight
 			// range
-			Game.current().displayMessage(target.getName() + " has gone out of sight range...", SColor.GRAY);
+			Game.current().displayMessage(actor.getName() + " is no longer targeting " + target.getName() + "...", SColor.GRAY);
 			return new RandomWalkBehavior(actor);
 		}
 		return null;
@@ -67,7 +70,10 @@ public class TargetedAttackBehavior extends Behavior {
 		Coordinate targetPos = target.getPosition();
 
 		float radius = radiusStrategy.radius(actorPos.x, actorPos.y, targetPos.x, targetPos.y);
-		return (radius <= actor.getVisionRadius());
+		if (radius <= actor.getVisionRadius()) {
+			return actor.canSee(target, Game.current().getCurrentMapArea());
+		}
+		return false;
 	}
 
 	private boolean canAttackTarget(float distance) {

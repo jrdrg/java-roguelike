@@ -11,6 +11,7 @@ import squidpony.squidmath.RNG;
 import squidpony.squidutility.SCollections;
 
 public class MapBuilder {
+	private RNG random = Game.current().random();
 	private TileBuilder tb = new TileBuilder();
 	private ArrayList<Rectangle> buildings = new ArrayList<Rectangle>();
 
@@ -29,7 +30,7 @@ public class MapBuilder {
 			}
 		}
 
-		ArrayList<Point> startingPoints = createLandscape(Game.current().random(), map);
+		ArrayList<Point> startingPoints = createLandscape(random, map);
 
 		// for (int i = 0; i < 60; i++) {
 		// int x = (int) Math.floor(Math.random() * width);
@@ -46,8 +47,8 @@ public class MapBuilder {
 		// }
 
 		for (int i = 0; i < 30; i++) {
-			int x = (int) Math.floor(Math.random() * width);
-			int y = (int) Math.floor(Math.random() * height);
+			int x = (int) Math.floor(random.between(0, width));
+			int y = (int) Math.floor(random.between(0, height));
 
 			createBuilding(map, x, y);
 		}
@@ -58,8 +59,8 @@ public class MapBuilder {
 	}
 
 	private void createBuilding(Tile[][] map, int x, int y) {
-		int width = (int) Math.ceil(Math.random() * 40) + 3;
-		int height = (int) Math.ceil(Math.random() * 40) + 3;
+		int width = (int) Math.ceil(random.between(5, 40));
+		int height = (int) Math.ceil(random.between(5, 40));
 
 		Rectangle mapBounds = new Rectangle(0, 0, map.length, map[0].length);
 		Rectangle buildingBounds = new Rectangle(x, y, width, height);
@@ -72,14 +73,14 @@ public class MapBuilder {
 		}
 
 		int doorX, doorY;
-		if (Math.random() < 0.5) {
+		if (random.nextDouble() < 0.5) {
 			// door on vertical axis
-			doorX = Math.random() < 0.5 ? 0 : width - 1;
-			doorY = (int) (Math.random() * height - 3) + 1;
+			doorX = random.nextDouble() < 0.5 ? 0 : width - 1;
+			doorY = random.between(2, height - 2);
 		} else {
 			// door on horizontal axis
-			doorX = (int) (Math.random() * width - 3) + 1;
-			doorY = Math.random() < 0.5 ? 0 : height - 1;
+			doorX = random.between(2, width - 2);
+			doorY = random.nextDouble() < 0.5 ? 0 : height - 1;
 		}
 		doorX += x;
 		doorY += y;
@@ -99,33 +100,33 @@ public class MapBuilder {
 		buildings.add(buildingBounds);
 	}
 
-//	private void createWater(Tile[][] map, int x, int y) {
-//		if (map[x][y].getSymbol() == '.') {
-//
-//			createWater(map, x, y, (int) (Math.random() * 30));
-//
-//		}
-//	}
+	// private void createWater(Tile[][] map, int x, int y) {
+	// if (map[x][y].getSymbol() == '.') {
+	//
+	// createWater(map, x, y, (int) (Math.random() * 30));
+	//
+	// }
+	// }
 
-//	private void createWater(Tile[][] map, int x, int y, int recurseCount) {
-//		if (recurseCount <= 1)
-//			return;
-//
-//		if (Math.random() < 0.2)
-//			return;
-//
-//		if (map[x][y].getSymbol() == '.') {
-//			if (x < map.length - 1 && x > 0 && y < map[0].length - 1 && y > 0) {
-//
-//				map[x][y] = tb.buildTile('~');
-//
-//				createWater(map, x - 1, y, recurseCount - 1);
-//				createWater(map, x + 1, y, recurseCount - 1);
-//				createWater(map, x, y - 1, recurseCount - 1);
-//				createWater(map, x, y + 1, recurseCount - 1);
-//			}
-//		}
-//	}
+	// private void createWater(Tile[][] map, int x, int y, int recurseCount) {
+	// if (recurseCount <= 1)
+	// return;
+	//
+	// if (Math.random() < 0.2)
+	// return;
+	//
+	// if (map[x][y].getSymbol() == '.') {
+	// if (x < map.length - 1 && x > 0 && y < map[0].length - 1 && y > 0) {
+	//
+	// map[x][y] = tb.buildTile('~');
+	//
+	// createWater(map, x - 1, y, recurseCount - 1);
+	// createWater(map, x + 1, y, recurseCount - 1);
+	// createWater(map, x, y - 1, recurseCount - 1);
+	// createWater(map, x, y + 1, recurseCount - 1);
+	// }
+	// }
+	// }
 
 	private ArrayList<Point> createLandscape(RNG rng, Tile[][] map) {
 		// (1/15)(noise(x, y) + (2/15)(noise(2x, 2y) + (4/15)(noise(4x, 4y) +

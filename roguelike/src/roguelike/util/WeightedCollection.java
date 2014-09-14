@@ -11,8 +11,7 @@ public class WeightedCollection<T> {
 	private int total = 0;
 
 	/**
-	 * Returns the first object whose weighted position is greater than the
-	 * specified value.
+	 * Returns the first object whose weighted position is greater than the specified value.
 	 * 
 	 * Returns null if no elements have been put in the table.
 	 * 

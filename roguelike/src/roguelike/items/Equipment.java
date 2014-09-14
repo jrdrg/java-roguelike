@@ -2,9 +2,23 @@ package roguelike.items;
 
 import java.util.HashMap;
 
+import roguelike.actors.Actor;
+
 public class Equipment {
 	public enum ItemSlot {
-		HEAD, TORSO, LEFT_ARM, RIGHT_ARM, LEGS
+		HEAD, TORSO, LEFT_ARM, RIGHT_ARM, LEGS;
+
+		public Item getItem(Actor actor) {
+			return actor.getEquipment().getEquipped(this);
+		}
+
+		public Weapon getEquippedWeapon(Actor actor) {
+			return actor.getEquipment().getEquippedWeapon(this);
+		}
+
+		public Item equipItem(Actor actor, Item item) {
+			return actor.getEquipment().equipItem(this, item, actor.getInventory());
+		}
 	}
 
 	private HashMap<ItemSlot, Item> equipped;
@@ -12,10 +26,6 @@ public class Equipment {
 
 	public Equipment() {
 		this.equipped = new HashMap<Equipment.ItemSlot, Item>();
-	}
-
-	public Item getEquipped(ItemSlot slot) {
-		return equipped.getOrDefault(slot, null);
 	}
 
 	public Weapon[] getEquippedWeapons() {
@@ -28,16 +38,7 @@ public class Equipment {
 		return equippedWeapons;
 	}
 
-	public Weapon getEquippedWeapon(ItemSlot slot) {
-		if (slot == ItemSlot.RIGHT_ARM || slot == ItemSlot.LEFT_ARM) {
-			Item weapon = equipped.getOrDefault(slot, null);
-			if (weapon instanceof Weapon)
-				return (Weapon) weapon;
-		}
-		return null;
-	}
-
-	public Item equipItem(ItemSlot slot, Item item, Inventory inventory) {
+	Item equipItem(ItemSlot slot, Item item, Inventory inventory) {
 		Item oldItem = equipped.put(slot, item);
 		if (oldItem != null) {
 			// inventory.add(oldItem);
@@ -53,5 +54,18 @@ public class Equipment {
 		// TODO: add equipped indicator to items
 
 		return oldItem;
+	}
+
+	Item getEquipped(ItemSlot slot) {
+		return equipped.getOrDefault(slot, null);
+	}
+
+	Weapon getEquippedWeapon(ItemSlot slot) {
+		if (slot == ItemSlot.RIGHT_ARM || slot == ItemSlot.LEFT_ARM) {
+			Item weapon = equipped.getOrDefault(slot, null);
+			if (weapon instanceof Weapon)
+				return (Weapon) weapon;
+		}
+		return null;
 	}
 }

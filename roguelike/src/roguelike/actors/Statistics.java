@@ -1,5 +1,6 @@
 package roguelike.actors;
 
+import roguelike.data.EnemyData;
 import squidpony.squidutility.Pair;
 
 public class Statistics {
@@ -39,8 +40,7 @@ public class Statistics {
 	public final Statistic speed = new Statistic(10, 0);
 
 	/**
-	 * The amount of damage done in melee, carrying capacity, ability to resist
-	 * poison and disease, etc
+	 * The amount of damage done in melee, carrying capacity, ability to resist poison and disease, etc
 	 */
 	public final Statistic toughness = new Statistic(10, 0);
 
@@ -50,25 +50,24 @@ public class Statistics {
 	public final Statistic conditioning = new Statistic(10, 0);
 
 	/**
-	 * Affects the vision radius, as well as the ability to exploit weak spots,
-	 * pick locks, and spot traps and other hidden things
+	 * Affects the vision radius, as well as the ability to exploit weak spots, pick locks, and spot traps and other
+	 * hidden things
 	 */
 	public final Statistic perception = new Statistic(10, 0);
 
 	/**
-	 * The ability to dodge attacks
+	 * The ability to dodge attacks and avoid effects of traps
 	 */
 	public final Statistic quickness = new Statistic(10, 0);
 
 	/**
-	 * Determines how the character resists various conditions, as well as
-	 * resistance to sorcery
+	 * Determines how the character resists various conditions, as well as resistance to sorcery
 	 */
 	public final Statistic willpower = new Statistic(10, 0);
 
 	/**
-	 * Influences whether opponents decide to flee from combat, attempts to
-	 * bribe and intimidate, anything having to do with social interaction
+	 * Influences whether opponents decide to flee from combat, attempts to bribe and intimidate, anything having to do
+	 * with social interaction
 	 */
 	public final Statistic presence = new Statistic(10, 0);
 
@@ -86,9 +85,8 @@ public class Statistics {
 	}
 
 	/**
-	 * Determines how quickly the character can respond to an attack - this is
-	 * the base number of dice that will be rolled to determine successes for a
-	 * melee attack
+	 * Determines how quickly the character can respond to an attack - this is the base number of dice that will be
+	 * rolled to determine successes for a melee attack
 	 * 
 	 * @return
 	 */
@@ -97,9 +95,8 @@ public class Statistics {
 	}
 
 	/**
-	 * Determines how effective the character is at aiming ranged weapons - this
-	 * is the base number of dice that will be rolled to determine successes for
-	 * a ranged attack
+	 * Determines how effective the character is at aiming ranged weapons - this is the base number of dice that will be
+	 * rolled to determine successes for a ranged attack
 	 * 
 	 * @return
 	 */
@@ -113,5 +110,18 @@ public class Statistics {
 
 	public int baseRangedPool(int weaponProficiency) {
 		return aiming() + weaponProficiency;
+	}
+
+	void setValues(EnemyData data) {
+		this.speed.setBase(data.speed);
+		this.toughness.setBase(data.toughness);
+		this.conditioning.setBase(data.conditioning);
+		this.perception.setBase(data.perception);
+		this.quickness.setBase(data.quickness);
+		this.willpower.setBase(data.willpower);
+		this.presence.setBase(data.presence);
+
+		this.reflexBonus = data.reflexBonus;
+		this.aimingBonus = data.aimingBonus;
 	}
 }

@@ -79,6 +79,12 @@ public class WeaponData {
 	@CsvField(pos = 19)
 	public String ammunitionType;
 
+	@CsvField(pos = 20)
+	public int quality;
+
+	@CsvField(pos = 21)
+	public int defenseTargetNumber;
+
 	/**
 	 * Used when deserializing from CSV file
 	 */

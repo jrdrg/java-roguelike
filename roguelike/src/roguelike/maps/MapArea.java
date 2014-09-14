@@ -5,9 +5,9 @@ import java.util.List;
 
 import roguelike.Game;
 import roguelike.actors.Actor;
+import roguelike.data.EnemyFactory;
 import roguelike.items.Inventory;
 import roguelike.items.Item;
-import roguelike.monsters.MonsterFactory;
 import roguelike.util.Coordinate;
 import roguelike.util.CurrentItemTracker;
 import squidpony.squidcolor.SColor;
@@ -21,11 +21,13 @@ public class MapArea {
 
 	private CurrentItemTracker<Actor> actors;
 	private int width, height;
+	private int difficulty; // controls how difficult random enemies are here
 
 	public MapArea(int width, int height, MapBuilder mapBuilder) {
 		actors = new CurrentItemTracker<Actor>();
 		this.width = width;
 		this.height = height;
+		this.difficulty = 1;
 
 		buildMapArea(mapBuilder);
 	}
@@ -38,7 +40,7 @@ public class MapArea {
 			Coordinate position = findRandomNonVisibleTile();
 			if (position != null) {
 
-				Actor npc = MonsterFactory.createMonster(position.x, position.y);
+				Actor npc = EnemyFactory.createEnemy(position.x, position.y, difficulty);
 
 				if (addActor(npc)) {
 					Game.current().displayMessage(npc.getName() + " created at " + position.x + ", " + position.y, SColor.ALOEWOOD_BROWN);
@@ -76,8 +78,7 @@ public class MapArea {
 	}
 
 	/**
-	 * Updates internal arrays tracking light values and walls for FOV
-	 * calculations. This should not change very often.
+	 * Updates internal arrays tracking light values and walls for FOV calculations. This should not change very often.
 	 */
 	public void updateValues() {
 		lightResistances = new float[width][height];
@@ -92,9 +93,8 @@ public class MapArea {
 	}
 
 	/**
-	 * Determines the location of the upper-left position of the visible area,
-	 * based on the provided screen size and center point (generally the
-	 * player's location).
+	 * Determines the location of the upper-left position of the visible area, based on the provided screen size and center point (generally the player's
+	 * location).
 	 * 
 	 * @param screenCellsX
 	 *            The width of the screen in cells
@@ -102,8 +102,7 @@ public class MapArea {
 	 *            The height of the screen in cells
 	 * @param center
 	 *            The point at which the screen should be centered on
-	 * @return The location of the upper left point, in cells, after adjusting
-	 *         for map boundaries
+	 * @return The location of the upper left point, in cells, after adjusting for map boundaries
 	 */
 	public Coordinate getUpperLeftScreenTile(int screenCellsX, int screenCellsY, Coordinate center) {
 		int left = (int) Math.round(center.x - (screenCellsX / 2.0));
@@ -124,8 +123,7 @@ public class MapArea {
 	 *            The height of the screen in cells
 	 * @param center
 	 *            The point at which the screen is centered on
-	 * @return A Rectangle representing the area that should be drawn to the
-	 *         screen, in cells
+	 * @return A Rectangle representing the area that should be drawn to the screen, in cells
 	 */
 	public Rectangle getAreaInTiles(int screenCellsX, int screenCellsY, Coordinate center) {
 		Coordinate upperLeft = getUpperLeftScreenTile(screenCellsX, screenCellsY, center);
@@ -156,8 +154,7 @@ public class MapArea {
 	 * @param item
 	 * @param x
 	 * @param y
-	 * @return True if the item was removed, false if there are no items on the
-	 *         tile or the specific item wasn't in the list.
+	 * @return True if the item was removed, false if there are no items on the tile or the specific item wasn't in the list.
 	 */
 	public boolean removeItem(Item item, int x, int y) {
 		Inventory items = getItemsAt(x, y);
@@ -224,8 +221,7 @@ public class MapArea {
 	 * Adds an actor to this map.
 	 * 
 	 * @param actor
-	 * @return True if the actor was added, false if there was already an actor
-	 *         at the location specified by actor.getPosition().
+	 * @return True if the actor was added, false if there was already an actor at the location specified by actor.getPosition().
 	 */
 	public boolean addActor(Actor actor) {
 		Coordinate pos = actor.getPosition();
@@ -261,9 +257,8 @@ public class MapArea {
 	 * Removes an actor from the map.
 	 * 
 	 * @param actor
-	 * @return True if the actor could be removed, false otherwise (for
-	 *         instance, if the tile at the actor's position actually has no
-	 *         actor, which probably indicates a bug)
+	 * @return True if the actor could be removed, false otherwise (for instance, if the tile at the actor's position actually has no actor, which probably
+	 *         indicates a bug)
 	 */
 	public boolean removeActor(Actor actor) {
 		System.out.println("Removing actor " + actor.getName());

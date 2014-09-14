@@ -16,7 +16,7 @@ import squidpony.squidcolor.SColor;
 public class MainWindow {
 	public static final int screenWidth = 1200;
 	public static final int screenHeight = 700;
-	public static final int cellWidth = 16;
+	public static final int cellWidth = 14;
 	public static final int cellHeight = 20;
 
 	public static final int width = screenWidth / cellWidth;

@@ -37,7 +37,6 @@ public class GameLoader {
 		currentMapArea.addActor(player);
 
 		game.setCurrentMapArea(currentMapArea);
-
 		return game;
 	}
 
@@ -49,15 +48,12 @@ public class GameLoader {
 	public Player createPlayer() {
 		Player player = new Player();
 
-		// MeleeWeapon sword = new MeleeWeapon("Sword", "A long sword", 25);
-		// MeleeWeapon spear = new MeleeWeapon("Spear", "A spear", 20);
-
 		MeleeWeapon sword = (MeleeWeapon) WeaponFactory.create("sword");
 		MeleeWeapon spear = (MeleeWeapon) WeaponFactory.create("spear");
 
 		player.getInventory().add(spear);
 
-		player.getEquipment().equipItem(ItemSlot.RIGHT_ARM, sword, player.getInventory());
+		ItemSlot.RIGHT_ARM.equipItem(player, sword);
 
 		return player;
 	}

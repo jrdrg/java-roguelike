@@ -5,7 +5,6 @@ import java.awt.event.KeyEvent;
 import roguelike.Game;
 import roguelike.actions.Action;
 import roguelike.actions.CloseDoorAction;
-import roguelike.actions.FailAction;
 import roguelike.actions.GetItemAction;
 import roguelike.actions.InventoryAction;
 import roguelike.actions.QuitAction;
@@ -65,7 +64,7 @@ public class PlayerInputBehavior extends Behavior {
 			return new GetItemAction(actor, Game.current().getCurrentMapArea());
 
 		}
-		return new FailAction(actor);
+		return null;
 	}
 
 	@Override

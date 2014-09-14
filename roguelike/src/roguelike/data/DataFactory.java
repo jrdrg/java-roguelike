@@ -1,20 +1,13 @@
 package roguelike.data;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import roguelike.MainScreen;
 import roguelike.actors.Actor;
 import roguelike.actors.behaviors.Behavior;
-import roguelike.util.FileUtils;
 
 /**
  * Loads all config data from JSON file and provides a central repository
@@ -25,14 +18,13 @@ import roguelike.util.FileUtils;
 public class DataFactory {
 
 	private static DataFactory instance = new DataFactory();
-	private Map<String, MonsterData> monsterData;
+	private Map<String, EnemyData> monsterData;
 	private Map<String, WeaponData> weaponData;
 
 	private DataFactory() {
-		monsterData = new HashMap<String, MonsterData>();
+		monsterData = new HashMap<String, EnemyData>();
 		weaponData = new HashMap<String, WeaponData>();
 
-		init();
 		initWeapons();
 		initMonsters();
 	}
@@ -41,7 +33,7 @@ public class DataFactory {
 		return instance;
 	}
 
-	public Map<String, MonsterData> getMonsters() {
+	public Map<String, EnemyData> getMonsters() {
 		return monsterData;
 	}
 
@@ -49,7 +41,7 @@ public class DataFactory {
 		return weaponData;
 	}
 
-	public MonsterData getMonster(String key) {
+	public EnemyData getMonster(String key) {
 		return monsterData.get(key);
 	}
 
@@ -81,35 +73,6 @@ public class DataFactory {
 		return (Behavior) instance;
 	}
 
-	private void init() {
-		System.out.println("Initializing data from config files...");
-
-		InputStream config = MainScreen.class.getResourceAsStream("/resources/config/data.json");
-		String configString = "";
-		try {
-			configString = FileUtils.readFile(config);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		/* load monster data from JSON file */
-		JSONObject jObj = new JSONObject(configString);
-
-		JSONArray tables = jObj.getJSONArray("tables");
-		for (int t = 0; t < tables.length(); t++) {
-			JSONObject jtable = tables.getJSONObject(t);
-			String tableName = jtable.getString("name");
-
-			System.out.println("Reading " + tableName + "...");
-
-			JSONArray jData = jtable.getJSONArray("records");
-
-			// if (tableName.equals("monsters")) {
-			// readMonsters(jData);
-			// }
-		}
-	}
-
 	private void initWeapons() {
 		List<WeaponData> weapons = WeaponData.create();
 		for (WeaponData data : weapons) {
@@ -118,8 +81,8 @@ public class DataFactory {
 	}
 
 	private void initMonsters() {
-		List<MonsterData> monsters = MonsterData.create();
-		for (MonsterData data : monsters) {
+		List<EnemyData> monsters = EnemyData.create();
+		for (EnemyData data : monsters) {
 			monsterData.put(data.name, data);
 		}
 	}

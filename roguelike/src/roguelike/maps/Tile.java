@@ -22,6 +22,9 @@ public class Tile {
 	protected SColor background;
 	private Actor actor;
 
+	// TODO: implement tile speed modifiers (i.e. mud might reduce speed by 10, ice might increase it)
+	private int speedModifier;
+
 	Tile() {
 		this.visible = false;
 		this.background = SColor.BLACK;
@@ -54,8 +57,7 @@ public class Tile {
 	}
 
 	/**
-	 * Gets the color that this tile should be drawn in after lighting and
-	 * visibility is taken into account
+	 * Gets the color that this tile should be drawn in after lighting and visibility is taken into account
 	 * 
 	 * @return
 	 */
@@ -64,8 +66,7 @@ public class Tile {
 	}
 
 	/**
-	 * Sets the actual color this tile will be drawn in after taking lighting
-	 * and visibility into account
+	 * Sets the actual color this tile will be drawn in after taking lighting and visibility into account
 	 * 
 	 * @param lightValue
 	 */

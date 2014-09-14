@@ -12,6 +12,8 @@ public class TitleScreen extends Screen {
 	private Terminal terminal;
 
 	public TitleScreen(Terminal terminal) {
+		System.out.println("TitleScreen: terminal size " + terminal.size().width + "x" + terminal.size().height);
+
 		this.terminal = terminal.withColor(SColor.WHITE, SColor.BLACK);
 		this.nextScreen = this;
 

@@ -19,7 +19,7 @@ public class RandomWalkBehavior extends Behavior {
 	@Override
 	public Action getAction() {
 		MapArea map = Game.current().getCurrentMapArea();
-		double rnd = Math.random();
+		double rnd = Game.current().random().nextDouble();
 		DirectionIntercardinal direction;
 		if (rnd < 0.25) {
 			direction = DirectionIntercardinal.UP;

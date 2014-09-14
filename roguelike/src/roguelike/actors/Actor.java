@@ -10,6 +10,7 @@ import roguelike.maps.MapArea;
 import roguelike.maps.Tile;
 import roguelike.util.Coordinate;
 import squidpony.squidcolor.SColor;
+import squidpony.squidgrid.util.BasicRadiusStrategy;
 import squidpony.squidgrid.los.BresenhamLOS;
 import squidpony.squidgrid.los.LOSSolver;
 
@@ -33,7 +34,7 @@ public abstract class Actor {
 
 	protected Actor(char symbol, SColor color) {
 		if (color == null)
-			throw new IllegalArgumentException("color cannot be null");
+			throw new IllegalArgumentException("color cannot be null: " + symbol);
 
 		this.symbol = symbol;
 		this.color = color;
@@ -106,9 +107,8 @@ public abstract class Actor {
 	}
 
 	/**
-	 * This is called after all other checks to move have been made, to allow
-	 * the actor a final chance to prevent the move (for example, moving over
-	 * certain tiles or opening doors could be disabled based on the actor type)
+	 * This is called after all other checks to move have been made, to allow the actor a final chance to prevent the
+	 * move (for example, moving over certain tiles or opening doors could be disabled based on the actor type)
 	 * 
 	 * @param mapArea
 	 * @param tile
@@ -125,6 +125,19 @@ public abstract class Actor {
 
 	public int getVisionRadius() {
 		return 15;
+	}
+
+	public boolean canSee(Actor other, MapArea mapArea) {
+
+		int startx = position.x, starty = position.y, targetx = other.position.x, targety = other.position.y;
+		// float force = this.getVisionRadius();
+		float force = 1;
+		float decay = 1 / this.getVisionRadius();
+		boolean visible = losSolver.isReachable(mapArea.getLightValues(), startx, starty, targetx, targety, force, decay, BasicRadiusStrategy.CIRCLE);
+
+		System.out.println(this.getName() + " canSee " + other.getName() + "=" + visible);
+
+		return visible;
 	}
 
 	public AttackAttempt getLastAttacked() {

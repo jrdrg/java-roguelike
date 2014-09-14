@@ -5,7 +5,7 @@ import java.util.List;
 import roguelike.Game;
 import roguelike.actions.Action;
 import roguelike.actors.behaviors.Behavior;
-import roguelike.data.MonsterData;
+import roguelike.data.EnemyData;
 import roguelike.items.Inventory;
 import roguelike.items.Item;
 import roguelike.maps.MapArea;
@@ -21,10 +21,14 @@ public class Npc extends Actor {
 		this.name = name;
 	}
 
-	public Npc(MonsterData data) {
+	public Npc(EnemyData data) {
 		super(data.symbol(), data.color());
 		this.name = data.name;
-		this.getStatistics().speed.setBase(data.speed);
+
+		Statistics stats = getStatistics();
+		stats.setValues(data);
+
+		this.getHealth().setMaximum(data.health);
 	}
 
 	public void setBehavior(Behavior behavior) {
@@ -41,7 +45,8 @@ public class Npc extends Actor {
 
 	@Override
 	public String getName() {
-		return name + " [" + getHealth().getCurrent() + "]";
+		// return name + " [" + getHealth().getCurrent() + "]";
+		return name;
 	}
 
 	@Override
@@ -69,7 +74,7 @@ public class Npc extends Actor {
 
 		for (int x = 0; x < droppableItems.size(); x++) {
 
-			if (Math.random() < 0.7) {
+			if (Game.current().random().nextFloat() < 0.7) {
 
 				Item i = droppableItems.get(x);
 				map.addItem(i, getPosition().x, getPosition().y);

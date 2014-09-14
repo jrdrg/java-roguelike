@@ -4,7 +4,7 @@ import roguelike.Game;
 import squidpony.squidmath.RNG;
 
 public class DiceRolls {
-	private final static int TARGET_NUMBER = 6;
+	public final static int TARGET_NUMBER = 6;
 	private final static int DICE_TYPE = 10;
 
 	/**

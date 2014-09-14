@@ -16,25 +16,19 @@ import squidpony.squidcolor.SColor;
  * 
  * some ideas: weapon reach should factor into this
  * 
- * for example, using a short weapon against a longer one should incur penalties
- * (amount of dice to roll, etc)
+ * for example, using a short weapon against a longer one should incur penalties (amount of dice to roll, etc)
  * 
  * conversely, a shorter weapon might increase the action speed of the user
  * 
- * reach can be a number from 1-5, where 1:fists, 2:daggers, 3:swords,
- * 4:spears/polearms, 5: extra long weapons
+ * reach can be a number from 1-5, where 1:fists, 2:daggers, 3:swords, 4:spears/polearms, 5: extra long weapons
  * 
- * the attack can hit a number of squares away equal to reach/2, rounded down,
- * with minimum of 1 - so reach 1-3 can hit the adjacent square, and 4-5 can hit
- * one square away
+ * the attack can hit a number of squares away equal to reach/2, rounded down, with minimum of 1 - so reach 1-3 can hit the adjacent square, and 4-5 can hit one
+ * square away
  * 
- * weapons with a reach greater than 1 square suffer penalties when used at
- * closer range (reach of 4 or 5)
+ * weapons with a reach greater than 1 square suffer penalties when used at closer range (reach of 4 or 5)
  * 
- * when combatants use weapons of different reaches but the same number of
- * squares, the last weapon to cause damage inflicts penalties on the opponent
- * until the opponent causes damage (so polearms incur double penalties once the
- * user of the shorter weapon scores a hit)
+ * when combatants use weapons of different reaches but the same number of squares, the last weapon to cause damage inflicts penalties on the opponent until the
+ * opponent causes damage (so polearms incur double penalties once the user of the shorter weapon scores a hit)
  * 
  * 
  * @author john
@@ -64,8 +58,7 @@ public class CombatHandler {
 	}
 
 	/**
-	 * Resolves the attack, and returns either the original attack or a modified
-	 * attack taking into account the defender's stats, resistances, etc
+	 * Resolves the attack, and returns either the original attack or a modified attack taking into account the defender's stats, resistances, etc
 	 * 
 	 * @param attacker
 	 * @param attack
@@ -91,22 +84,26 @@ public class CombatHandler {
 
 		// TODO: need to switch this penalty to the combatant who was damaged
 		// most recently
-		Weapon defendingWeapon = actor.getEquipment().getEquippedWeapon(ItemSlot.RIGHT_ARM);
+		Weapon defendingWeapon = ItemSlot.RIGHT_ARM.getEquippedWeapon(actor);
+		int attackingReach = attack.getWeapon().reach;
 		int defendingReach = defendingWeapon == null ? 0 : defendingWeapon.reach;
-		int reachDiff = attack.getWeapon().reach - defendingReach;
+		int reachDiff = attackingReach - defendingReach;
 		if (reachDiff > 0) {
 			attackSuccessPool += reachDiff;
 		} else if (reachDiff < 0) {
 			defendSuccessPool += -reachDiff;
 		}
 
+		System.out.println("Attacker reach: " + attackingReach);
+		System.out.println("Defender reach: " + defendingReach);
+
 		// This determines whether the attack landed or not
 		int attackerSuccesses = DiceRolls.roll(attackSuccessPool, attackWeaponTN);
 		int defenderSuccesses = DiceRolls.roll(defendSuccessPool, defendWeaponTN);
 
 		int total = attackerSuccesses - defenderSuccesses;
-		System.out.println("S (A): " + attackerSuccesses + ", TN=" + attackWeaponTN);
-		System.out.println("S (D): " + defenderSuccesses + ", TN=" + defendWeaponTN);
+		System.out.println("S (A): " + attackerSuccesses + ", TN=" + attackWeaponTN + ", pool=" + attackSuccessPool);
+		System.out.println("S (D): " + defenderSuccesses + ", TN=" + defendWeaponTN + ", pool=" + defendSuccessPool);
 
 		String attackMsg = String.format("%s successes: %d", attacker.getName(), total);
 
@@ -114,8 +111,9 @@ public class CombatHandler {
 
 		if (total > 0) {
 
-			// Currently just return the original unmodified attack - need to
-			// take other stuff into account later
+			// Currently just return the original attack - need to take other stuff into account later
+
+			attack.baseDamage -= armorValue; // placeholder logic here
 			return attack;
 		}
 		else {
@@ -129,8 +127,7 @@ public class CombatHandler {
 	 * @param action
 	 * @param attack
 	 * @param target
-	 * @return The result from onDamaged() - true if the attack killed the
-	 *         target
+	 * @return The result from onDamaged() - true if the attack killed the target
 	 */
 	boolean processAttack(Action action, Attack attack, Actor target) {
 		attack = target.getCombatHandler().defend(actor, attack);

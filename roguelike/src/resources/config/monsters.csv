@@ -1,5 +1,0 @@
-name,symbol,color,speed,behavior,weapon,category,health,dropTypes,difficulty
-fire ant,f,Red,15,RandomWalk,mandibles,insect,30,,1
-wolf,w,Light Gray,30,RandomWalk,bite,canine,60,,1
-bandit,b,Bright Pink,10,RandomWalk,Random,human,100,,1
-snake,s,Light Green,20,RandomWalk,bite,reptile,40,,1
