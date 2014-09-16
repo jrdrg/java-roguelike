@@ -52,26 +52,27 @@ public class EnemyFactory {
 	}
 
 	private static Npc createEnemy(EnemyData data) {
-		Npc monster = new Npc(data);
-		Behavior behavior = DataFactory.createBehavior(data.behavior, monster);
-		monster.setBehavior(behavior);
+		Npc enemy = new Npc(data);
+		Behavior behavior = DataFactory.createBehavior(data.behavior, enemy);
+		enemy.setBehavior(behavior);
 
 		if (data.weapon != null) {
 			if (data.weapon.equals("Random")) {
 				/* create random weapon(s) */
+				inventoryBuilder.populateRandomInventory(enemy);
 
 			} else {
 				Weapon defWpn = WeaponFactory.create(data.weapon);
 
 				if (defWpn != null) {
-					monster.getInventory().add(defWpn);
+					enemy.getInventory().add(defWpn);
 				}
 				else {
-					System.out.println("No default weapon for " + monster.getName());
+					System.out.println("No default weapon for " + enemy.getName());
 				}
 			}
 		}
-		return monster;
+		return enemy;
 	}
 
 	private static Map<Integer, List<EnemyData>> getEnemiesByDifficulty() {

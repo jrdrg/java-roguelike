@@ -6,12 +6,14 @@ import javax.swing.JFrame;
 
 import squidpony.squidgrid.gui.SGKeyListener;
 import squidpony.squidgrid.gui.SGKeyListener.CaptureType;
+import squidpony.squidgrid.util.DirectionIntercardinal;
 
 public class InputManager {
 
 	private static SGKeyListener keyListener = new SGKeyListener(false, CaptureType.DOWN);
 	private static boolean inputReceived;
 	private static boolean inputEnabled = true;
+	private static KeyMap activeKeyMap = new KeyMap("Default");
 
 	public static KeyEvent nextKey() {
 		if (!inputEnabled)
@@ -22,6 +24,44 @@ public class InputManager {
 			DisplayManager.instance().setDirty();
 		}
 		return key;
+	}
+
+	public static InputCommand nextCommand() {
+		return activeKeyMap.getCommand(nextKey());
+	}
+
+	public static DirectionIntercardinal nextDirection() {
+		KeyEvent key = nextKey();
+		return nextDirection(key);
+	}
+
+	public static DirectionIntercardinal nextDirection(KeyEvent key) {
+		DirectionIntercardinal direction;
+		if (key != null) {
+			switch (key.getKeyCode()) {
+			case KeyEvent.VK_UP:
+				direction = DirectionIntercardinal.UP;
+				break;
+
+			case KeyEvent.VK_DOWN:
+				direction = DirectionIntercardinal.DOWN;
+				break;
+
+			case KeyEvent.VK_LEFT:
+				direction = DirectionIntercardinal.LEFT;
+				break;
+
+			case KeyEvent.VK_RIGHT:
+				direction = DirectionIntercardinal.RIGHT;
+				break;
+
+			default:
+				direction = DirectionIntercardinal.NONE;
+				break;
+			}
+			return direction;
+		}
+		return null;
 	}
 
 	public static void registerWithFrame(JFrame frame) {
@@ -37,6 +77,11 @@ public class InputManager {
 	public static void setInputEnabled(boolean enabled) {
 		inputEnabled = enabled;
 	}
+
+	public static void setActiveKeybindings(KeyMap keyMap) {
+		activeKeyMap = keyMap;
+	}
+
 	/*
 	 * 
 	 * potential key bindings

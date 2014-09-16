@@ -1,7 +1,5 @@
 package roguelike.actions;
 
-import java.awt.event.KeyEvent;
-
 import roguelike.Game;
 import roguelike.actors.Actor;
 import roguelike.maps.Door;
@@ -32,32 +30,14 @@ public class CloseDoorAction extends Action {
 
 	@Override
 	protected ActionResult onPerform() {
-		if (direction == DirectionIntercardinal.NONE) {
-			KeyEvent nextKey = InputManager.nextKey();
-			if (nextKey != null) {
-				switch (nextKey.getKeyCode()) {
-				case KeyEvent.VK_UP:
-					direction = DirectionIntercardinal.UP;
-					break;
+		if (direction == DirectionIntercardinal.NONE || direction == null) {
 
-				case KeyEvent.VK_DOWN:
-					direction = DirectionIntercardinal.DOWN;
-					break;
-
-				case KeyEvent.VK_LEFT:
-					direction = DirectionIntercardinal.LEFT;
-					break;
-
-				case KeyEvent.VK_RIGHT:
-					direction = DirectionIntercardinal.RIGHT;
-					break;
-
-				default:
-					return ActionResult.failure().setMessage("Invalid direction");
-
-				}
-			} else {
+			direction = InputManager.nextDirection();
+			if (direction == null) {
 				return ActionResult.incomplete();
+			}
+			if (direction == DirectionIntercardinal.NONE) {
+				return ActionResult.failure().setMessage("Invalid direction");
 			}
 		}
 

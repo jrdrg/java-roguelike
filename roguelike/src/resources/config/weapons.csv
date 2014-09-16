@@ -4,5 +4,5 @@ mandibles,Vicious insectoid mandibles,m,Red,slash,15,1,%s slices %s with its man
 axe,A sturdy axe,a,Gray,slash,15,3,,true,7,1,,,9,1,,,,,1,9
 dagger,An ordinary dagger,d,Gray,pierce,10,2,,true,8,1,7,1,,,,,,,1,8
 sword,An ordinary short sword,s,Gray,slash,25,3,,true,7,1,7,1,8,1,,,,,1,7
-spear,A long spear,s,Gray,pierce,20,4,,true,,,7,1,9,1,,,,,1,8
+spear,A long spear,s,Gray,pierce,20,4,%s stabs %s,true,,,7,1,9,1,,,,,1,8
 short bow,A short bow,b,Brown,ranged,20,2,,true,,,,,,,,1,true,arrow,1,9

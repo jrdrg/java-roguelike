@@ -10,14 +10,15 @@ import roguelike.actors.Energy;
 import roguelike.actors.Player;
 import roguelike.data.DataFactory;
 import roguelike.maps.MapArea;
+import roguelike.ui.Cursor;
 import roguelike.ui.windows.Dialog;
+import roguelike.util.Coordinate;
 import squidpony.squidcolor.SColor;
 import squidpony.squidmath.RNG;
 
 /**
- * Setting - sword and sorcery version of 17th century caribbean/pirate setting.
- * port towns, swashbucklers, black powder weapons, jungle temples, fanatical
- * cultists, lost treasures, etc
+ * Setting - sword and sorcery version of 17th century caribbean/pirate setting. port towns, swashbucklers, black powder
+ * weapons, jungle temples, fanatical cultists, lost treasures, etc
  * 
  * win condition - leaving the island alive with as much wealth as you can carry
  * 
@@ -28,7 +29,7 @@ public class Game {
 	private static Game currentGame;
 
 	private RNG rng;
-	private boolean isRunning;
+	private boolean running;
 	private boolean playerDead;
 	private MapArea currentMapArea;
 	private Player player;
@@ -67,12 +68,8 @@ public class Game {
 		return rng;
 	}
 
-	public Player getPlayer() {
-		return player;
-	}
-
-	public boolean getIsRunning() {
-		return isRunning;
+	public boolean isRunning() {
+		return running;
 	}
 
 	public boolean isPlayerDead() {
@@ -81,6 +78,14 @@ public class Game {
 			return true;
 		}
 		return false;
+	}
+
+	public Player getPlayer() {
+		return player;
+	}
+
+	public Coordinate getCenterScreenPosition() {
+		return player.getPosition();
 	}
 
 	public MapArea getCurrentMapArea() {
@@ -97,14 +102,18 @@ public class Game {
 		// this.player.setPosition(1, 1);
 	}
 
+	public void setCursor(Cursor cursor) {
+		currentTurnResult.setCursor(cursor);
+	}
+
 	public void initialize() {
 		System.out.println("Initializing Game");
 
-		isRunning = true;
+		running = true;
 	}
 
 	public TurnResult processTurn() {
-		if (isRunning) {
+		if (running) {
 			currentTurnResult = onProcessing();
 			return currentTurnResult;
 		}
@@ -112,7 +121,7 @@ public class Game {
 	}
 
 	public void stopGame() {
-		isRunning = false;
+		running = false;
 	}
 
 	public void reset() {
@@ -157,7 +166,7 @@ public class Game {
 		// turnResult = currentTurnResult;
 		// } else
 		{
-			turnResult = new TurnResult(isRunning);
+			turnResult = new TurnResult(running);
 			if (currentTurnResult != null && currentTurnResult.activeWindow != null) {
 
 				turnResult.setWindow(currentTurnResult.getActiveWindow());
@@ -194,7 +203,7 @@ public class Game {
 
 		while (!actor.isAlive()) {
 			System.out.println("Attempting to act on dead actor: " + actor.getName());
-			currentMapArea.nextActor();
+			currentMapArea.nextActor("getCurrentActions, isAlive=false");
 			actor = currentMapArea.getCurrentActor();
 		}
 
@@ -205,16 +214,19 @@ public class Game {
 			Action action = actor.getNextAction();
 			if (action != null) {
 				queuedActions.add(action);
+
+				if (Player.isPlayer(actor)) {
+					// TODO: process things that happen every turn after player
+					Game.currentGame.currentMapArea.spawnMonsters();
+					System.out.println("Queue length: " + queuedActions.size());
+				}
+
 			} else {
 				return turnResult;
 			}
 		} else {
 			// advance to next actor
-			currentMapArea.nextActor();
-		}
-
-		if (Player.isPlayer(actor)) {
-			// TODO: process things that happen every turn after player
+			currentMapArea.nextActor("getCurrentActions, !canAct, queueSize=" + queuedActions.size());
 		}
 
 		return null;
@@ -231,7 +243,7 @@ public class Game {
 
 		// don't perform the action if the actor is dead
 		if (!currentAction.getActor().isAlive()) {
-			currentMapArea.nextActor();
+			currentMapArea.nextActor("executeQueuedActions, currentAction actor !isAlive");
 			System.out.println(" -> actor " + currentAction.getActor().getName() + " is dead, skipping");
 			return turnResult;
 		}
@@ -240,8 +252,7 @@ public class Game {
 		turnResult.addMessage(result.getMessage());
 
 		/*
-		 * if the result is completed we can proceed, else put it back on the
-		 * queue
+		 * if the result is completed we can proceed, else put it back on the queue
 		 */
 		if (result.isCompleted()) {
 			// clear any dialogs
@@ -254,11 +265,15 @@ public class Game {
 
 			Actor currentActor = currentAction.getActor();
 			if (currentActor != null && !currentActor.getEnergy().canAct()) {
+
 				// if (result.isSuccess()) {
 				currentActor.finishTurn();
-				currentMapArea.nextActor();
+				System.out.println(currentActor.getName() + " finishTurn()");
+				// currentMapArea.nextActor("executeQueuedActions, !currentActor.canAct");
 				// }
+
 			} else {
+
 				System.out.println("Actor=" + currentActor.getName());
 				System.out.println("Energy=" + currentActor.isAlive());
 				System.out.println("Remaining energy: " + currentActor.getEnergy().getCurrent() + " Result=" + result);
@@ -273,9 +288,6 @@ public class Game {
 		/* return when player's actions are performed so we can redraw */
 		if (Player.isPlayer(currentAction.getActor())) {
 			turnResult.playerActed();
-
-			Game.currentGame.currentMapArea.spawnMonsters();
-
 			return turnResult;
 		}
 

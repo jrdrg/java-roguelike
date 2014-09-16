@@ -2,44 +2,84 @@ package roguelike.actions;
 
 import java.awt.event.KeyEvent;
 
+import roguelike.Game;
 import roguelike.actors.Actor;
+import roguelike.items.Inventory;
 import roguelike.items.Item;
-import roguelike.items.Equipment.ItemSlot;
 import roguelike.maps.MapArea;
+import roguelike.ui.Cursor;
 import roguelike.ui.InputManager;
+import roguelike.ui.windows.LookDialog;
 import roguelike.util.Coordinate;
+import squidpony.squidgrid.util.DirectionIntercardinal;
 
 public class LookAction extends Action {
 
 	private MapArea mapArea;
-	private Coordinate lookPosition = new Coordinate();
+	private Cursor lookCursor;
+	private LookDialog lookDialog;
 
-	protected LookAction(Actor actor, MapArea mapArea) {
+	public LookAction(Actor actor, MapArea mapArea) {
 		super(actor);
 		this.mapArea = mapArea;
 		this.usesEnergy = false;
+		this.lookCursor = new Cursor(actor.getPosition());
 	}
 
 	@Override
 	protected ActionResult onPerform() {
 
-		KeyEvent nextKey = InputManager.nextKey();
-		if (nextKey != null) {
+		if (lookDialog != null) {
+			Game.current().setActiveDialog(lookDialog);
 
-			switch (nextKey.getKeyCode()) {
-			case KeyEvent.VK_UP:
-				break;
-			case KeyEvent.VK_DOWN:
-				break;
-			case KeyEvent.VK_LEFT:
-				break;
-			case KeyEvent.VK_RIGHT:
-				break;
+			if (lookDialog.shouldClose())
+				return ActionResult.success();
 
+		} else {
+			Game.current().setCursor(lookCursor);
+
+			KeyEvent nextKey = InputManager.nextKey();
+			if (nextKey != null) {
+				DirectionIntercardinal direction = InputManager.nextDirection(nextKey);
+				if (direction != null && direction != DirectionIntercardinal.NONE) {
+
+					Coordinate newPosition = lookCursor.getPosition().createOffsetPosition(direction);
+
+					if (mapArea.isWithinBounds(newPosition.x, newPosition.y)) {
+						lookCursor.setPosition(newPosition);
+					}
+
+				} else {
+					switch (nextKey.getKeyCode()) {
+					case KeyEvent.VK_ENTER:
+						// look at whatever's under the cursor
+						Game.current().setCursor(null);
+						if (!lookAt())
+							return ActionResult.success();
+
+						break;
+
+					case KeyEvent.VK_ESCAPE:
+						Game.current().setCursor(null);
+						return ActionResult.failure().setMessage("Canceled look");
+					}
+				}
 			}
-			// process key
 		}
+		return ActionResult.incomplete();
+	}
 
-		return null;
+	private boolean lookAt() {
+		int x = lookCursor.getPosition().x;
+		int y = lookCursor.getPosition().y;
+		Game game = Game.current();
+
+		MapArea map = game.getCurrentMapArea();
+		if (map.getActorAt(x, y) == null && !map.getItemsAt(x, y).any())
+			return false;
+
+		lookDialog = new LookDialog(game.getCurrentMapArea(), x, y);
+		game.setActiveDialog(lookDialog);
+		return true;
 	}
 }

@@ -8,10 +8,12 @@ import roguelike.actors.Actor;
 import roguelike.data.EnemyFactory;
 import roguelike.items.Inventory;
 import roguelike.items.Item;
+import roguelike.ui.windows.Terminal;
 import roguelike.util.Coordinate;
 import roguelike.util.CurrentItemTracker;
 import squidpony.squidcolor.SColor;
 import squidpony.squidmath.RNG;
+import squidpony.squidutility.graph.PointGraph;
 
 public class MapArea {
 
@@ -23,6 +25,8 @@ public class MapArea {
 	private int width, height;
 	private int difficulty; // controls how difficult random enemies are here
 
+	private PointGraph pointGraph;
+
 	public MapArea(int width, int height, MapBuilder mapBuilder) {
 		actors = new CurrentItemTracker<Actor>();
 		this.width = width;
@@ -32,7 +36,16 @@ public class MapArea {
 		buildMapArea(mapBuilder);
 	}
 
+	public int width() {
+		return this.width;
+	}
+
+	public int height() {
+		return this.height;
+	}
+
 	public void spawnMonsters() {
+		System.out.println("spawnMonsters");
 		int maxActors = 70;
 		if (actors.count() < maxActors) {
 			/* create a new one somewhere close to the player */
@@ -93,8 +106,8 @@ public class MapArea {
 	}
 
 	/**
-	 * Determines the location of the upper-left position of the visible area, based on the provided screen size and center point (generally the player's
-	 * location).
+	 * Determines the location of the upper-left position of the visible area, based on the provided screen size and
+	 * center point (generally the player's location).
 	 * 
 	 * @param screenCellsX
 	 *            The width of the screen in cells
@@ -136,6 +149,10 @@ public class MapArea {
 		return new Rectangle(upperLeft.x, upperLeft.y, w, h);
 	}
 
+	public Rectangle getAreaInTiles(Terminal terminal, Coordinate center) {
+		return getAreaInTiles(terminal.size().width, terminal.size().height, center);
+	}
+
 	/**
 	 * Adds an item to the tile at x,y
 	 * 
@@ -154,7 +171,8 @@ public class MapArea {
 	 * @param item
 	 * @param x
 	 * @param y
-	 * @return True if the item was removed, false if there are no items on the tile or the specific item wasn't in the list.
+	 * @return True if the item was removed, false if there are no items on the tile or the specific item wasn't in the
+	 *         list.
 	 */
 	public boolean removeItem(Item item, int x, int y) {
 		Inventory items = getItemsAt(x, y);
@@ -199,8 +217,10 @@ public class MapArea {
 	/**
 	 * Advances the current actor to the next in the queue.
 	 */
-	public void nextActor() {
+	public void nextActor(String reason) {
 		actors.advance();
+
+		System.out.println("Current actor: " + getCurrentActor().getName() + " => " + reason);
 	}
 
 	/**
@@ -221,7 +241,8 @@ public class MapArea {
 	 * Adds an actor to this map.
 	 * 
 	 * @param actor
-	 * @return True if the actor was added, false if there was already an actor at the location specified by actor.getPosition().
+	 * @return True if the actor was added, false if there was already an actor at the location specified by
+	 *         actor.getPosition().
 	 */
 	public boolean addActor(Actor actor) {
 		Coordinate pos = actor.getPosition();
@@ -257,8 +278,8 @@ public class MapArea {
 	 * Removes an actor from the map.
 	 * 
 	 * @param actor
-	 * @return True if the actor could be removed, false otherwise (for instance, if the tile at the actor's position actually has no actor, which probably
-	 *         indicates a bug)
+	 * @return True if the actor could be removed, false otherwise (for instance, if the tile at the actor's position
+	 *         actually has no actor, which probably indicates a bug)
 	 */
 	public boolean removeActor(Actor actor) {
 		System.out.println("Removing actor " + actor.getName());
@@ -354,5 +375,18 @@ public class MapArea {
 
 		mapBuilder.buildMap(map);
 		updateValues();
+
+		// TODO: pathfinding precalculations?
+
+		// System.out.println("Calculating path maps...");
+		// pointGraph = new PointGraph();
+		// for (int x = 0; x < width; x++) {
+		// for (int y = 0; y < height; y++) {
+		// if (getTileAt(x, y).isPassable)
+		// pointGraph.addVertex(new Vertex(new Point(x, y)));
+		// }
+		// }
+		// pointGraph.calculateEdges();
+		// System.out.println("done");
 	}
 }

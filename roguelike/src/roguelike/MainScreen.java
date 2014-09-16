@@ -1,14 +1,18 @@
 package roguelike;
 
 import java.awt.Rectangle;
+import java.awt.event.KeyEvent;
 
 import roguelike.actors.Actor;
 import roguelike.actors.AttackAttempt;
 import roguelike.actors.Player;
 import roguelike.maps.MapArea;
 import roguelike.maps.Tile;
+import roguelike.ui.Cursor;
 import roguelike.ui.DisplayManager;
+import roguelike.ui.InputCommand;
 import roguelike.ui.InputManager;
+import roguelike.ui.KeyMap;
 import roguelike.ui.MainWindow;
 import roguelike.ui.MessageDisplay;
 import roguelike.ui.StatsDisplay;
@@ -64,6 +68,8 @@ public class MainScreen extends Screen {
 		Terminal statsTerminal =
 				fullTerminal.getWindow(width - MainWindow.statWidth, 0, MainWindow.statWidth, height);
 
+		setKeyBindings();
+
 		messageDisplay = new MessageDisplay(messageTerminal, outputLines);
 		statsDisplay = new StatsDisplay(statsTerminal);
 
@@ -80,6 +86,16 @@ public class MainScreen extends Screen {
 
 		InputManager.setInputEnabled(true);
 		displayManager.setDirty();
+	}
+
+	public void setKeyBindings() {
+		KeyMap defaultKeys = new KeyMap("Default");
+
+		defaultKeys
+				.bindKey(KeyEvent.VK_UP, InputCommand.UP)
+				.bindKey(KeyEvent.VK_DOWN, InputCommand.DOWN)
+				.bindKey(KeyEvent.VK_LEFT, InputCommand.LEFT)
+				.bindKey(KeyEvent.VK_RIGHT, InputCommand.RIGHT);
 	}
 
 	@Override
@@ -149,6 +165,8 @@ public class MainScreen extends Screen {
 		drawMessages(currentTurn);
 		drawEvents(currentTurn);
 
+		drawCursor(currentTurn);
+
 		displayManager.refresh();
 
 		long end = System.currentTimeMillis();
@@ -156,18 +174,12 @@ public class MainScreen extends Screen {
 	}
 
 	private void drawMap() {
-		// if ((currentTurn != null && !currentTurn.playerActedThisTurn()) ||
-		// animationManager.shouldRefresh())
-		// return;
-
 		MapArea currentMap = game.getCurrentMapArea();
-		Coordinate playerPosition = game.getPlayer().getPosition();
+		Coordinate centerPosition = game.getCenterScreenPosition();
 
 		Rectangle screenArea = currentMap
-				.getAreaInTiles(windowWidth, windowHeight, playerPosition);
+				.getAreaInTiles(windowWidth, windowHeight, centerPosition);
 
-		// doFOV(currentMap, screenArea, playerPosition);
-		//
 		for (int x = screenArea.x; x < screenArea.getMaxX(); x++) {
 			for (int y = screenArea.y; y < screenArea.getMaxY(); y++) {
 				Tile tile = currentMap.getTileAt(x, y);
@@ -201,12 +213,12 @@ public class MainScreen extends Screen {
 	 */
 	private void doFOV() {
 		MapArea currentMap = game.getCurrentMapArea();
-		Coordinate playerPosition = game.getPlayer().getPosition();
+		Coordinate centerPosition = game.getCenterScreenPosition();
 
 		Rectangle screenArea = currentMap
-				.getAreaInTiles(windowWidth, windowHeight, playerPosition);
+				.getAreaInTiles(windowWidth, windowHeight, centerPosition);
 
-		doFOV(currentMap, screenArea, playerPosition);
+		doFOV(currentMap, screenArea, centerPosition);
 	}
 
 	private void doFOV(MapArea currentMap, Rectangle screenArea, Coordinate player) {
@@ -249,7 +261,7 @@ public class MainScreen extends Screen {
 	private void drawEvents(TurnResult run) {
 		Rectangle screenArea = game
 				.getCurrentMapArea()
-				.getAreaInTiles(width, height, game.getPlayer().getPosition());
+				.getAreaInTiles(windowWidth, windowHeight, game.getCenterScreenPosition());
 
 		for (TurnEvent event : run.getEvents()) {
 			Actor initiator = event.getInitiator();
@@ -301,6 +313,19 @@ public class MainScreen extends Screen {
 			}
 
 		}
+	}
+
+	private void drawCursor(TurnResult run) {
+		Cursor activeCursor = run.getCursor();
+		if (activeCursor == null)
+			return;
+
+		MapArea currentMap = game.getCurrentMapArea();
+		Coordinate centerPosition = game.getCenterScreenPosition();
+		Rectangle screenArea = currentMap
+				.getAreaInTiles(windowWidth, windowHeight, centerPosition);
+
+		activeCursor.draw(terminal, screenArea);
 	}
 
 	private boolean drawActiveWindow(TurnResult run) {

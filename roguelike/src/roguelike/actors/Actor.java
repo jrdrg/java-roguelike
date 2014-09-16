@@ -1,5 +1,7 @@
 package roguelike.actors;
 
+import java.awt.Point;
+import java.util.Queue;
 import java.util.Stack;
 
 import roguelike.actions.Action;
@@ -10,9 +12,9 @@ import roguelike.maps.MapArea;
 import roguelike.maps.Tile;
 import roguelike.util.Coordinate;
 import squidpony.squidcolor.SColor;
-import squidpony.squidgrid.util.BasicRadiusStrategy;
 import squidpony.squidgrid.los.BresenhamLOS;
 import squidpony.squidgrid.los.LOSSolver;
+import squidpony.squidgrid.util.BasicRadiusStrategy;
 
 public abstract class Actor {
 
@@ -130,11 +132,9 @@ public abstract class Actor {
 	public boolean canSee(Actor other, MapArea mapArea) {
 
 		int startx = position.x, starty = position.y, targetx = other.position.x, targety = other.position.y;
-		// float force = this.getVisionRadius();
 		float force = 1;
 		float decay = 1 / this.getVisionRadius();
 		boolean visible = losSolver.isReachable(mapArea.getLightValues(), startx, starty, targetx, targety, force, decay, BasicRadiusStrategy.CIRCLE);
-
 		System.out.println(this.getName() + " canSee " + other.getName() + "=" + visible);
 
 		return visible;
@@ -149,9 +149,9 @@ public abstract class Actor {
 	}
 
 	public final void finishTurn() {
-		if (attacked.size() > 5)
+		while (attacked.size() > 1)
 			((Stack<AttackAttempt>) attacked).remove(0);
-		if (attackedBy.size() > 5)
+		while (attackedBy.size() > 1)
 			((Stack<AttackAttempt>) attackedBy).remove(0);
 
 		onTurnFinished();

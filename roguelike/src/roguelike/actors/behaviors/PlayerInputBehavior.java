@@ -7,6 +7,7 @@ import roguelike.actions.Action;
 import roguelike.actions.CloseDoorAction;
 import roguelike.actions.GetItemAction;
 import roguelike.actions.InventoryAction;
+import roguelike.actions.LookAction;
 import roguelike.actions.QuitAction;
 import roguelike.actions.RestAction;
 import roguelike.actions.WalkAction;
@@ -62,6 +63,9 @@ public class PlayerInputBehavior extends Behavior {
 
 		case KeyEvent.VK_G:
 			return new GetItemAction(actor, Game.current().getCurrentMapArea());
+
+		case KeyEvent.VK_L:
+			return new LookAction(actor, Game.current().getCurrentMapArea());
 
 		}
 		return null;
