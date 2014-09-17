@@ -177,8 +177,6 @@ public class Game {
 
 		while (true) {
 
-			Actor nextActor = currentMapArea.peekNextActor();
-
 			while (!queuedActions.isEmpty()) {
 				if (executeQueuedActions(turnResult) != null) {
 					return turnResult;
@@ -189,11 +187,6 @@ public class Game {
 				if (getCurrentActions(turnResult) != null) {
 					return turnResult;
 				}
-			}
-
-			if (nextActor != null && Player.isPlayer(nextActor)) {
-				System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!nextactor=player");
-				return turnResult;
 			}
 
 			if (playerDead)
@@ -231,7 +224,7 @@ public class Game {
 			if (Player.isPlayer(actor)) {
 				// TODO: process things that happen every turn after player queues actions
 				Game.currentGame.currentMapArea.spawnMonsters();
-				System.out.println("Queue length: " + queuedActions.size());
+				System.out.println("Game: Queue length: " + queuedActions.size());
 			}
 		}
 
@@ -273,17 +266,18 @@ public class Game {
 
 				if (result.isSuccess()) {
 					currentActor.finishTurn();
+					DisplayManager.instance().setDirty(); // make sure we show the result of the action
 				} else {
-					currentMapArea.nextActor("executeQueuedActions, !currentActor.canAct");
+					currentMapArea.nextActor("executeQueuedActions, !currentActor.canAct && !success");
 					return turnResult;
 				}
 
 			} else {
 
-				System.out.println("Actor=" + currentActor.getName());
-				System.out.println("Energy=" + currentActor.isAlive());
-				System.out.println("Remaining energy: " + currentActor.getEnergy().getCurrent() + " Result=" + result);
-				System.out.println(result.getMessage() + ", " + result.isSuccess() + ", " + result.isCompleted());
+				System.out.println("Game: Actor=" + currentActor.getName());
+				System.out.println("Game: Energy=" + currentActor.isAlive());
+				System.out.println("Game: Remaining energy: " + currentActor.getEnergy().getCurrent() + " Result=" + result);
+				System.out.println("Game: " + result.getMessage() + ", " + result.isSuccess() + ", " + result.isCompleted());
 			}
 
 		} else { // incomplete action
@@ -295,16 +289,6 @@ public class Game {
 		if (Player.isPlayer(currentAction.getActor())) {
 			turnResult.playerActed();
 			return turnResult;
-		}
-
-		Actor nextActor = currentMapArea.peekNextActor();
-		if (nextActor != null) {
-			System.out.println("nextActor=" + nextActor.getName());
-			if (Player.isPlayer(nextActor)) {
-				System.out.println("################ next actor is player, returning");
-				DisplayManager.instance().setDirty();
-				return turnResult;
-			}
 		}
 
 		return null;

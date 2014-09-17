@@ -28,7 +28,7 @@ public class InputManager {
 	}
 
 	public static DirectionIntercardinal nextDirection() {
-		InputCommand cmd = nextCommand();
+		InputCommand cmd = nextCommandPreserveKeyData();
 		if (cmd == null)
 			return null;
 
@@ -92,21 +92,6 @@ public class InputManager {
 	 * 
 	 * m: use active attack maneuver
 	 * 
-	 * 
-	 * 
-	 * MOVEMENT
-	 * 
-	 * ++++++++++
-	 * 
-	 * wasd: up/left/down/right
-	 * 
-	 * q: diagonal up-left
-	 * 
-	 * e: diagonal up-right
-	 * 
-	 * z: diagonal down-left
-	 * 
-	 * x: diagonal down-right
 	 * 
 	 * 
 	 * OTHER
