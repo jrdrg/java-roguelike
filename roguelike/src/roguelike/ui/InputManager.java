@@ -15,12 +15,16 @@ public class InputManager {
 	private static boolean inputEnabled = true;
 	private static KeyMap activeKeyMap = new KeyMap("Default");
 
-	public static InputCommand nextCommand(KeyEvent key) {
-		return activeKeyMap.getCommand(key);
+	public static void registerWithFrame(JFrame frame) {
+		frame.addKeyListener(keyListener);
 	}
 
 	public static InputCommand nextCommand() {
-		return nextCommand(nextKey());
+		return nextCommand(nextKey(), false);
+	}
+
+	public static InputCommand nextCommandPreserveKeyData() {
+		return nextCommand(nextKey(), true);
 	}
 
 	public static DirectionIntercardinal nextDirection() {
@@ -29,10 +33,6 @@ public class InputManager {
 			return null;
 
 		return cmd.toDirection();
-	}
-
-	public static void registerWithFrame(JFrame frame) {
-		frame.addKeyListener(keyListener);
 	}
 
 	public static boolean inputReceived() {
@@ -47,6 +47,14 @@ public class InputManager {
 
 	public static void setActiveKeybindings(KeyMap keyMap) {
 		activeKeyMap = keyMap;
+	}
+
+	private static InputCommand nextCommand(KeyEvent key, boolean getKeyData) {
+		InputCommand cmd = activeKeyMap.getCommand(key);
+		if (cmd == null && key != null && getKeyData) {
+			return InputCommand.fromKey(key.getKeyCode(), key.getKeyChar());
+		}
+		return cmd;
 	}
 
 	private static KeyEvent nextKey() {

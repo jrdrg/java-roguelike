@@ -31,7 +31,7 @@ public class InventoryAction extends Action {
 			Game.current().setActiveDialog(new InventoryDialog(menu));
 
 		} else {
-			InputCommand nextCommand = InputManager.nextCommand();
+			InputCommand nextCommand = InputManager.nextCommandPreserveKeyData();
 			if (nextCommand != null) {
 
 				switch (nextCommand) {

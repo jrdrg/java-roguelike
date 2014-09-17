@@ -48,8 +48,12 @@ public abstract class Menu<T> {
 				currentPage = Math.min(currentPage + 1, pageCount);
 				break;
 
+			case FROM_KEYDATA:
+				pageIndex = Math.min(maxItems - 1, Math.max(0, getIndexOfChar(command.getKeyChar())));
+				break;
+
 			default:
-				// pageIndex = Math.min(maxItems - 1, Math.max(0, getIndexOfChar(key)));
+
 			}
 
 			activeIndex = Math.min(items.size() - 1, getPageOffset(pageIndex));
@@ -103,8 +107,7 @@ public abstract class Menu<T> {
 		return Math.min(((currentPage - 1) * pageSize) + index, items.size());
 	}
 
-	private int getIndexOfChar(KeyEvent key) {
-		char keyChar = key.getKeyChar();
+	private int getIndexOfChar(char keyChar) {
 		if (keyChar >= 97 && keyChar <= 122)
 			return keyChar - 97; // a-z, returns 0-26
 		if (keyChar >= 65 && keyChar <= 90)

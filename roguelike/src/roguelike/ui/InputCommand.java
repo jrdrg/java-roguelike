@@ -27,7 +27,33 @@ public enum InputCommand {
 	REST,
 
 	TALK,
-	PICK_UP;
+	PICK_UP,
+
+	FROM_KEYDATA;
+
+	private int keyData;
+	private char keyChar;
+
+	InputCommand() {
+		this(-999, ' ');
+	}
+
+	InputCommand(int keyData, char keyChar) {
+		this.keyData = keyData;
+		this.keyChar = keyChar;
+	}
+
+	public static InputCommand fromKey(int keyData, char keyChar) {
+		return FROM_KEYDATA.setKeyData(keyData, keyChar);
+	}
+
+	public int getKeyData() {
+		return keyData;
+	}
+
+	public char getKeyChar() {
+		return keyChar;
+	}
 
 	public DirectionIntercardinal toDirection() {
 		switch (this) {
@@ -50,5 +76,11 @@ public enum InputCommand {
 		default:
 			return DirectionIntercardinal.NONE;
 		}
+	}
+
+	private InputCommand setKeyData(int keyData, char keyChar) {
+		this.keyData = keyData;
+		this.keyChar = keyChar;
+		return this;
 	}
 }

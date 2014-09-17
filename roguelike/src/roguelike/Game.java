@@ -192,7 +192,7 @@ public class Game {
 			}
 
 			if (nextActor != null && Player.isPlayer(nextActor)) {
-				System.out.println("nextactor=player");
+				System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!nextactor=player");
 				return turnResult;
 			}
 
@@ -296,6 +296,7 @@ public class Game {
 			turnResult.playerActed();
 			return turnResult;
 		}
+
 		Actor nextActor = currentMapArea.peekNextActor();
 		if (nextActor != null) {
 			System.out.println("nextActor=" + nextActor.getName());
