@@ -17,6 +17,15 @@ public class AttackAction extends Action {
 
 	@Override
 	protected ActionResult onPerform() {
+		if (target != null) {
+			return attackTarget();
+		} else {
+			// choose target
+			return null;
+		}
+	}
+
+	private ActionResult attackTarget() {
 		if (!actor.isAlive()) {
 			System.out.println(">>> onPerform() >>> Actor " + actor.getName() + " is dead!");
 			return ActionResult.failure().setMessage("Actor " + actor.getName() + " is dead!");
@@ -46,8 +55,8 @@ public class AttackAction extends Action {
 		}
 		else {
 			/*
-			 * we can't attack but success the action anyway so it causes the
-			 * actor to lose energy and advance to the next actor
+			 * we can't attack but success the action anyway so it causes the actor to lose energy and advance to the
+			 * next actor
 			 */
 			return ActionResult.success().setMessage("No weapon");
 		}

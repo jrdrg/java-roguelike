@@ -4,8 +4,6 @@ import java.awt.event.KeyEvent;
 
 import roguelike.Game;
 import roguelike.actors.Actor;
-import roguelike.items.Inventory;
-import roguelike.items.Item;
 import roguelike.maps.MapArea;
 import roguelike.ui.Cursor;
 import roguelike.ui.InputManager;

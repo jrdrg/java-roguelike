@@ -4,14 +4,17 @@ import java.awt.event.KeyEvent;
 
 import roguelike.ui.DisplayManager;
 import roguelike.ui.InputManager;
+import roguelike.ui.windows.SwingPaneTerminalView;
 import roguelike.ui.windows.Terminal;
 import squidpony.squidcolor.SColor;
 
 public class TitleScreen extends Screen {
 
 	private Terminal terminal;
+	private SwingPaneTerminalView terminalView;
 
 	public TitleScreen(Terminal terminal) {
+		terminalView = DisplayManager.instance().getTerminalView();
 		System.out.println("TitleScreen: terminal size " + terminal.size().width + "x" + terminal.size().height);
 
 		this.terminal = terminal.withColor(SColor.WHITE, SColor.BLACK);

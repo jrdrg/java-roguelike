@@ -11,6 +11,7 @@ import roguelike.actors.Player;
 import roguelike.data.DataFactory;
 import roguelike.maps.MapArea;
 import roguelike.ui.Cursor;
+import roguelike.ui.DisplayManager;
 import roguelike.ui.windows.Dialog;
 import roguelike.util.Coordinate;
 import squidpony.squidcolor.SColor;
@@ -175,18 +176,17 @@ public class Game {
 		currentTurnResult = turnResult;
 
 		while (true) {
-			while (!queuedActions.isEmpty()) {
-				if (executeQueuedActions(turnResult) != null) {
-					return turnResult;
-				}
-			}
 
 			while (queuedActions.isEmpty()) {
 				if (getCurrentActions(turnResult) != null) {
 					return turnResult;
 				}
 			}
-
+			while (!queuedActions.isEmpty()) {
+				if (executeQueuedActions(turnResult) != null) {
+					return turnResult;
+				}
+			}
 			if (playerDead)
 				return turnResult;
 		}
@@ -202,8 +202,7 @@ public class Game {
 		Actor actor = currentMapArea.getCurrentActor();
 
 		while (!actor.isAlive()) {
-			System.out.println("Attempting to act on dead actor: " + actor.getName());
-			currentMapArea.nextActor("getCurrentActions, isAlive=false");
+			currentMapArea.nextActor("Attempting to act on dead actor: " + actor.getName());
 			actor = currentMapArea.getCurrentActor();
 		}
 
@@ -214,19 +213,17 @@ public class Game {
 			Action action = actor.getNextAction();
 			if (action != null) {
 				queuedActions.add(action);
-
-				if (Player.isPlayer(actor)) {
-					// TODO: process things that happen every turn after player
-					Game.currentGame.currentMapArea.spawnMonsters();
-					System.out.println("Queue length: " + queuedActions.size());
-				}
-
 			} else {
 				return turnResult;
 			}
-		} else {
-			// advance to next actor
+		} else { // advance to next actor
 			currentMapArea.nextActor("getCurrentActions, !canAct, queueSize=" + queuedActions.size());
+
+			if (Player.isPlayer(actor)) {
+				// TODO: process things that happen every turn after player queues actions
+				Game.currentGame.currentMapArea.spawnMonsters();
+				System.out.println("Queue length: " + queuedActions.size());
+			}
 		}
 
 		return null;
@@ -243,8 +240,7 @@ public class Game {
 
 		// don't perform the action if the actor is dead
 		if (!currentAction.getActor().isAlive()) {
-			currentMapArea.nextActor("executeQueuedActions, currentAction actor !isAlive");
-			System.out.println(" -> actor " + currentAction.getActor().getName() + " is dead, skipping");
+			currentMapArea.nextActor("executeQueuedActions, currentAction actor !isAlive: " + currentAction.getActor().getName());
 			return turnResult;
 		}
 
@@ -266,11 +262,12 @@ public class Game {
 			Actor currentActor = currentAction.getActor();
 			if (currentActor != null && !currentActor.getEnergy().canAct()) {
 
-				// if (result.isSuccess()) {
-				currentActor.finishTurn();
-				System.out.println(currentActor.getName() + " finishTurn()");
-				// currentMapArea.nextActor("executeQueuedActions, !currentActor.canAct");
-				// }
+				if (result.isSuccess()) {
+					currentActor.finishTurn();
+				} else {
+					currentMapArea.nextActor("executeQueuedActions, !currentActor.canAct");
+					return turnResult;
+				}
 
 			} else {
 
@@ -281,7 +278,6 @@ public class Game {
 			}
 
 		} else {
-			// System.out.println("Incomplete action, re-adding on queue...");
 			queuedActions.add(currentAction);
 		}
 
@@ -289,6 +285,15 @@ public class Game {
 		if (Player.isPlayer(currentAction.getActor())) {
 			turnResult.playerActed();
 			return turnResult;
+		}
+		Actor nextActor = currentMapArea.peekNextActor();
+		if (nextActor != null) {
+			System.out.println("nextActor=" + nextActor.getName());
+			if (Player.isPlayer(nextActor)) {
+				System.out.println("next actor is player, returning");
+				DisplayManager.instance().setDirty();
+				return turnResult;
+			}
 		}
 
 		return null;

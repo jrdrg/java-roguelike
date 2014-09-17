@@ -2,6 +2,8 @@ package roguelike.maps;
 
 public class Door extends Tile {
 
+	private static final long serialVersionUID = -5705303883628916040L;
+
 	private boolean isOpen;
 
 	public void open(MapArea map) {

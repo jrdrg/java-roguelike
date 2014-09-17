@@ -7,6 +7,8 @@ import roguelike.data.WeaponData;
 
 public class MeleeWeapon extends Weapon {
 
+	private static final long serialVersionUID = 682348343481995648L;
+
 	protected int baseDamage;
 	protected String name;
 	protected String description;

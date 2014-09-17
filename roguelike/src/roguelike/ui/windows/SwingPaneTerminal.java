@@ -8,19 +8,18 @@ public class SwingPaneTerminal extends Terminal {
 
 	private SwingPane foreground;
 	private SwingPane background;
-	private ColorPair colors;
-	private TerminalChangeNotification terminalChanged;
 
 	public SwingPaneTerminal(int width, int height, SwingPane foreground, SwingPane background, TerminalChangeNotification terminalChanged) {
-		this(new Rectangle(0, 0, width, height), foreground, background, new char[width][height], terminalChanged);
+		this(new Rectangle(0, 0, width, height), foreground, background, new CharEx[width][height], terminalChanged);
 	}
 
 	SwingPaneTerminal(
 			final Rectangle area, final SwingPane foreground,
-			final SwingPane background, final char[][] data,
+			final SwingPane background, final CharEx[][] data,
 			final TerminalChangeNotification terminalChanged)
 	{
-		this.terminalChanged = terminalChanged;
+		super(terminalChanged);
+
 		this.colors = new ColorPair(SColor.WHITE, SColor.BLACK);
 		this.foreground = foreground;
 		this.background = background;
@@ -29,31 +28,27 @@ public class SwingPaneTerminal extends Terminal {
 		this.cursor = new TerminalCursor() {
 
 			@Override
-			public TerminalCursor put(int x, int y, char c) {
-				data[size.x + x][size.y + y] = c;
-				foreground.put(getX(x), getY(y), c, colors.foreground());
-				background.put(getX(x), getY(y), colors.background());
-
-				terminalChanged.onChanged();
-				return this;
-			}
-
-			@Override
-			public TerminalCursor put(int xPos, int yPos, char[][] c) {
-				for (int i = 0; i < c.length; i++) {
-					for (int j = 0; j < c[0].length; j++) {
-						this.put(xPos + i, yPos + j, c[i][j]);
-					}
+			public boolean put(int x, int y, CharEx c) {
+				int sx = getX(x);
+				int sy = getY(y);
+				if (data[sx][sy] != null && data[sx][sy].equals(c)) {
+					return false;
 				}
-				return this;
+				data[sx][sy] = c;
+				return true;
 			}
 
 			@Override
-			public TerminalCursor bg(int x, int y) {
-				background.put(getX(x), getY(y), colors.background());
+			public boolean bg(int x, int y) {
+				int sx = getX(x);
+				int sy = getY(y);
+				CharEx c = data[getX(x)][getY(y)];
+				CharEx c2 = new CharEx(c.symbol(), c.foregroundColor(), colors.background());
+				data[sx][sy] = c2;
 
-				terminalChanged.onChanged();
-				return this;
+				terminalChanged.onChanged(sx, sy, c2);
+
+				return true;
 			}
 
 			private int getX(int x) {
@@ -87,28 +82,6 @@ public class SwingPaneTerminal extends Terminal {
 	}
 
 	@Override
-	public Terminal write(int x, int y, String text) {
-		char[][] temp = new char[text.length()][1];
-		for (int i = 0; i < text.length(); i++) {
-			temp[i][0] = text.charAt(i);
-		}
-		cursor.put(x, y, temp);
-		return this;
-	}
-
-	@Override
-	public Terminal put(int x, int y, char[][] c) {
-		cursor.put(x, y, c);
-		return this;
-	}
-
-	@Override
-	public Terminal put(int x, int y, char c) {
-		cursor.put(x, y, c);
-		return this;
-	}
-
-	@Override
 	public Terminal fill(int x, int y, int width, int height) {
 		for (int i = 0; i < width; i++) {
 			for (int j = 0; j < height; j++) {
@@ -118,13 +91,4 @@ public class SwingPaneTerminal extends Terminal {
 		return this;
 	}
 
-	@Override
-	public Terminal fill(int x, int y, int width, int height, char c) {
-		for (int i = 0; i < width; i++) {
-			for (int j = 0; j < height; j++) {
-				cursor.put(i + x, j + y, c);
-			}
-		}
-		return this;
-	}
 }

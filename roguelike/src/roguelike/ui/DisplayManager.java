@@ -7,7 +7,9 @@ import java.io.InputStream;
 import javax.swing.JLayeredPane;
 
 import roguelike.TitleScreen;
+import roguelike.ui.windows.CharEx;
 import roguelike.ui.windows.SwingPaneTerminal;
+import roguelike.ui.windows.SwingPaneTerminalView;
 import roguelike.ui.windows.Terminal;
 import roguelike.ui.windows.TerminalChangeNotification;
 import squidpony.squidgrid.gui.SwingPane;
@@ -16,7 +18,9 @@ import squidpony.squidgrid.gui.TextCellFactory;
 public class DisplayManager {
 	// private final String FONT_NAME = "joystix monospace.ttf";
 	// private final String FONT_NAME = "Adore64.ttf";
-	private final String FONT_NAME = "Commodore Pixelized v1.2.ttf";
+	// private final String FONT_NAME = "Commodore Pixelized v1.2.ttf";
+	private final String FONT_NAME = "Nouveau_IBM.ttf";
+
 	private final String BACKUP_FONT_NAME = "Lucidia";
 	private static final String CHARS_USED = "☃☺.,Xy#@.~M";
 
@@ -29,6 +33,8 @@ public class DisplayManager {
 	private int cellWidth;
 	private int cellHeight;
 	private boolean dirty;
+
+	private SwingPaneTerminalView terminalView;
 
 	// TODO: this is a hack, for now
 	private static DisplayManager self;
@@ -55,8 +61,8 @@ public class DisplayManager {
 
 	public void refresh() {
 		if (dirty) {
-			foreground.refresh();
 			background.refresh();
+			foreground.refresh();
 			dirty = false;
 		}
 	}
@@ -71,12 +77,19 @@ public class DisplayManager {
 					new TerminalChangeNotification() {
 
 						@Override
-						public void onChanged() {
+						public void onChanged(int x, int y, CharEx c) {
 							// dirty = true;
 						}
 					});
 		}
 		return mainDisplay;
+	}
+
+	public SwingPaneTerminalView getTerminalView() {
+		if (terminalView == null) {
+			terminalView = new SwingPaneTerminalView(getTerminal(), foreground, background);
+		}
+		return terminalView;
 	}
 
 	public void init(int width, int height) {

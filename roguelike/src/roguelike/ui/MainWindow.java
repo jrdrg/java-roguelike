@@ -1,6 +1,9 @@
 package roguelike.ui;
 
 import java.awt.BorderLayout;
+import java.awt.Point;
+import java.awt.Toolkit;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
@@ -88,6 +91,20 @@ public class MainWindow {
 
 		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
+
+		hideMouseCursor();
+	}
+
+	private void hideMouseCursor() {
+		BufferedImage cursorImg = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
+
+		// Create a new blank cursor.
+		java.awt.Cursor blankCursor = Toolkit
+				.getDefaultToolkit()
+				.createCustomCursor(cursorImg, new Point(0, 0), "blank cursor");
+
+		// Set the blank cursor to the JFrame.
+		frame.getContentPane().setCursor(blankCursor);
 	}
 
 }

@@ -1,9 +1,7 @@
 package roguelike.ui.windows;
 
 abstract class TerminalCursor {
-	public abstract TerminalCursor put(int x, int y, char c);
+	public abstract boolean put(int x, int y, CharEx c);
 
-	public abstract TerminalCursor put(int x, int y, char[][] c);
-
-	public abstract TerminalCursor bg(int x, int y);
+	public abstract boolean bg(int x, int y);
 }

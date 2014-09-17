@@ -1,10 +1,13 @@
 package roguelike.items;
 
+import java.io.Serializable;
 import java.util.UUID;
 
 import squidpony.squidcolor.SColor;
 
-public abstract class Item {
+public abstract class Item implements Serializable {
+
+	private static final long serialVersionUID = -7103589500266419030L;
 
 	private UUID itemId = UUID.randomUUID();
 	protected String name;

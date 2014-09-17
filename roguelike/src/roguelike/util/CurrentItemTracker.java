@@ -34,6 +34,10 @@ public class CurrentItemTracker<T> {
 		return list.get(currentItem);
 	}
 
+	public T peek() {
+		return list.get((currentItem + 1) % list.size());
+	}
+
 	public void advance() {
 		currentItem = (currentItem + 1) % list.size();
 	}

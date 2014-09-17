@@ -33,7 +33,7 @@ public class GameLoader {
 		// player.setPosition(1, 1);
 
 		// TODO: make a real map
-		MapArea currentMapArea = new MapArea(300, 300, new MapBuilder());
+		MapArea currentMapArea = new MapArea(200, 200, new MapBuilder());
 		currentMapArea.addActor(player);
 
 		game.setCurrentMapArea(currentMapArea);

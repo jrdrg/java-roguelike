@@ -37,9 +37,12 @@ public class Cursor {
 		if (terminal == null)
 			throw new IllegalArgumentException("terminal cannot be null");
 
-		terminal.withColor(SColor.TRANSPARENT, color).fill(position.x - screenArea.x, position.y - screenArea.y, 1, 1);
+		int sx = position.x - screenArea.x;
+		int sy = position.y - screenArea.y;
+
+		terminal.withColor(SColor.TRANSPARENT, color).fill(sx, sy, 1, 1);
 		MapArea mapArea = Game.current().getCurrentMapArea();
 		if (!mapArea.getTileAt(position).isExplored())
-			terminal.withColor(SColor.TRANSPARENT, color).put(position.x - screenArea.x, position.y - screenArea.y, ' ');
+			terminal.withColor(SColor.TRANSPARENT, color).put(sx, sy, ' ');
 	}
 }

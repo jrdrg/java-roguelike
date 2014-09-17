@@ -1,12 +1,16 @@
 package roguelike.maps;
 
+import java.io.Serializable;
+
 import roguelike.actors.Actor;
 import roguelike.items.Inventory;
 import roguelike.items.Item;
 import squidpony.squidcolor.SColor;
 import squidpony.squidcolor.SColorFactory;
 
-public class Tile {
+public class Tile implements Serializable {
+
+	private static final long serialVersionUID = -5752164119434588867L;
 
 	protected boolean visible;
 	protected boolean wall;

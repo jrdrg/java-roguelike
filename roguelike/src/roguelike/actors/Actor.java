@@ -1,7 +1,5 @@
 package roguelike.actors;
 
-import java.awt.Point;
-import java.util.Queue;
 import java.util.Stack;
 
 import roguelike.actions.Action;
@@ -153,6 +151,8 @@ public abstract class Actor {
 			((Stack<AttackAttempt>) attacked).remove(0);
 		while (attackedBy.size() > 1)
 			((Stack<AttackAttempt>) attackedBy).remove(0);
+
+		System.out.println("Actor.finishTurn(): " + getName());
 
 		onTurnFinished();
 	}

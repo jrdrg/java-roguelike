@@ -30,15 +30,18 @@ public class InventoryDialog extends Dialog {
 		border.write(1, 0, "Inventory");
 
 		int activeIndex = menu.getActiveItemIndex();
+		int firstIndex = menu.getFirstItemIndex();
+		int lastIndex = menu.getLastItemIndex();
+		int currentPage = menu.getCurrentPage();
+		int pageCount = menu.getPageCount();
 
 		int totalItems = menu.totalItems();
-		int itemCount = Math.min(this.size.height - 5, totalItems);
-
-		int offset = Math.max(0, activeIndex - (itemCount - 1));
+		int itemCount = lastIndex - firstIndex;
 
 		Terminal activeText = terminal.withColor(SColor.ALIZARIN, menuBgColor);
-		for (int x = 0; x < itemCount; x++) {
-			int itemIdx = x + offset;
+		for (int x = firstIndex; x < lastIndex; x++) {
+			int offset = x - firstIndex;
+			int itemIdx = x;
 			Item item = menu.getItemAt(itemIdx);
 			if (item == null)
 				break;
@@ -47,15 +50,12 @@ public class InventoryDialog extends Dialog {
 			if (itemIdx == activeIndex) {
 				t = activeText;
 			}
-			int displayY = 3 + x;
-			text.write(1, displayY, getCharForIndex(itemIdx) + ")");
+			int displayY = 3 + offset;
+			text.write(1, displayY, getCharForIndex(offset) + ")");
 			t.write(4, displayY, item.getName());
 		}
 
-		if (activeIndex < totalItems - 1 && totalItems > itemCount) {
-			int remainingCount = Math.min((totalItems - activeIndex - 1), (totalItems - itemCount));
-			text.write(6, itemCount + 4, "- " + remainingCount + " more -");
-		}
+		text.write(6, itemCount + 5, String.format("%2d/%2d", currentPage, pageCount));
 	}
 
 	private char getCharForIndex(int index) {

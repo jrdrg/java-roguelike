@@ -1,6 +1,9 @@
 package roguelike.ui.windows;
 
+import java.util.ArrayList;
+
 import roguelike.actors.Actor;
+import roguelike.actors.Statistics;
 import roguelike.items.Inventory;
 import roguelike.items.Item;
 import roguelike.items.Equipment.ItemSlot;
@@ -32,27 +35,41 @@ public class LookDialog extends Dialog {
 		Terminal background = terminal.withColor(menuBgColor, menuBgColor);
 		Terminal text = terminal.withColor(SColor.WHITE, menuBgColor);
 
+		ArrayList<String> textList = new ArrayList<String>();
+
 		background.fill(0, 0, size.width, size.height, ' ');
 		// border.fill(0, 0, size.width, 1, ' ');
 
 		Actor actor = mapArea.getActorAt(x, y);
 		if (actor != null) {
-			text.write(2, 4, "There is a " + actor.getName() + " here.");
-			text.write(3, 5, "Weapon: " + ItemSlot.RIGHT_ARM.getEquippedWeapon(actor).getDescription());
+			textList.add(actor.getDescription());
+			textList.add(" Weapon: " + ItemSlot.RIGHT_ARM.getEquippedWeapon(actor).getDescription());
+
+			Statistics stats = actor.getStatistics();
+			textList.add(String.format(" MP:%3d RP:%3d Ref:%3d Aim:%3d Spd:%3d",
+					stats.baseMeleePool(0), stats.baseRangedPool(0), stats.reflexes(), stats.aiming(), stats.speed.getTotalValue()));
+
+			textList.add(String.format(" To:%3d Co:%3d Pe:%3d Qu:%3d Wi:%3d Pr:%3d",
+					stats.toughness.getTotalValue(), stats.conditioning.getTotalValue(), stats.perception.getTotalValue(),
+					stats.quickness.getTotalValue(), stats.willpower.getTotalValue(), stats.presence.getTotalValue()));
+
+			textList.add(String.format(" H:%3d", actor.getHealth().getCurrent()));
 		}
-		int textY = 8;
+		int textY = 2;
 		Inventory inventory = mapArea.getItemsAt(x, y);
-		text.write(2, 7, "On ground:");
+		textList.add("");
+		textList.add("On ground:");
 		if (inventory != null && inventory.any()) {
 			for (Item i : inventory.allItems()) {
-				text.write(3, textY, i.getName());
-				textY++;
+				textList.add(i.getName());
+			}
+		}
 
-				if (textY > 10)
-				{
-					text.write(2, textY, "...");
-					break;
-				}
+		for (int x = 0; x < textList.size(); x++) {
+			text.write(2, x + textY, textList.get(x));
+			if (x >= 15) {
+				text.write(3, x + 1, "...");
+				break;
 			}
 		}
 	}

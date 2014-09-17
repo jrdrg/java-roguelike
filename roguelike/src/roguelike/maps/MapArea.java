@@ -138,7 +138,7 @@ public class MapArea {
 	 *            The point at which the screen is centered on
 	 * @return A Rectangle representing the area that should be drawn to the screen, in cells
 	 */
-	public Rectangle getAreaInTiles(int screenCellsX, int screenCellsY, Coordinate center) {
+	public Rectangle getVisibleAreaInTiles(int screenCellsX, int screenCellsY, Coordinate center) {
 		Coordinate upperLeft = getUpperLeftScreenTile(screenCellsX, screenCellsY, center);
 		int w;
 		int h;
@@ -149,8 +149,8 @@ public class MapArea {
 		return new Rectangle(upperLeft.x, upperLeft.y, w, h);
 	}
 
-	public Rectangle getAreaInTiles(Terminal terminal, Coordinate center) {
-		return getAreaInTiles(terminal.size().width, terminal.size().height, center);
+	public Rectangle getVisibleAreaInTiles(Terminal terminal, Coordinate center) {
+		return getVisibleAreaInTiles(terminal.size().width, terminal.size().height, center);
 	}
 
 	/**
@@ -212,6 +212,10 @@ public class MapArea {
 	 */
 	public Actor getCurrentActor() {
 		return actors.getCurrent();
+	}
+
+	public Actor peekNextActor() {
+		return actors.peek();
 	}
 
 	/**

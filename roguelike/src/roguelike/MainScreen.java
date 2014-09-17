@@ -167,8 +167,6 @@ public class MainScreen extends Screen {
 
 		drawCursor(currentTurn);
 
-		displayManager.refresh();
-
 		long end = System.currentTimeMillis();
 		return end - start;
 	}
@@ -178,7 +176,7 @@ public class MainScreen extends Screen {
 		Coordinate centerPosition = game.getCenterScreenPosition();
 
 		Rectangle screenArea = currentMap
-				.getAreaInTiles(windowWidth, windowHeight, centerPosition);
+				.getVisibleAreaInTiles(windowWidth, windowHeight, centerPosition);
 
 		for (int x = screenArea.x; x < screenArea.getMaxX(); x++) {
 			for (int y = screenArea.y; y < screenArea.getMaxY(); y++) {
@@ -216,7 +214,7 @@ public class MainScreen extends Screen {
 		Coordinate centerPosition = game.getCenterScreenPosition();
 
 		Rectangle screenArea = currentMap
-				.getAreaInTiles(windowWidth, windowHeight, centerPosition);
+				.getVisibleAreaInTiles(windowWidth, windowHeight, centerPosition);
 
 		doFOV(currentMap, screenArea, centerPosition);
 	}
@@ -261,7 +259,7 @@ public class MainScreen extends Screen {
 	private void drawEvents(TurnResult run) {
 		Rectangle screenArea = game
 				.getCurrentMapArea()
-				.getAreaInTiles(windowWidth, windowHeight, game.getCenterScreenPosition());
+				.getVisibleAreaInTiles(windowWidth, windowHeight, game.getCenterScreenPosition());
 
 		for (TurnEvent event : run.getEvents()) {
 			Actor initiator = event.getInitiator();
@@ -323,7 +321,7 @@ public class MainScreen extends Screen {
 		MapArea currentMap = game.getCurrentMapArea();
 		Coordinate centerPosition = game.getCenterScreenPosition();
 		Rectangle screenArea = currentMap
-				.getAreaInTiles(windowWidth, windowHeight, centerPosition);
+				.getVisibleAreaInTiles(windowWidth, windowHeight, centerPosition);
 
 		activeCursor.draw(terminal, screenArea);
 	}

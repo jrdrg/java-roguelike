@@ -12,13 +12,18 @@ public class TileBuilder {
 
 	private ProbabilityTable<Character> trees;
 	private ProbabilityTable<Character> ground;
+	private ProbabilityTable<Character> water;
 
 	public TileBuilder() {
 		trees = new ProbabilityTable<Character>();
 		ground = new ProbabilityTable<Character>();
+		water = new ProbabilityTable<Character>();
 
 		trees.add('&', 15);
-		trees.add('T', 7);
+		trees.add('♣', 7);
+
+		water.add('~', 20);
+		water.add('≈', 5);
 
 		ground.add('.', 30);
 		// ground.add(';', 2);
@@ -46,7 +51,7 @@ public class TileBuilder {
 			break;
 
 		case '~': // water
-			t.setValues('~', false, SColorFactory.asSColor(50, 150, 255)).setLighting(0f);// .setBackground(SColor.DARK_BLUE);
+			t.setValues(water.random(), false, SColorFactory.asSColor(50, 150, 255)).setLighting(0f);// .setBackground(SColor.DARK_BLUE);
 			break;
 
 		case 'M': // mountain

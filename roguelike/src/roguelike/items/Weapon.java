@@ -9,7 +9,11 @@ import roguelike.data.WeaponData;
 import squidpony.squidutility.Pair;
 
 public abstract class Weapon extends Item {
+
+	private static final long serialVersionUID = -7712813593206574664L;
+
 	public static final Weapon DEFAULT = new Weapon(WeaponData.DEFAULT) {
+		private static final long serialVersionUID = 1L;
 
 		@Override
 		public String getDescription() {
