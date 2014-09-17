@@ -145,6 +145,15 @@ public class MainScreen extends Screen {
 			return 0;
 		}
 
+		if (!drawActiveWindow(currentTurn)) {
+			drawMap();
+		}
+		drawStats();
+		drawMessages(currentTurn);
+		drawEvents(currentTurn);
+
+		drawCursor(currentTurn);
+
 		/*
 		 * this will only refresh if player input has occurred or something has reset the dirty flag
 		 */
@@ -155,17 +164,6 @@ public class MainScreen extends Screen {
 			displayManager.setDirty();
 			System.out.println("Set dirty flag");
 		}
-
-		if (currentTurn.playerActedThisTurn() || animationManager.shouldRefresh()) {
-			if (!drawActiveWindow(currentTurn)) {
-				drawMap();
-			}
-			drawStats();
-		}
-		drawMessages(currentTurn);
-		drawEvents(currentTurn);
-
-		drawCursor(currentTurn);
 
 		long end = System.currentTimeMillis();
 		return end - start;

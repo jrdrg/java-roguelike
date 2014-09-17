@@ -1,5 +1,7 @@
 package roguelike.actors;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Stack;
 
 import roguelike.actions.Action;
@@ -30,6 +32,8 @@ public abstract class Actor {
 	private Inventory inventory;
 	private Equipment equipment;
 
+	private ArrayList<Condition> conditions;
+
 	protected LOSSolver losSolver;
 
 	protected Actor(char symbol, SColor color) {
@@ -50,7 +54,13 @@ public abstract class Actor {
 		attacked = new Stack<AttackAttempt>();
 		attackedBy = new Stack<AttackAttempt>();
 
+		conditions = new ArrayList<Condition>();
+
 		losSolver = new BresenhamLOS();
+	}
+
+	public List<Condition> conditions() {
+		return conditions;
 	}
 
 	public Energy getEnergy() {

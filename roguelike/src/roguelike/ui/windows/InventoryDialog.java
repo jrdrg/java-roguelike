@@ -35,7 +35,6 @@ public class InventoryDialog extends Dialog {
 		int currentPage = menu.getCurrentPage();
 		int pageCount = menu.getPageCount();
 
-		int totalItems = menu.totalItems();
 		int itemCount = lastIndex - firstIndex;
 
 		Terminal activeText = terminal.withColor(SColor.ALIZARIN, menuBgColor);
@@ -51,14 +50,11 @@ public class InventoryDialog extends Dialog {
 				t = activeText;
 			}
 			int displayY = 3 + offset;
-			text.write(1, displayY, getCharForIndex(offset) + ")");
+			text.write(1, displayY, menu.getCharForIndex(offset) + ")");
 			t.write(4, displayY, item.getName());
 		}
 
 		text.write(6, itemCount + 5, String.format("%2d/%2d", currentPage, pageCount));
 	}
 
-	private char getCharForIndex(int index) {
-		return (char) (index + 65);
-	}
 }

@@ -77,12 +77,19 @@ public abstract class Terminal {
 	public Terminal fill(int x, int y, int width, int height, char c) {
 		for (int i = 0; i < width; i++) {
 			for (int j = 0; j < height; j++) {
-				put(i + x, j + y, new CharEx(c));
+				put(i + x, j + y, new CharEx(c, colors.foreground(), colors.background()));
 			}
 		}
 		return this;
 	}
 
-	public abstract Terminal fill(int x, int y, int width, int height);
+	public Terminal fill(int x, int y, int width, int height) {
+		for (int i = 0; i < width; i++) {
+			for (int j = 0; j < height; j++) {
+				cursor.bg(i + x, j + y);
+			}
+		}
+		return this;
+	}
 
 }

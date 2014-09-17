@@ -27,7 +27,8 @@ public abstract class Menu<T> {
 	}
 
 	public void processKey(KeyEvent key) {
-		int maxItems = Math.min(items.size(), pageSize);
+		int maxItems = getLastItemIndex() - getFirstItemIndex() + 1;
+		pageIndex = activeIndex % pageSize;
 
 		if (items.size() > 0) {
 
@@ -51,7 +52,7 @@ public abstract class Menu<T> {
 				pageIndex = Math.min(maxItems - 1, Math.max(0, getIndexOfChar(key)));
 			}
 
-			activeIndex = getPageOffset(pageIndex);
+			activeIndex = Math.min(items.size() - 1, getPageOffset(pageIndex));
 		}
 	}
 
@@ -78,7 +79,8 @@ public abstract class Menu<T> {
 	}
 
 	public int getLastItemIndex() {
-		return getFirstItemIndex() + Math.min(pageSize, items.size());
+		// return getFirstItemIndex() + Math.min(pageSize, items.size());
+		return getPageOffset(pageSize);
 	}
 
 	public int getCurrentPage() {
@@ -93,8 +95,12 @@ public abstract class Menu<T> {
 		return items.size();
 	}
 
+	public char getCharForIndex(int index) {
+		return (char) (index + 65);
+	}
+
 	private int getPageOffset(int index) {
-		return ((currentPage - 1) * pageSize) + index;
+		return Math.min(((currentPage - 1) * pageSize) + index, items.size());
 	}
 
 	private int getIndexOfChar(KeyEvent key) {

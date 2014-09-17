@@ -73,7 +73,7 @@ public class DisplayManager {
 
 	public Terminal getTerminal() {
 		if (mainDisplay == null) {
-			mainDisplay = new SwingPaneTerminal(foreground.gridWidth(), foreground.gridHeight(), foreground, background,
+			mainDisplay = new SwingPaneTerminal(foreground.gridWidth(), foreground.gridHeight(),
 					new TerminalChangeNotification() {
 
 						@Override

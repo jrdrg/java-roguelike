@@ -22,7 +22,7 @@ public class TileBuilder {
 		trees.add('&', 15);
 		trees.add('♣', 7);
 
-		water.add('~', 20);
+		// water.add('~', 20);
 		water.add('≈', 5);
 
 		ground.add('.', 30);

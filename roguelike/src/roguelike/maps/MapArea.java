@@ -13,7 +13,6 @@ import roguelike.util.Coordinate;
 import roguelike.util.CurrentItemTracker;
 import squidpony.squidcolor.SColor;
 import squidpony.squidmath.RNG;
-import squidpony.squidutility.graph.PointGraph;
 
 public class MapArea {
 
@@ -25,7 +24,7 @@ public class MapArea {
 	private int width, height;
 	private int difficulty; // controls how difficult random enemies are here
 
-	private PointGraph pointGraph;
+	// private PointGraph pointGraph;
 
 	public MapArea(int width, int height, MapBuilder mapBuilder) {
 		actors = new CurrentItemTracker<Actor>();
@@ -224,7 +223,7 @@ public class MapArea {
 	public void nextActor(String reason) {
 		actors.advance();
 
-		System.out.println("Current actor: " + getCurrentActor().getName() + " => " + reason);
+		// System.out.println("Current actor: " + getCurrentActor().getName() + " => " + reason);
 	}
 
 	/**

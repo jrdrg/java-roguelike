@@ -177,16 +177,25 @@ public class Game {
 
 		while (true) {
 
-			while (queuedActions.isEmpty()) {
-				if (getCurrentActions(turnResult) != null) {
-					return turnResult;
-				}
-			}
+			Actor nextActor = currentMapArea.peekNextActor();
+
 			while (!queuedActions.isEmpty()) {
 				if (executeQueuedActions(turnResult) != null) {
 					return turnResult;
 				}
 			}
+
+			while (queuedActions.isEmpty()) {
+				if (getCurrentActions(turnResult) != null) {
+					return turnResult;
+				}
+			}
+
+			if (nextActor != null && Player.isPlayer(nextActor)) {
+				System.out.println("nextactor=player");
+				return turnResult;
+			}
+
 			if (playerDead)
 				return turnResult;
 		}
@@ -277,7 +286,8 @@ public class Game {
 				System.out.println(result.getMessage() + ", " + result.isSuccess() + ", " + result.isCompleted());
 			}
 
-		} else {
+		} else { // incomplete action
+
 			queuedActions.add(currentAction);
 		}
 
@@ -290,7 +300,7 @@ public class Game {
 		if (nextActor != null) {
 			System.out.println("nextActor=" + nextActor.getName());
 			if (Player.isPlayer(nextActor)) {
-				System.out.println("next actor is player, returning");
+				System.out.println("################ next actor is player, returning");
 				DisplayManager.instance().setDirty();
 				return turnResult;
 			}
