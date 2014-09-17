@@ -1,7 +1,6 @@
 package roguelike;
 
 import java.awt.Rectangle;
-import java.awt.event.KeyEvent;
 
 import roguelike.actors.Actor;
 import roguelike.actors.AttackAttempt;
@@ -10,9 +9,7 @@ import roguelike.maps.MapArea;
 import roguelike.maps.Tile;
 import roguelike.ui.Cursor;
 import roguelike.ui.DisplayManager;
-import roguelike.ui.InputCommand;
 import roguelike.ui.InputManager;
-import roguelike.ui.KeyMap;
 import roguelike.ui.MainWindow;
 import roguelike.ui.MessageDisplay;
 import roguelike.ui.StatsDisplay;
@@ -68,8 +65,6 @@ public class MainScreen extends Screen {
 		Terminal statsTerminal =
 				fullTerminal.getWindow(width - MainWindow.statWidth, 0, MainWindow.statWidth, height);
 
-		setKeyBindings();
-
 		messageDisplay = new MessageDisplay(messageTerminal, outputLines);
 		statsDisplay = new StatsDisplay(statsTerminal);
 
@@ -86,16 +81,6 @@ public class MainScreen extends Screen {
 
 		InputManager.setInputEnabled(true);
 		displayManager.setDirty();
-	}
-
-	public void setKeyBindings() {
-		KeyMap defaultKeys = new KeyMap("Default");
-
-		defaultKeys
-				.bindKey(KeyEvent.VK_UP, InputCommand.UP)
-				.bindKey(KeyEvent.VK_DOWN, InputCommand.DOWN)
-				.bindKey(KeyEvent.VK_LEFT, InputCommand.LEFT)
-				.bindKey(KeyEvent.VK_RIGHT, InputCommand.RIGHT);
 	}
 
 	@Override

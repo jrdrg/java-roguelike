@@ -3,6 +3,7 @@ package roguelike.ui;
 import java.awt.BorderLayout;
 import java.awt.Point;
 import java.awt.Toolkit;
+import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -28,7 +29,7 @@ public class MainWindow {
 
 	private JFrame frame;
 
-	final int FRAMES_PER_SECOND = 50;
+	final int FRAMES_PER_SECOND = 40;
 	final int SKIP_TICKS = 1000 / FRAMES_PER_SECOND;
 
 	private Screen currentScreen;
@@ -42,6 +43,7 @@ public class MainWindow {
 		displayManager = new DisplayManager(fontSize, cellWidth, cellHeight);
 
 		initFrame();
+		setKeyBindings();
 
 		currentScreen = new TitleScreen(displayManager.getTerminal());
 
@@ -63,6 +65,31 @@ public class MainWindow {
 				}
 			}
 		}
+	}
+
+	public void setKeyBindings() {
+		KeyMap defaultKeys = new KeyMap("Default");
+
+		defaultKeys
+				.bindKey(KeyEvent.VK_UP, InputCommand.UP)
+				.bindKey(KeyEvent.VK_DOWN, InputCommand.DOWN)
+				.bindKey(KeyEvent.VK_LEFT, InputCommand.LEFT)
+				.bindKey(KeyEvent.VK_RIGHT, InputCommand.RIGHT)
+				.bindKey(KeyEvent.VK_UP, true, InputCommand.UP_LEFT)
+				.bindKey(KeyEvent.VK_RIGHT, true, InputCommand.UP_RIGHT)
+				.bindKey(KeyEvent.VK_DOWN, true, InputCommand.DOWN_RIGHT)
+				.bindKey(KeyEvent.VK_LEFT, true, InputCommand.DOWN_LEFT)
+
+				.bindKey(KeyEvent.VK_ENTER, InputCommand.CONFIRM)
+				.bindKey(KeyEvent.VK_ESCAPE, InputCommand.CANCEL)
+
+				.bindKey(KeyEvent.VK_PERIOD, InputCommand.REST)
+				.bindKey(KeyEvent.VK_C, InputCommand.CLOSE_DOOR)
+				.bindKey(KeyEvent.VK_I, InputCommand.INVENTORY)
+				.bindKey(KeyEvent.VK_G, InputCommand.PICK_UP)
+				.bindKey(KeyEvent.VK_L, InputCommand.LOOK);
+
+		InputManager.setActiveKeybindings(defaultKeys);
 	}
 
 	private void initFrame() {

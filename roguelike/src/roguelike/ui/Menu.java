@@ -26,30 +26,30 @@ public abstract class Menu<T> {
 		pageCount = (int) Math.ceil(items.size() / (float) pageSize);
 	}
 
-	public void processKey(KeyEvent key) {
+	public void processCommand(InputCommand command) {
 		int maxItems = getLastItemIndex() - getFirstItemIndex() + 1;
 		pageIndex = activeIndex % pageSize;
 
 		if (items.size() > 0) {
 
-			switch (key.getKeyCode()) {
-			case KeyEvent.VK_UP:
+			switch (command) {
+			case UP:
 				pageIndex = Math.max(0, pageIndex - 1);
 				break;
-			case KeyEvent.VK_DOWN:
+			case DOWN:
 				pageIndex = Math.min(maxItems - 1, pageIndex + 1);
 				break;
 
-			case KeyEvent.VK_LEFT:
+			case LEFT:
 				currentPage = Math.max(currentPage - 1, 1);
 				break;
 
-			case KeyEvent.VK_RIGHT:
+			case RIGHT:
 				currentPage = Math.min(currentPage + 1, pageCount);
 				break;
 
 			default:
-				pageIndex = Math.min(maxItems - 1, Math.max(0, getIndexOfChar(key)));
+				// pageIndex = Math.min(maxItems - 1, Math.max(0, getIndexOfChar(key)));
 			}
 
 			activeIndex = Math.min(items.size() - 1, getPageOffset(pageIndex));

@@ -75,6 +75,6 @@ public class LookDialog extends Dialog {
 	}
 
 	public boolean shouldClose() {
-		return InputManager.nextKey() != null;
+		return InputManager.nextCommand() != null;
 	}
 }

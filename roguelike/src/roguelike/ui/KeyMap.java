@@ -39,10 +39,10 @@ public class KeyMap {
 			return null;
 
 		if (key.isShiftDown()) {
-			return shiftKeyBindings.getOrDefault(key, null);
+			return shiftKeyBindings.getOrDefault(key.getKeyCode(), null);
 		}
 		else {
-			return keyBindings.getOrDefault(key, null);
+			return keyBindings.getOrDefault(key.getKeyCode(), null);
 		}
 	}
 }

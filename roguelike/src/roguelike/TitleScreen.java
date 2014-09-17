@@ -1,8 +1,7 @@
 package roguelike;
 
-import java.awt.event.KeyEvent;
-
 import roguelike.ui.DisplayManager;
+import roguelike.ui.InputCommand;
 import roguelike.ui.InputManager;
 import roguelike.ui.windows.SwingPaneTerminalView;
 import roguelike.ui.windows.Terminal;
@@ -42,16 +41,18 @@ public class TitleScreen extends Screen {
 
 	@Override
 	public void process() {
-		KeyEvent nextKey = InputManager.nextKey();
-		if (nextKey != null) {
-			switch (nextKey.getKeyCode()) {
+		InputCommand cmd = InputManager.nextCommand();
+		if (cmd != null) {
+			switch (cmd) {
 
-			case KeyEvent.VK_ENTER:
+			case CONFIRM:
 				nextScreen = new MainScreen(DisplayManager.instance().getTerminal());
 				break;
 
-			case KeyEvent.VK_ESCAPE:
+			case CANCEL:
 				System.exit(0);
+
+			default:
 			}
 		}
 	}

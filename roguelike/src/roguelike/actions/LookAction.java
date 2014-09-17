@@ -1,11 +1,10 @@
 package roguelike.actions;
 
-import java.awt.event.KeyEvent;
-
 import roguelike.Game;
 import roguelike.actors.Actor;
 import roguelike.maps.MapArea;
 import roguelike.ui.Cursor;
+import roguelike.ui.InputCommand;
 import roguelike.ui.InputManager;
 import roguelike.ui.windows.LookDialog;
 import roguelike.util.Coordinate;
@@ -36,10 +35,10 @@ public class LookAction extends Action {
 		} else {
 			Game.current().setCursor(lookCursor);
 
-			KeyEvent nextKey = InputManager.nextKey();
-			if (nextKey != null) {
-				DirectionIntercardinal direction = InputManager.nextDirection(nextKey);
-				if (direction != null && direction != DirectionIntercardinal.NONE) {
+			InputCommand cmd = InputManager.nextCommand();
+			if (cmd != null) {
+				DirectionIntercardinal direction = cmd.toDirection();
+				if (direction != DirectionIntercardinal.NONE) {
 
 					Coordinate newPosition = lookCursor.getPosition().createOffsetPosition(direction);
 
@@ -48,8 +47,8 @@ public class LookAction extends Action {
 					}
 
 				} else {
-					switch (nextKey.getKeyCode()) {
-					case KeyEvent.VK_ENTER:
+					switch (cmd) {
+					case CONFIRM:
 						// look at whatever's under the cursor
 						Game.current().setCursor(null);
 						if (!lookAt())
@@ -57,9 +56,11 @@ public class LookAction extends Action {
 
 						break;
 
-					case KeyEvent.VK_ESCAPE:
+					case CANCEL:
 						Game.current().setCursor(null);
 						return ActionResult.failure().setMessage("Canceled look");
+
+					default:
 					}
 				}
 			}

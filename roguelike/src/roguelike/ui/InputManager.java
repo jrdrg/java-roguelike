@@ -15,53 +15,20 @@ public class InputManager {
 	private static boolean inputEnabled = true;
 	private static KeyMap activeKeyMap = new KeyMap("Default");
 
-	public static KeyEvent nextKey() {
-		if (!inputEnabled)
-			return null;
-
-		KeyEvent key = keyListener.next();
-		if (key != null) {
-			DisplayManager.instance().setDirty();
-		}
-		return key;
+	public static InputCommand nextCommand(KeyEvent key) {
+		return activeKeyMap.getCommand(key);
 	}
 
 	public static InputCommand nextCommand() {
-		return activeKeyMap.getCommand(nextKey());
+		return nextCommand(nextKey());
 	}
 
 	public static DirectionIntercardinal nextDirection() {
-		KeyEvent key = nextKey();
-		return nextDirection(key);
-	}
+		InputCommand cmd = nextCommand();
+		if (cmd == null)
+			return null;
 
-	public static DirectionIntercardinal nextDirection(KeyEvent key) {
-		DirectionIntercardinal direction;
-		if (key != null) {
-			switch (key.getKeyCode()) {
-			case KeyEvent.VK_UP:
-				direction = DirectionIntercardinal.UP;
-				break;
-
-			case KeyEvent.VK_DOWN:
-				direction = DirectionIntercardinal.DOWN;
-				break;
-
-			case KeyEvent.VK_LEFT:
-				direction = DirectionIntercardinal.LEFT;
-				break;
-
-			case KeyEvent.VK_RIGHT:
-				direction = DirectionIntercardinal.RIGHT;
-				break;
-
-			default:
-				direction = DirectionIntercardinal.NONE;
-				break;
-			}
-			return direction;
-		}
-		return null;
+		return cmd.toDirection();
 	}
 
 	public static void registerWithFrame(JFrame frame) {
@@ -80,6 +47,17 @@ public class InputManager {
 
 	public static void setActiveKeybindings(KeyMap keyMap) {
 		activeKeyMap = keyMap;
+	}
+
+	private static KeyEvent nextKey() {
+		if (!inputEnabled)
+			return null;
+
+		KeyEvent key = keyListener.next();
+		if (key != null) {
+			DisplayManager.instance().setDirty();
+		}
+		return key;
 	}
 
 	/*

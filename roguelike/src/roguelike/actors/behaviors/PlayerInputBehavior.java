@@ -1,7 +1,5 @@
 package roguelike.actors.behaviors;
 
-import java.awt.event.KeyEvent;
-
 import roguelike.Game;
 import roguelike.actions.Action;
 import roguelike.actions.CloseDoorAction;
@@ -12,6 +10,7 @@ import roguelike.actions.QuitAction;
 import roguelike.actions.RestAction;
 import roguelike.actions.WalkAction;
 import roguelike.actors.Player;
+import roguelike.ui.InputCommand;
 import roguelike.ui.InputManager;
 import squidpony.squidgrid.util.DirectionIntercardinal;
 
@@ -23,52 +22,58 @@ public class PlayerInputBehavior extends Behavior {
 
 	@Override
 	public Action getAction() {
-		KeyEvent input = InputManager.nextKey();
+		InputCommand input = InputManager.nextCommand();
 		if (input == null)
 			return null;
 
-		// use CMD+up/right/down/left for up-left, up-right,down-right,down-left
+		// use Shift+up/right/down/left for up-left, up-right,down-right,down-left
 
-		boolean useDiagonals = input.isMetaDown();
-		DirectionIntercardinal direction;
-
-		switch (input.getKeyCode()) {
-		case KeyEvent.VK_ESCAPE:
+		switch (input) {
+		case CANCEL:
 			return new QuitAction(actor);
 
-		case KeyEvent.VK_LEFT:
-			direction = useDiagonals ? DirectionIntercardinal.DOWN_LEFT : DirectionIntercardinal.LEFT;
-			return new WalkAction(actor, Game.current().getCurrentMapArea(), direction);
+		case LEFT:
+			return new WalkAction(actor, Game.current().getCurrentMapArea(), DirectionIntercardinal.LEFT);
 
-		case KeyEvent.VK_RIGHT:
-			direction = useDiagonals ? DirectionIntercardinal.UP_RIGHT : DirectionIntercardinal.RIGHT;
-			return new WalkAction(actor, Game.current().getCurrentMapArea(), direction);
+		case DOWN_LEFT:
+			return new WalkAction(actor, Game.current().getCurrentMapArea(), DirectionIntercardinal.DOWN_LEFT);
 
-		case KeyEvent.VK_UP:
-			direction = useDiagonals ? DirectionIntercardinal.UP_LEFT : DirectionIntercardinal.UP;
-			return new WalkAction(actor, Game.current().getCurrentMapArea(), direction);
+		case UP_RIGHT:
+			return new WalkAction(actor, Game.current().getCurrentMapArea(), DirectionIntercardinal.UP_RIGHT);
 
-		case KeyEvent.VK_DOWN:
-			direction = useDiagonals ? DirectionIntercardinal.DOWN_RIGHT : DirectionIntercardinal.DOWN;
-			return new WalkAction(actor, Game.current().getCurrentMapArea(), direction);
+		case RIGHT:
+			return new WalkAction(actor, Game.current().getCurrentMapArea(), DirectionIntercardinal.RIGHT);
 
-		case KeyEvent.VK_PERIOD:
+		case UP_LEFT:
+			return new WalkAction(actor, Game.current().getCurrentMapArea(), DirectionIntercardinal.UP_LEFT);
+
+		case UP:
+			return new WalkAction(actor, Game.current().getCurrentMapArea(), DirectionIntercardinal.UP);
+
+		case DOWN_RIGHT:
+			return new WalkAction(actor, Game.current().getCurrentMapArea(), DirectionIntercardinal.DOWN_RIGHT);
+
+		case DOWN:
+			return new WalkAction(actor, Game.current().getCurrentMapArea(), DirectionIntercardinal.DOWN);
+
+		case REST:
 			return new RestAction(actor);
 
-		case KeyEvent.VK_I:
+		case INVENTORY:
 			return new InventoryAction(actor);
 
-		case KeyEvent.VK_C:
+		case CLOSE_DOOR:
 			return new CloseDoorAction(actor, Game.current().getCurrentMapArea());
 
-		case KeyEvent.VK_G:
+		case PICK_UP:
 			return new GetItemAction(actor, Game.current().getCurrentMapArea());
 
-		case KeyEvent.VK_L:
+		case LOOK:
 			return new LookAction(actor, Game.current().getCurrentMapArea());
 
+		default:
+			return null;
 		}
-		return null;
 	}
 
 	@Override

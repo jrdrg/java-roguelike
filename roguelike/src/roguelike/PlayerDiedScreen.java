@@ -1,9 +1,8 @@
 package roguelike;
 
-import java.awt.event.KeyEvent;
-
 import roguelike.actors.Actor;
 import roguelike.ui.DisplayManager;
+import roguelike.ui.InputCommand;
 import roguelike.ui.InputManager;
 import roguelike.ui.windows.Terminal;
 import squidpony.squidcolor.SColor;
@@ -45,17 +44,19 @@ public class PlayerDiedScreen extends Screen {
 
 	@Override
 	public void process() {
-		KeyEvent nextKey = InputManager.nextKey();
-		if (nextKey != null) {
-			switch (nextKey.getKeyCode()) {
+		InputCommand cmd = InputManager.nextCommand();
+		if (cmd != null) {
+			switch (cmd) {
 
-			case KeyEvent.VK_ENTER:
+			case CONFIRM:
 				System.out.println("Switching to TitleScreen");
 				nextScreen = new TitleScreen(DisplayManager.instance().getTerminal());
 				break;
 
-			case KeyEvent.VK_ESCAPE:
+			case CANCEL:
 				System.exit(0);
+
+			default:
 			}
 		}
 	}
