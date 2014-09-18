@@ -4,7 +4,7 @@ import java.awt.Point;
 
 import roguelike.actors.Actor;
 import roguelike.actors.Player;
-import roguelike.ui.windows.Terminal;
+import roguelike.ui.windows.TerminalBase;
 import squidpony.squidcolor.SColor;
 import squidpony.squidcolor.SColorFactory;
 
@@ -25,7 +25,7 @@ public class AttackAnimation extends Animation {
 	}
 
 	@Override
-	public void onNextFrame(Terminal terminal) {
+	public void onNextFrame(TerminalBase terminal) {
 		Point offsetPos = getOffsetPosition(terminal, target);
 		int x = offsetPos.x;
 		int y = offsetPos.y;
@@ -46,13 +46,11 @@ public class AttackAnimation extends Animation {
 		}
 		foregroundColor = SColorFactory.blend(foregroundColor, SColor.BENI_DYE, currentFrame / (float) totalFrames);
 
-		Terminal effect = terminal.withColor(SColor.TRANSPARENT, backgroundColor);
-		Terminal dmg = terminal.withColor(foregroundColor);
+		TerminalBase effect = terminal.withColor(SColor.TRANSPARENT, backgroundColor);
+		TerminalBase dmg = terminal.withColor(foregroundColor);
 
 		effect.fill(x, y, width, height);
 		dmg.write(x, y + yOffset, damage.toString());
-
-		System.out.println("AttackAnimation: frame " + currentFrame + ", x=" + x + ", y=" + y);
 	}
 
 }

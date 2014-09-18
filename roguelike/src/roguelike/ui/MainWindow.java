@@ -25,7 +25,7 @@ public class MainWindow {
 
 	public static final int width = screenWidth / cellWidth;
 	public static final int height = screenHeight / cellHeight;
-	public static final int statWidth = 20, fontSize = 22, outputLines = 5;
+	public static final int statWidth = 25, fontSize = 20, outputLines = 5;
 
 	private JFrame frame;
 
@@ -90,6 +90,7 @@ public class MainWindow {
 				.bindKey(KeyEvent.VK_L, InputCommand.LOOK);
 
 		InputManager.setActiveKeybindings(defaultKeys);
+		InputManager.DefaultKeyBindings = defaultKeys;
 	}
 
 	private void initFrame() {

@@ -9,6 +9,7 @@ import roguelike.actors.Statistics;
 import roguelike.items.Equipment.ItemSlot;
 import roguelike.items.Weapon;
 import roguelike.util.DiceRolls;
+import roguelike.util.Log;
 import squidpony.squidcolor.SColor;
 
 /**
@@ -22,13 +23,14 @@ import squidpony.squidcolor.SColor;
  * 
  * reach can be a number from 1-5, where 1:fists, 2:daggers, 3:swords, 4:spears/polearms, 5: extra long weapons
  * 
- * the attack can hit a number of squares away equal to reach/2, rounded down, with minimum of 1 - so reach 1-3 can hit the adjacent square, and 4-5 can hit one
- * square away
+ * the attack can hit a number of squares away equal to reach/2, rounded down, with minimum of 1 - so reach 1-3 can hit
+ * the adjacent square, and 4-5 can hit one square away
  * 
  * weapons with a reach greater than 1 square suffer penalties when used at closer range (reach of 4 or 5)
  * 
- * when combatants use weapons of different reaches but the same number of squares, the last weapon to cause damage inflicts penalties on the opponent until the
- * opponent causes damage (so polearms incur double penalties once the user of the shorter weapon scores a hit)
+ * when combatants use weapons of different reaches but the same number of squares, the last weapon to cause damage
+ * inflicts penalties on the opponent until the opponent causes damage (so polearms incur double penalties once the user
+ * of the shorter weapon scores a hit)
  * 
  * 
  * @author john
@@ -58,7 +60,8 @@ public class CombatHandler {
 	}
 
 	/**
-	 * Resolves the attack, and returns either the original attack or a modified attack taking into account the defender's stats, resistances, etc
+	 * Resolves the attack, and returns either the original attack or a modified attack taking into account the
+	 * defender's stats, resistances, etc
 	 * 
 	 * @param attacker
 	 * @param attack
@@ -94,16 +97,16 @@ public class CombatHandler {
 			defendSuccessPool += -reachDiff;
 		}
 
-		System.out.println("Attacker reach: " + attackingReach);
-		System.out.println("Defender reach: " + defendingReach);
+		Log.debug("Attacker reach: " + attackingReach);
+		Log.debug("Defender reach: " + defendingReach);
 
 		// This determines whether the attack landed or not
 		int attackerSuccesses = DiceRolls.roll(attackSuccessPool, attackWeaponTN);
 		int defenderSuccesses = DiceRolls.roll(defendSuccessPool, defendWeaponTN);
 
 		int total = attackerSuccesses - defenderSuccesses;
-		System.out.println("S (A): " + attackerSuccesses + ", TN=" + attackWeaponTN + ", pool=" + attackSuccessPool);
-		System.out.println("S (D): " + defenderSuccesses + ", TN=" + defendWeaponTN + ", pool=" + defendSuccessPool);
+		Log.debug("S (A): " + attackerSuccesses + ", TN=" + attackWeaponTN + ", pool=" + attackSuccessPool);
+		Log.debug("S (D): " + defenderSuccesses + ", TN=" + defendWeaponTN + ", pool=" + defendSuccessPool);
 
 		String attackMsg = String.format("%s successes: %d", attacker.getName(), total);
 

@@ -3,6 +3,7 @@ package roguelike.items;
 import java.util.HashMap;
 
 import roguelike.actors.Actor;
+import roguelike.util.Log;
 
 public class Equipment {
 	public enum ItemSlot {
@@ -48,7 +49,7 @@ public class Equipment {
 
 		Item existingItem = inventory.getItem(item.itemId());
 		if (existingItem == null) {
-			System.out.println("equipItem: Existing item=null, adding " + item.itemId());
+			Log.debug("equipItem: Existing item=null, adding " + item.itemId());
 			inventory.add(item);
 		}
 		// TODO: add equipped indicator to items

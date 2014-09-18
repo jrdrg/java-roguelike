@@ -7,9 +7,9 @@ public class SwingPaneTerminalView {
 	private SwingPane foreground;
 	private SwingPane background;
 
-	private Terminal terminal;
+	private TerminalBase terminal;
 
-	public SwingPaneTerminalView(Terminal terminal, SwingPane fgPane, SwingPane bgPane) {
+	public SwingPaneTerminalView(TerminalBase terminal, SwingPane fgPane, SwingPane bgPane) {
 		this.terminal = terminal;
 		this.foreground = fgPane;
 		this.background = bgPane;

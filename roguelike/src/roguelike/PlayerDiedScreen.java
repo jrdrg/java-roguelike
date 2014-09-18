@@ -4,16 +4,16 @@ import roguelike.actors.Actor;
 import roguelike.ui.DisplayManager;
 import roguelike.ui.InputCommand;
 import roguelike.ui.InputManager;
-import roguelike.ui.windows.Terminal;
+import roguelike.ui.windows.TerminalBase;
 import squidpony.squidcolor.SColor;
 
 public class PlayerDiedScreen extends Screen {
 
-	private Terminal terminal;
-	private Terminal fullTerminal;
+	private TerminalBase terminal;
+	private TerminalBase fullTerminal;
 	private Actor killedBy;
 
-	public PlayerDiedScreen(Actor killedBy, Terminal terminal) {
+	public PlayerDiedScreen(Actor killedBy, TerminalBase terminal) {
 		this.nextScreen = this;
 
 		this.killedBy = killedBy;
@@ -32,7 +32,6 @@ public class PlayerDiedScreen extends Screen {
 		long start = System.currentTimeMillis();
 
 		String title = "You died";
-		// int x = (int) ((terminal.size().width / 2f) - (title.length() / 2f));
 		int x = 5;
 
 		terminal.write(x, 10, title);
@@ -49,7 +48,6 @@ public class PlayerDiedScreen extends Screen {
 			switch (cmd) {
 
 			case CONFIRM:
-				System.out.println("Switching to TitleScreen");
 				nextScreen = new TitleScreen(DisplayManager.instance().getTerminal());
 				break;
 

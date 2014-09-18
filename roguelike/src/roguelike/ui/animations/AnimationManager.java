@@ -3,7 +3,8 @@ package roguelike.ui.animations;
 import java.util.ArrayList;
 
 import roguelike.ui.InputManager;
-import roguelike.ui.windows.Terminal;
+import roguelike.ui.windows.TerminalBase;
+import roguelike.util.Log;
 
 public class AnimationManager {
 
@@ -23,7 +24,7 @@ public class AnimationManager {
 
 	public boolean shouldRefresh() {
 		if (refresh) {
-			System.out.println("Refresh=true");
+			Log.debug("AnimationManager refresh=true");
 			refresh = false;
 			return true;
 		}
@@ -36,7 +37,7 @@ public class AnimationManager {
 	 * @param terminal
 	 * @return
 	 */
-	public boolean nextFrame(Terminal terminal) {
+	public boolean nextFrame(TerminalBase terminal) {
 		boolean anyBlocking = false;
 		boolean anyAnimations = false;
 

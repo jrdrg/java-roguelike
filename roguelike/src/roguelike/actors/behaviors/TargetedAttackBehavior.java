@@ -7,6 +7,7 @@ import roguelike.actions.WalkAction;
 import roguelike.actors.Actor;
 import roguelike.maps.MapArea;
 import roguelike.util.Coordinate;
+import roguelike.util.Log;
 import squidpony.squidcolor.SColor;
 import squidpony.squidgrid.fov.BasicRadiusStrategy;
 import squidpony.squidgrid.fov.RadiusStrategy;
@@ -54,7 +55,7 @@ public class TargetedAttackBehavior extends Behavior {
 				if (actor.getEquipment().getEquippedWeapons()[0] != null)
 					return this;
 				else {
-					System.out.println(String.format("%s has no weapon!", actor.getName()));
+					Log.debug(String.format("%s has no weapon!", actor.getName()));
 				}
 			}
 			// TODO: figure out what to do when target is dead or out of sight

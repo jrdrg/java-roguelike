@@ -4,6 +4,8 @@ import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import roguelike.util.Log;
+
 public class AStarPathfinder {
 	/** The set of nodes that have been searched through */
 	private ArrayList<Node> closed = new ArrayList<Node>();
@@ -49,7 +51,7 @@ public class AStarPathfinder {
 	 */
 	public Path findPath(MapArea map, int sx, int sy, int tx, int ty) {
 
-		System.out.println("Finding path from " + sx + "," + sy + " to " + tx + "," + ty);
+		Log.debug("Finding path from " + sx + "," + sy + " to " + tx + "," + ty);
 
 		// easy first check, if the destination is blocked, we can't get there
 		// if (map.blocked(mover, tx, ty)) {

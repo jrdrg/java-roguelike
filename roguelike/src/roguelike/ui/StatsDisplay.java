@@ -5,16 +5,16 @@ import java.util.Arrays;
 import roguelike.actors.Player;
 import roguelike.items.Equipment.ItemSlot;
 import roguelike.items.Weapon;
-import roguelike.ui.windows.Terminal;
+import roguelike.ui.windows.TerminalBase;
 import squidpony.squidcolor.SColor;
 import squidpony.squidcolor.SColorFactory;
 
 public class StatsDisplay {
 
-	private Terminal terminal;
+	private TerminalBase terminal;
 	private Player player;
 
-	public StatsDisplay(Terminal terminal) {
+	public StatsDisplay(TerminalBase terminal) {
 		this.terminal = terminal;
 
 		System.out.println("Stats display: " + terminal.size().width + "x" + terminal.size().height);
@@ -38,7 +38,7 @@ public class StatsDisplay {
 	}
 
 	private void drawHealth() {
-		Terminal bracketTerm = terminal.withColor(SColor.WHITE);
+		TerminalBase bracketTerm = terminal.withColor(SColor.WHITE);
 
 		bracketTerm.put(0, 4, '[');
 		bracketTerm.put(10, 4, ']');
@@ -50,7 +50,7 @@ public class StatsDisplay {
 		Arrays.fill(bar, '*');
 		String result = new String(bar);
 
-		Terminal barTerm = terminal.withColor(SColorFactory.blend(SColor.RED, SColor.GREEN, floatPct));
+		TerminalBase barTerm = terminal.withColor(SColorFactory.blend(SColor.RED, SColor.GREEN, floatPct));
 
 		String blank = "         ";
 		barTerm.withColor(SColor.BLACK).write(1, 4, blank);
@@ -62,7 +62,7 @@ public class StatsDisplay {
 	private void drawEquipped() {
 
 		SColor headerColor = SColor.BLOOD;
-		Terminal headerTerm = terminal.withColor(headerColor);
+		TerminalBase headerTerm = terminal.withColor(headerColor);
 
 		headerTerm.write(1, 7, "L  ");
 		headerTerm.write(1, 8, "R  ");
@@ -89,8 +89,8 @@ public class StatsDisplay {
 	private void drawStats() {
 
 		SColor headerColor = SColor.BRONZE;
-		Terminal headerTerm = terminal.withColor(headerColor);
-		Terminal displayTerm = terminal;
+		TerminalBase headerTerm = terminal.withColor(headerColor);
+		TerminalBase displayTerm = terminal;
 		// toughness conditioning perception quickness willpower presence
 		headerTerm.write(1, 11, "To");
 		displayTerm.write(3, 11, String.format("%3d", player.getStatistics().toughness.getTotalValue()));

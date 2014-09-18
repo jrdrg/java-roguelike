@@ -8,9 +8,9 @@ import javax.swing.JLayeredPane;
 
 import roguelike.TitleScreen;
 import roguelike.ui.windows.CharEx;
-import roguelike.ui.windows.SwingPaneTerminal;
-import roguelike.ui.windows.SwingPaneTerminalView;
 import roguelike.ui.windows.Terminal;
+import roguelike.ui.windows.SwingPaneTerminalView;
+import roguelike.ui.windows.TerminalBase;
 import roguelike.ui.windows.TerminalChangeNotification;
 import squidpony.squidgrid.gui.SwingPane;
 import squidpony.squidgrid.gui.TextCellFactory;
@@ -28,7 +28,7 @@ public class DisplayManager {
 	private JLayeredPane displayPane;
 	private SwingPane foreground;
 	private SwingPane background;
-	private Terminal mainDisplay;
+	private TerminalBase mainDisplay;
 	private int fontSize;
 	private int cellWidth;
 	private int cellHeight;
@@ -71,9 +71,9 @@ public class DisplayManager {
 		dirty = true;
 	}
 
-	public Terminal getTerminal() {
+	public TerminalBase getTerminal() {
 		if (mainDisplay == null) {
-			mainDisplay = new SwingPaneTerminal(foreground.gridWidth(), foreground.gridHeight(),
+			mainDisplay = new Terminal(foreground.gridWidth(), foreground.gridHeight(),
 					new TerminalChangeNotification() {
 
 						@Override

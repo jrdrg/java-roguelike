@@ -4,16 +4,19 @@ import java.awt.event.KeyEvent;
 
 import javax.swing.JFrame;
 
+import roguelike.util.Log;
 import squidpony.squidgrid.gui.SGKeyListener;
 import squidpony.squidgrid.gui.SGKeyListener.CaptureType;
 import squidpony.squidgrid.util.DirectionIntercardinal;
 
 public class InputManager {
 
+	public static KeyMap DefaultKeyBindings;
+
 	private static SGKeyListener keyListener = new SGKeyListener(false, CaptureType.DOWN);
 	private static boolean inputReceived;
 	private static boolean inputEnabled = true;
-	private static KeyMap activeKeyMap = new KeyMap("Default");
+	private static KeyMap activeKeyMap = new KeyMap(".");
 
 	public static void registerWithFrame(JFrame frame) {
 		frame.addKeyListener(keyListener);
@@ -45,8 +48,13 @@ public class InputManager {
 		inputEnabled = enabled;
 	}
 
-	public static void setActiveKeybindings(KeyMap keyMap) {
-		activeKeyMap = keyMap;
+	public static KeyMap setActiveKeybindings(KeyMap keyMap) {
+		KeyMap old = activeKeyMap;
+		if (!keyMap.getName().equals(old.getName())) {
+			Log.debug("switching keyMap to " + keyMap.getName());
+			activeKeyMap = keyMap;
+		}
+		return old;
 	}
 
 	private static InputCommand nextCommand(KeyEvent key, boolean getKeyData) {

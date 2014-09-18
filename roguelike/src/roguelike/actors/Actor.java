@@ -11,6 +11,7 @@ import roguelike.items.Inventory;
 import roguelike.maps.MapArea;
 import roguelike.maps.Tile;
 import roguelike.util.Coordinate;
+import roguelike.util.Log;
 import squidpony.squidcolor.SColor;
 import squidpony.squidgrid.los.BresenhamLOS;
 import squidpony.squidgrid.los.LOSSolver;
@@ -143,7 +144,7 @@ public abstract class Actor {
 		float force = 1;
 		float decay = 1 / this.getVisionRadius();
 		boolean visible = losSolver.isReachable(mapArea.getLightValues(), startx, starty, targetx, targety, force, decay, BasicRadiusStrategy.CIRCLE);
-		System.out.println(this.getName() + " canSee " + other.getName() + "=" + visible);
+		Log.debug(this.getName() + " canSee " + other.getName() + "=" + visible);
 
 		return visible;
 	}
@@ -162,7 +163,7 @@ public abstract class Actor {
 		while (attackedBy.size() > 1)
 			((Stack<AttackAttempt>) attackedBy).remove(0);
 
-		System.out.println("Actor.finishTurn(): " + getName());
+		Log.debug("Actor.finishTurn(): " + getName());
 
 		onTurnFinished();
 	}

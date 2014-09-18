@@ -8,9 +8,10 @@ import roguelike.actors.Actor;
 import roguelike.data.EnemyFactory;
 import roguelike.items.Inventory;
 import roguelike.items.Item;
-import roguelike.ui.windows.Terminal;
+import roguelike.ui.windows.TerminalBase;
 import roguelike.util.Coordinate;
 import roguelike.util.CurrentItemTracker;
+import roguelike.util.Log;
 import squidpony.squidcolor.SColor;
 import squidpony.squidmath.RNG;
 
@@ -44,7 +45,7 @@ public class MapArea {
 	}
 
 	public void spawnMonsters() {
-		System.out.println("spawnMonsters");
+		Log.debug("spawnMonsters");
 		int maxActors = 70;
 		if (actors.count() < maxActors) {
 			/* create a new one somewhere close to the player */
@@ -148,7 +149,7 @@ public class MapArea {
 		return new Rectangle(upperLeft.x, upperLeft.y, w, h);
 	}
 
-	public Rectangle getVisibleAreaInTiles(Terminal terminal, Coordinate center) {
+	public Rectangle getVisibleAreaInTiles(TerminalBase terminal, Coordinate center) {
 		return getVisibleAreaInTiles(terminal.size().width, terminal.size().height, center);
 	}
 
@@ -176,7 +177,7 @@ public class MapArea {
 	public boolean removeItem(Item item, int x, int y) {
 		Inventory items = getItemsAt(x, y);
 		if (!items.any()) {
-			System.out.println("Failed! no items at " + x + "," + y);
+			Log.debug("Failed! no items at " + x + "," + y);
 			return false;
 		}
 		boolean removed = items.remove(item);
@@ -223,7 +224,7 @@ public class MapArea {
 	public void nextActor(String reason) {
 		actors.advance();
 
-		// System.out.println("Current actor: " + getCurrentActor().getName() + " => " + reason);
+		// Log.debug("Current actor: " + getCurrentActor().getName() + " => " + reason);
 	}
 
 	/**
@@ -285,18 +286,18 @@ public class MapArea {
 	 *         actually has no actor, which probably indicates a bug)
 	 */
 	public boolean removeActor(Actor actor) {
-		System.out.println("Removing actor " + actor.getName());
+		Log.debug("Removing actor " + actor.getName());
 
 		Coordinate pos = actor.getPosition();
 		Tile tile = getTileAt(pos.x, pos.y);
 		if (tile.getActor() == null) {
-			System.out.println("Failed!  actor=" + actor.getName());
+			Log.debug("Failed!  actor=" + actor.getName());
 			return false;
 		}
-		System.out.println("Success!");
+		Log.debug("Success!");
 
 		actors.remove(actor);
-		System.out.println("     > actors count: " + actors.getAll().size());
+		Log.debug("     > actors count: " + actors.getAll().size());
 		tile.setActor(null);
 		return true;
 	}
@@ -381,7 +382,7 @@ public class MapArea {
 
 		// TODO: pathfinding precalculations?
 
-		// System.out.println("Calculating path maps...");
+		// Log.debug("Calculating path maps...");
 		// pointGraph = new PointGraph();
 		// for (int x = 0; x < width; x++) {
 		// for (int y = 0; y < height; y++) {
@@ -390,6 +391,6 @@ public class MapArea {
 		// }
 		// }
 		// pointGraph.calculateEdges();
-		// System.out.println("done");
+		// Log.debug("done");
 	}
 }

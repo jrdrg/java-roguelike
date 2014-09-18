@@ -18,16 +18,14 @@ public class InventoryDialog extends Dialog {
 	protected void onDraw() {
 		SColor menuBgColor = SColorFactory.asSColor(30, 30, 30);
 
-		Terminal border = terminal.withColor(SColor.WHITE, SColor.GRAPE_MOUSE);
-		Terminal background = terminal.withColor(menuBgColor, menuBgColor);
-		Terminal text = terminal.withColor(SColor.WHITE, menuBgColor);
+		TerminalBase border = terminal.withColor(SColor.WHITE, SColor.GRAPE_MOUSE);
+		TerminalBase background = terminal.withColor(menuBgColor, menuBgColor);
+		TerminalBase text = terminal.withColor(SColor.WHITE, menuBgColor);
 
 		background.fill(0, 0, size.width, size.height, ' ');
 		border.fill(0, 0, size.width, 1, ' ');
 
 		// drawBoxShape(border);
-
-		border.write(1, 0, "Inventory");
 
 		int activeIndex = menu.getActiveItemIndex();
 		int firstIndex = menu.getFirstItemIndex();
@@ -35,9 +33,9 @@ public class InventoryDialog extends Dialog {
 		int currentPage = menu.getCurrentPage();
 		int pageCount = menu.getPageCount();
 
-		int itemCount = lastIndex - firstIndex;
+		border.write(1, 0, String.format("Inventory `Gray`(%d/%d)", currentPage, pageCount));
 
-		Terminal activeText = terminal.withColor(SColor.ALIZARIN, menuBgColor);
+		TerminalBase activeText = terminal.withColor(SColor.ALIZARIN, menuBgColor);
 		for (int x = firstIndex; x < lastIndex; x++) {
 			int offset = x - firstIndex;
 			int itemIdx = x;
@@ -45,7 +43,7 @@ public class InventoryDialog extends Dialog {
 			if (item == null)
 				break;
 
-			Terminal t = text;
+			TerminalBase t = text;
 			if (itemIdx == activeIndex) {
 				t = activeText;
 			}
@@ -53,8 +51,6 @@ public class InventoryDialog extends Dialog {
 			text.write(1, displayY, menu.getCharForIndex(offset) + ")");
 			t.write(4, displayY, item.getName());
 		}
-
-		text.write(6, itemCount + 5, String.format("%2d/%2d", currentPage, pageCount));
 	}
 
 }

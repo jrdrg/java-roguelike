@@ -7,13 +7,13 @@ public abstract class Dialog {
 	// Box drawing tiles: "┻┗┛┫┳┣┃━┏┓╋"
 
 	protected Rectangle size;
-	protected Terminal terminal;
+	protected TerminalBase terminal;
 
 	protected Dialog(int width, int height) {
 		this.size = new Rectangle(0, 0, width, height);
 	}
 
-	public void showInPane(Terminal terminal) {
+	public void showInPane(TerminalBase terminal) {
 
 		int width = terminal.size.width;
 		int height = terminal.size.height;
@@ -37,7 +37,7 @@ public abstract class Dialog {
 		return size.getLocation();
 	}
 
-	protected void drawBoxShape(Terminal term) {
+	protected void drawBoxShape(TerminalBase term) {
 		int width = size.width;
 		int height = size.height;
 

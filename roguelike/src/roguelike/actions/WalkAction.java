@@ -5,6 +5,7 @@ import roguelike.maps.Door;
 import roguelike.maps.MapArea;
 import roguelike.maps.Tile;
 import roguelike.util.Coordinate;
+import roguelike.util.Log;
 import squidpony.squidgrid.util.DirectionIntercardinal;
 
 public class WalkAction extends Action {
@@ -27,7 +28,7 @@ public class WalkAction extends Action {
 	@Override
 	public ActionResult onPerform() {
 		if (!actor.isAlive()) {
-			System.out.println(">>> Actor is dead! " + actor.getName());
+			Log.debug(">>> Actor is dead! " + actor.getName());
 			return ActionResult.success().setMessage("Actor is dead");
 		}
 

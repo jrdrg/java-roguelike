@@ -17,9 +17,10 @@ import roguelike.ui.animations.AnimationManager;
 import roguelike.ui.animations.AttackAnimation;
 import roguelike.ui.animations.AttackMissedAnimation;
 import roguelike.ui.windows.Dialog;
-import roguelike.ui.windows.Terminal;
+import roguelike.ui.windows.TerminalBase;
 import roguelike.util.ArrayUtils;
 import roguelike.util.Coordinate;
+import roguelike.util.Log;
 import squidpony.squidcolor.SColor;
 import squidpony.squidcolor.SColorFactory;
 import squidpony.squidgrid.fov.FOVTranslator;
@@ -35,8 +36,8 @@ public class MainScreen extends Screen {
 	private final int windowWidth = width - MainWindow.statWidth;
 	private final int windowHeight = height - outputLines;
 
-	Terminal fullTerminal;
-	Terminal terminal;
+	TerminalBase fullTerminal;
+	TerminalBase terminal;
 
 	Game game;
 	GameLoader gameLoader;
@@ -47,7 +48,7 @@ public class MainScreen extends Screen {
 
 	TurnResult currentTurn;
 
-	public MainScreen(Terminal fullTerminal) {
+	public MainScreen(TerminalBase fullTerminal) {
 		this.fullTerminal = fullTerminal;
 		this.terminal = fullTerminal.getWindow(0, 0, windowWidth, windowHeight);
 		this.nextScreen = this;
@@ -59,10 +60,10 @@ public class MainScreen extends Screen {
 		animationManager = new AnimationManager();
 		displayManager = DisplayManager.instance();
 
-		Terminal messageTerminal =
+		TerminalBase messageTerminal =
 				fullTerminal.getWindow(0, height - outputLines, width, outputLines);
 
-		Terminal statsTerminal =
+		TerminalBase statsTerminal =
 				fullTerminal.getWindow(width - MainWindow.statWidth, 0, MainWindow.statWidth, height);
 
 		messageDisplay = new MessageDisplay(messageTerminal, outputLines);
@@ -126,7 +127,7 @@ public class MainScreen extends Screen {
 		long start = System.currentTimeMillis();
 
 		if (currentTurn == null) {
-			System.out.println("No current turn yet");
+			Log.debug("No current turn yet");
 			return 0;
 		}
 
@@ -147,7 +148,7 @@ public class MainScreen extends Screen {
 
 		if (animationProcessed || animationManager.shouldRefresh()) {
 			displayManager.setDirty();
-			System.out.println("Set dirty flag");
+			Log.debug("Set dirty flag");
 		}
 
 		long end = System.currentTimeMillis();
@@ -263,14 +264,14 @@ public class MainScreen extends Screen {
 				direction = DirectionIntercardinal
 						.getDirection(-diff.x, -diff.y);
 
-				System.out.println(initiator.getName() + " attacks "
+				Log.debug(initiator.getName() + " attacks "
 						+ target.getName() + " in direction "
 						+ direction.symbol);
 
 				if (screenArea.contains(initiatorPos) && screenArea.contains(targetPos)) {
 
 					animationManager.addAnimation(new AttackAnimation(target, event.getMessage()));
-					System.out.println("Added attack animation");
+					Log.debug("Added attack animation");
 
 				}
 				break;
@@ -287,7 +288,7 @@ public class MainScreen extends Screen {
 				if (screenArea.contains(initiatorPos) && screenArea.contains(targetPos)) {
 
 					animationManager.addAnimation(new AttackMissedAnimation(target));
-					System.out.println("Added attack missed animation");
+					Log.debug("Added attack missed animation");
 
 				}
 				break;

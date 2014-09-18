@@ -14,6 +14,7 @@ import roguelike.ui.Cursor;
 import roguelike.ui.DisplayManager;
 import roguelike.ui.windows.Dialog;
 import roguelike.util.Coordinate;
+import roguelike.util.Log;
 import squidpony.squidcolor.SColor;
 import squidpony.squidmath.RNG;
 
@@ -51,7 +52,7 @@ public class Game {
 		queuedActions = new LinkedList<Action>();
 		rng = gameLoader.getRandom();
 		currentGame = this;
-		System.out.println("Created Game");
+		Log.debug("Created Game");
 
 		this.dataFactory = gameLoader.dataFactory;
 	}
@@ -108,7 +109,7 @@ public class Game {
 	}
 
 	public void initialize() {
-		System.out.println("Initializing Game");
+		Log.debug("Initializing Game");
 
 		running = true;
 	}
@@ -136,7 +137,7 @@ public class Game {
 	 */
 	public void displayMessage(String message) {
 		currentTurnResult.addMessage(message);
-		System.out.println("> " + message);
+		Log.debug("> " + message);
 	}
 
 	public void displayMessage(String message, SColor color) {
@@ -224,7 +225,7 @@ public class Game {
 			if (Player.isPlayer(actor)) {
 				// TODO: process things that happen every turn after player queues actions
 				Game.currentGame.currentMapArea.spawnMonsters();
-				System.out.println("Game: Queue length: " + queuedActions.size());
+				Log.debug("Game: Queue length: " + queuedActions.size());
 			}
 		}
 
@@ -274,10 +275,10 @@ public class Game {
 
 			} else {
 
-				System.out.println("Game: Actor=" + currentActor.getName());
-				System.out.println("Game: Energy=" + currentActor.isAlive());
-				System.out.println("Game: Remaining energy: " + currentActor.getEnergy().getCurrent() + " Result=" + result);
-				System.out.println("Game: " + result.getMessage() + ", " + result.isSuccess() + ", " + result.isCompleted());
+				Log.debug("Game: Actor=" + currentActor.getName());
+				Log.debug("Game: Energy=" + currentActor.isAlive());
+				Log.debug("Game: Remaining energy: " + currentActor.getEnergy().getCurrent() + " Result=" + result);
+				Log.debug("Game: " + result.getMessage() + ", " + result.isSuccess() + ", " + result.isCompleted());
 			}
 
 		} else { // incomplete action

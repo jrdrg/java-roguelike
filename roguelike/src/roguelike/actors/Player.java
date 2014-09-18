@@ -4,6 +4,7 @@ import roguelike.Game;
 import roguelike.actions.Action;
 import roguelike.actors.behaviors.Behavior;
 import roguelike.actors.behaviors.PlayerInputBehavior;
+import roguelike.util.Log;
 import squidpony.squidcolor.SColor;
 
 public class Player extends Actor {
@@ -50,8 +51,8 @@ public class Player extends Actor {
 
 	@Override
 	public void onAttackedInternal(Actor attacker) {
-		System.out.println("Player attacked by " + attacker.getName());
-		System.out.println("AttackedBy count=" + attackedBy.size());
+		Log.debug("Player attacked by " + attacker.getName());
+		Log.debug("AttackedBy count=" + attackedBy.size());
 	}
 
 	@Override

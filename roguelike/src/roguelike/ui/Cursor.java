@@ -4,7 +4,7 @@ import java.awt.Rectangle;
 
 import roguelike.Game;
 import roguelike.maps.MapArea;
-import roguelike.ui.windows.Terminal;
+import roguelike.ui.windows.TerminalBase;
 import roguelike.util.Coordinate;
 import squidpony.squidcolor.SColor;
 
@@ -33,7 +33,7 @@ public class Cursor {
 		this.position.y = position.y;
 	}
 
-	public void draw(Terminal terminal, Rectangle screenArea) {
+	public void draw(TerminalBase terminal, Rectangle screenArea) {
 		if (terminal == null)
 			throw new IllegalArgumentException("terminal cannot be null");
 

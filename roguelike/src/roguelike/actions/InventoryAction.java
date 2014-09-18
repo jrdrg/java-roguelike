@@ -7,6 +7,7 @@ import roguelike.items.InventoryMenu;
 import roguelike.items.Item;
 import roguelike.ui.InputCommand;
 import roguelike.ui.InputManager;
+import roguelike.ui.Menu;
 import roguelike.ui.windows.InventoryDialog;
 
 public class InventoryAction extends Action {
@@ -30,10 +31,13 @@ public class InventoryAction extends Action {
 
 			Game.current().setActiveDialog(new InventoryDialog(menu));
 
+			InputManager.setActiveKeybindings(Menu.KeyBindings);
+
 		} else {
 			InputCommand nextCommand = InputManager.nextCommandPreserveKeyData();
 			if (nextCommand != null) {
 
+				ActionResult result;
 				switch (nextCommand) {
 				case CONFIRM:
 
@@ -43,15 +47,19 @@ public class InventoryAction extends Action {
 						// TODO: change this to something else, equip it for now
 						ItemSlot.RIGHT_ARM.equipItem(actor, activeItem);
 
-						return ActionResult.success().setMessage("Selected item: " + activeItem.getName());
+						result = ActionResult.success().setMessage("Selected item: " + activeItem.getName());
 
 					} else {
-						return ActionResult.failure().setMessage("Empty inventory...");
+						result = ActionResult.failure().setMessage("Empty inventory...");
 
 					}
 
 				case CANCEL:
-					return ActionResult.failure().setMessage("Closed inventory menu");
+					result = ActionResult.failure().setMessage("Closed inventory menu");
+
+					// No break statement since we fall through to this from either cancel or confirm
+					InputManager.setActiveKeybindings(InputManager.DefaultKeyBindings);
+					return result;
 
 				default:
 					menu.processCommand(nextCommand);

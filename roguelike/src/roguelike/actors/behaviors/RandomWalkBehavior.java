@@ -8,6 +8,7 @@ import roguelike.actors.Actor;
 import roguelike.actors.AttackAttempt;
 import roguelike.maps.MapArea;
 import roguelike.util.Coordinate;
+import roguelike.util.Log;
 import squidpony.squidgrid.util.DirectionIntercardinal;
 
 public class RandomWalkBehavior extends Behavior {
@@ -42,7 +43,7 @@ public class RandomWalkBehavior extends Behavior {
 	public Behavior getNextBehavior() {
 		AttackAttempt lastAttackedBy = actor.getLastAttackedBy();
 		if (lastAttackedBy != null) {
-			System.out.println("Switching to targeted attack behavior");
+			Log.debug("Switching to targeted attack behavior");
 			return new TargetedAttackBehavior(actor, lastAttackedBy.getActor());
 		}
 

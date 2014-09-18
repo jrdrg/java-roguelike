@@ -5,6 +5,7 @@ import roguelike.actions.combat.Attack;
 import roguelike.actors.Actor;
 import roguelike.actors.Player;
 import roguelike.maps.MapArea;
+import roguelike.util.Log;
 
 public class AttackAction extends Action {
 
@@ -27,7 +28,7 @@ public class AttackAction extends Action {
 
 	private ActionResult attackTarget() {
 		if (!actor.isAlive()) {
-			System.out.println(">>> onPerform() >>> Actor " + actor.getName() + " is dead!");
+			Log.debug(">>> onPerform() >>> Actor " + actor.getName() + " is dead!");
 			return ActionResult.failure().setMessage("Actor " + actor.getName() + " is dead!");
 		}
 		if (!target.isAlive()) {

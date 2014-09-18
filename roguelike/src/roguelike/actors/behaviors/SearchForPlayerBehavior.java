@@ -10,6 +10,7 @@ import roguelike.maps.AStarPathfinder;
 import roguelike.maps.MapArea;
 import roguelike.maps.Path;
 import roguelike.maps.Path.Step;
+import roguelike.util.Log;
 import squidpony.squidgrid.util.DirectionIntercardinal;
 
 public class SearchForPlayerBehavior extends Behavior {
@@ -45,12 +46,12 @@ public class SearchForPlayerBehavior extends Behavior {
 					return new WalkAction(actor, map, DirectionIntercardinal.getDirection(ssx, ssy));
 				}
 			}
-			System.out.println("Resting, can't find path...");
+			Log.debug("Resting, can't find path...");
 			return new RestAction(actor);
 		}
 		else {
 			// try to find a path toward the player
-			System.out.println("Resting, can't see player...");
+			Log.debug("Resting, can't see player...");
 			return new RestAction(actor);
 		}
 	}
@@ -59,7 +60,7 @@ public class SearchForPlayerBehavior extends Behavior {
 	public Behavior getNextBehavior() {
 		AttackAttempt lastAttackedBy = actor.getLastAttackedBy();
 		if (lastAttackedBy != null) {
-			System.out.println("Switching to targeted attack behavior");
+			Log.debug("Switching to targeted attack behavior");
 			return new TargetedAttackBehavior(actor, lastAttackedBy.getActor());
 		}
 

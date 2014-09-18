@@ -4,7 +4,7 @@ import java.awt.Point;
 
 import roguelike.actors.Actor;
 import roguelike.actors.Player;
-import roguelike.ui.windows.Terminal;
+import roguelike.ui.windows.TerminalBase;
 import squidpony.squidcolor.SColor;
 import squidpony.squidcolor.SColorFactory;
 
@@ -24,7 +24,7 @@ public class AttackMissedAnimation extends Animation {
 	}
 
 	@Override
-	public void onNextFrame(Terminal terminal) {
+	public void onNextFrame(TerminalBase terminal) {
 		Point offsetPos = getOffsetPosition(terminal, target);
 		int x = offsetPos.x;
 		int y = offsetPos.y;
@@ -41,11 +41,9 @@ public class AttackMissedAnimation extends Animation {
 		}
 		foregroundColor = SColorFactory.blend(foregroundColor, SColor.DARK_BROWN, currentFrame / (float) totalFrames);
 
-		Terminal dmg = terminal.withColor(foregroundColor);
+		TerminalBase dmg = terminal.withColor(foregroundColor);
 
 		dmg.write(x, y + yOffset, description);
-
-		System.out.println("AttackMissedAnimation: frame " + currentFrame + ", x=" + x + ", y=" + y);
 	}
 
 }

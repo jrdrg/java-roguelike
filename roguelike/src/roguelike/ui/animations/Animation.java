@@ -5,7 +5,7 @@ import java.awt.Rectangle;
 
 import roguelike.Game;
 import roguelike.actors.Actor;
-import roguelike.ui.windows.Terminal;
+import roguelike.ui.windows.TerminalBase;
 import roguelike.util.Coordinate;
 
 public abstract class Animation {
@@ -27,7 +27,7 @@ public abstract class Animation {
 	 * @return True if the last frame was just drawn and the animation should be
 	 *         removed.
 	 */
-	public final boolean nextFrame(Terminal terminal) {
+	public final boolean nextFrame(TerminalBase terminal) {
 		if (currentFrame < totalFrames) {
 			onNextFrame(terminal);
 		}
@@ -36,7 +36,7 @@ public abstract class Animation {
 		return finished;
 	}
 
-	protected Point getOffsetPosition(Terminal terminal, Actor target) {
+	protected Point getOffsetPosition(TerminalBase terminal, Actor target) {
 		Game g = Game.current();
 		Rectangle termSize = terminal.size();
 		Point upperLeft = g
@@ -50,5 +50,5 @@ public abstract class Animation {
 		return ret;
 	}
 
-	public abstract void onNextFrame(Terminal terminal);
+	public abstract void onNextFrame(TerminalBase terminal);
 }

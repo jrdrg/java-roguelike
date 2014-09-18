@@ -1,95 +1,78 @@
 package roguelike.ui.windows;
 
-import java.awt.Point;
 import java.awt.Rectangle;
 
 import squidpony.squidcolor.SColor;
 
-public abstract class Terminal {
+public class Terminal extends TerminalBase {
 
-	protected CharEx[][] data;
-	protected Rectangle size;
-	protected ColorPair colors;
-	protected TerminalCursor cursor;
-
-	protected TerminalChangeNotification terminalChanged;
-
-	protected Terminal(TerminalChangeNotification terminalChanged) {
-		setTerminalChanged(terminalChanged);
+	public Terminal(int width, int height, TerminalChangeNotification terminalChanged) {
+		this(new Rectangle(0, 0, width, height), new CharEx[width][height], terminalChanged);
 	}
 
-	public void setTerminalChanged(TerminalChangeNotification terminalChanged) {
-		if (terminalChanged == null)
-			throw new IllegalArgumentException("terminal changed notification is null");
+	Terminal(
+			final Rectangle area, final CharEx[][] data,
+			final TerminalChangeNotification terminalChanged)
+	{
+		super(terminalChanged);
 
-		this.terminalChanged = terminalChanged;
-	}
+		this.colors = new ColorPair(SColor.WHITE, SColor.BLACK);
+		this.size = area;
+		this.data = data;
+		this.cursor = new TerminalCursor() {
 
-	public Point location() {
-		return this.size.getLocation();
-	}
-
-	public Rectangle size() {
-		return this.size;
-	}
-
-	public abstract Terminal getWindow(int x, int y, int width, int height);
-
-	public abstract Terminal withColor(SColor color);
-
-	public abstract Terminal withColor(SColor foreground, SColor background);
-
-	public Terminal write(int x, int y, String text) {
-		return write(x, y, new StringEx(text, colors.foreground(), colors.background()));
-	}
-
-	public Terminal write(int x, int y, StringEx text) {
-		CharEx[][] temp = new CharEx[text.size()][1];
-		for (int i = 0; i < text.size(); i++) {
-			temp[i][0] = text.get(i);
-		}
-		put(x, y, temp);
-		return this;
-	}
-
-	public Terminal put(int x, int y, CharEx[][] c) {
-		for (int i = 0; i < c.length; i++) {
-			for (int j = 0; j < c[0].length; j++) {
-				put(x + i, y + j, c[i][j]);
+			@Override
+			public boolean put(int x, int y, CharEx c) {
+				int sx = getX(x);
+				int sy = getY(y);
+				if (data[sx][sy] != null && data[sx][sy].equals(c)) {
+					return false;
+				}
+				data[sx][sy] = c;
+				return true;
 			}
-		}
-		return this;
-	}
 
-	public Terminal put(int x, int y, CharEx c) {
-		if (cursor.put(x, y, c)) {
-			terminalChanged.onChanged(x + size.x, y + size.y, c);
-		}
-		return this;
-	}
+			@Override
+			public boolean bg(int x, int y) {
+				int sx = getX(x);
+				int sy = getY(y);
+				CharEx c = data[getX(x)][getY(y)];
+				CharEx c2 = new CharEx(c.symbol(), c.foregroundColor(), colors.background());
+				data[sx][sy] = c2;
 
-	public Terminal put(int x, int y, char c) {
-		CharEx ch = new CharEx(c, colors.foreground(), colors.background());
-		put(x, y, ch);
-		return this;
-	}
+				terminalChanged.onChanged(sx, sy, c2);
 
-	public Terminal fill(int x, int y, int width, int height, char c) {
-		for (int i = 0; i < width; i++) {
-			for (int j = 0; j < height; j++) {
-				put(i + x, j + y, new CharEx(c, colors.foreground(), colors.background()));
+				return true;
 			}
-		}
-		return this;
+
+			private int getX(int x) {
+				return size.x + x;
+			}
+
+			private int getY(int y) {
+				return size.y + y;
+			}
+		};
 	}
 
-	public Terminal fill(int x, int y, int width, int height) {
-		for (int i = 0; i < width; i++) {
-			for (int j = 0; j < height; j++) {
-				cursor.bg(i + x, j + y);
-			}
-		}
-		return this;
+	@Override
+	public TerminalBase getWindow(int x, int y, int width, int height) {
+		Rectangle area = new Rectangle(x, y, width, height);
+		return new Terminal(area, this.data, this.terminalChanged);
+	}
+
+	@Override
+	public TerminalBase withColor(SColor color) {
+		Terminal term = new Terminal(size, data, this.terminalChanged);
+		term.colors = new ColorPair(color);
+		return term;
+	}
+
+	@Override
+	public TerminalBase withColor(SColor fgColor, SColor bgColor) {
+		Terminal term = new Terminal(size, data, this.terminalChanged);
+		term.colors = new ColorPair(fgColor, bgColor);
+		return term;
 	}
 
 }

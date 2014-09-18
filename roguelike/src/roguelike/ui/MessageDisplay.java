@@ -3,15 +3,15 @@ package roguelike.ui;
 import java.util.ArrayList;
 
 import roguelike.MessageDisplayProperties;
-import roguelike.ui.windows.Terminal;
+import roguelike.ui.windows.TerminalBase;
 import squidpony.squidcolor.SColor;
 
 public class MessageDisplay {
-	private Terminal terminal;
+	private TerminalBase terminal;
 	private ArrayList<MessageDisplayProperties> messages;
 	private int numLines;
 
-	public MessageDisplay(Terminal terminal, int numLines) {
+	public MessageDisplay(TerminalBase terminal, int numLines) {
 		this.terminal = terminal;
 		this.numLines = numLines;
 		this.messages = new ArrayList<MessageDisplayProperties>();
@@ -40,7 +40,7 @@ public class MessageDisplay {
 		terminal.fill(0, 0, terminal.size().width, terminal.size().height, ' ');
 		for (int x = 0; x < messages.size(); x++) {
 			MessageDisplayProperties props = messages.get(x);
-			Terminal colorTerm = terminal.withColor(props.getColor());
+			TerminalBase colorTerm = terminal.withColor(props.getColor());
 			colorTerm.write(0, x, props.getText());
 		}
 	}

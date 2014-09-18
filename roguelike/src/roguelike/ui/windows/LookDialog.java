@@ -32,8 +32,8 @@ public class LookDialog extends Dialog {
 		SColor menuBgColor = SColorFactory.asSColor(30, 30, 30);
 
 		// Terminal border = terminal.withColor(SColor.WHITE, SColor.GRAPE_MOUSE);
-		Terminal background = terminal.withColor(menuBgColor, menuBgColor);
-		Terminal text = terminal.withColor(SColor.WHITE, menuBgColor);
+		TerminalBase background = terminal.withColor(menuBgColor, menuBgColor);
+		TerminalBase text = terminal.withColor(SColor.WHITE, menuBgColor);
 
 		ArrayList<String> textList = new ArrayList<String>();
 
@@ -42,18 +42,20 @@ public class LookDialog extends Dialog {
 
 		Actor actor = mapArea.getActorAt(x, y);
 		if (actor != null) {
-			textList.add(actor.getDescription());
-			textList.add(" Weapon: " + ItemSlot.RIGHT_ARM.getEquippedWeapon(actor).getDescription());
+			textList.add("`" + actor.getColor().getName() + "`" + actor.getDescription());
+			textList.add("");
+			textList.add(" `Gray`Weapon: `White`" + ItemSlot.RIGHT_ARM.getEquippedWeapon(actor).getDescription());
 
 			Statistics stats = actor.getStatistics();
-			textList.add(String.format(" MP:%3d RP:%3d Ref:%3d Aim:%3d Spd:%3d",
+			textList.add(String.format(" `Bronze`MP:`White`%3d `Bronze`RP:`White`%3d `Bronze`Ref:`White`%3d `Bronze`Aim:`White`%3d `Bronze`Spd:`White`%3d",
 					stats.baseMeleePool(0), stats.baseRangedPool(0), stats.reflexes(), stats.aiming(), stats.speed.getTotalValue()));
 
-			textList.add(String.format(" To:%3d Co:%3d Pe:%3d Qu:%3d Wi:%3d Pr:%3d",
+			textList.add(String.format(" `Bronze`To:`White`%3d `Bronze`Co:`White`%3d `Bronze`Pe:`White`%3d " +
+					"`Bronze`Qu:`White`%3d `Bronze`Wi:`White`%3d `Bronze`Pr:`White`%3d",
 					stats.toughness.getTotalValue(), stats.conditioning.getTotalValue(), stats.perception.getTotalValue(),
 					stats.quickness.getTotalValue(), stats.willpower.getTotalValue(), stats.presence.getTotalValue()));
 
-			textList.add(String.format(" H:%3d", actor.getHealth().getCurrent()));
+			textList.add(String.format(" `Red`H:`White`%3d", actor.getHealth().getCurrent()));
 		}
 		int textY = 2;
 		Inventory inventory = mapArea.getItemsAt(x, y);

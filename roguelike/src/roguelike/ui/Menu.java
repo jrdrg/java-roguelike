@@ -1,10 +1,19 @@
 package roguelike.ui;
 
-import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.sun.glass.events.KeyEvent;
+
 public abstract class Menu<T> {
+
+	public static KeyMap KeyBindings = new KeyMap("Menu")
+			.bindKey(KeyEvent.VK_ENTER, InputCommand.CONFIRM)
+			.bindKey(KeyEvent.VK_ESCAPE, InputCommand.CANCEL)
+			.bindKey(KeyEvent.VK_UP, InputCommand.UP)
+			.bindKey(KeyEvent.VK_DOWN, InputCommand.DOWN)
+			.bindKey(KeyEvent.VK_LEFT, InputCommand.LEFT)
+			.bindKey(KeyEvent.VK_RIGHT, InputCommand.RIGHT);
 
 	private ArrayList<T> items;
 	private int activeIndex;
