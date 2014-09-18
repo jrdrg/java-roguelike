@@ -3,6 +3,8 @@ package roguelike.ui.windows;
 import java.awt.Point;
 import java.awt.Rectangle;
 
+import roguelike.util.CharEx;
+import roguelike.util.StringEx;
 import squidpony.squidcolor.SColor;
 
 public abstract class TerminalBase {

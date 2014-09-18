@@ -2,6 +2,7 @@ package roguelike.ui.windows;
 
 import java.awt.Rectangle;
 
+import roguelike.util.CharEx;
 import squidpony.squidcolor.SColor;
 
 public class Terminal extends TerminalBase {

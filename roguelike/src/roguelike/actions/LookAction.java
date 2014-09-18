@@ -29,7 +29,7 @@ public class LookAction extends Action {
 		if (lookDialog != null) {
 			Game.current().setActiveDialog(lookDialog);
 
-			if (lookDialog.shouldClose())
+			if (lookDialog.result() != null)
 				return ActionResult.success();
 
 		} else {

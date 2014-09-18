@@ -311,7 +311,7 @@ public class MainScreen extends Screen {
 	}
 
 	private boolean drawActiveWindow(TurnResult run) {
-		Dialog window = run.getActiveWindow();
+		Dialog<?> window = run.getActiveWindow();
 		if (window != null) {
 			window.showInPane(terminal);
 			window.draw();

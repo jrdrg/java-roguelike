@@ -28,7 +28,7 @@ public class AttackAction extends Action {
 
 	private ActionResult attackTarget() {
 		if (!actor.isAlive()) {
-			Log.debug(">>> onPerform() >>> Actor " + actor.getName() + " is dead!");
+			Log.warning(">>> onPerform() >>> Actor " + actor.getName() + " is dead!");
 			return ActionResult.failure().setMessage("Actor " + actor.getName() + " is dead!");
 		}
 		if (!target.isAlive()) {

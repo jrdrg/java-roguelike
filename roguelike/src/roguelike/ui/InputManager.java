@@ -1,6 +1,7 @@
 package roguelike.ui;
 
 import java.awt.event.KeyEvent;
+import java.util.Stack;
 
 import javax.swing.JFrame;
 
@@ -17,6 +18,7 @@ public class InputManager {
 	private static boolean inputReceived;
 	private static boolean inputEnabled = true;
 	private static KeyMap activeKeyMap = new KeyMap(".");
+	private static Stack<KeyMap> keyBindings = new Stack<KeyMap>();
 
 	public static void registerWithFrame(JFrame frame) {
 		frame.addKeyListener(keyListener);
@@ -53,8 +55,22 @@ public class InputManager {
 		if (!keyMap.getName().equals(old.getName())) {
 			Log.debug("switching keyMap to " + keyMap.getName());
 			activeKeyMap = keyMap;
+			keyBindings.push(old);
 		}
 		return old;
+	}
+
+	/**
+	 * Sets the active key map to the previous one in the stack.
+	 * 
+	 * @return The new active key map.
+	 */
+	public static KeyMap previousKeyMap() {
+		if (keyBindings.isEmpty())
+			return null;
+
+		activeKeyMap = keyBindings.pop();
+		return activeKeyMap;
 	}
 
 	private static InputCommand nextCommand(KeyEvent key, boolean getKeyData) {

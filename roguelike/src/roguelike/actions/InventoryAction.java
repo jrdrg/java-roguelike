@@ -1,18 +1,16 @@
 package roguelike.actions;
 
-import roguelike.Game;
 import roguelike.actors.Actor;
 import roguelike.items.Equipment.ItemSlot;
 import roguelike.items.InventoryMenu;
 import roguelike.items.Item;
-import roguelike.ui.InputCommand;
-import roguelike.ui.InputManager;
-import roguelike.ui.Menu;
+import roguelike.ui.windows.DialogResult;
 import roguelike.ui.windows.InventoryDialog;
 
 public class InventoryAction extends Action {
 
 	private InventoryMenu menu;
+	private InventoryDialog dialog;
 
 	public InventoryAction(Actor actor) {
 		super(actor);
@@ -28,43 +26,37 @@ public class InventoryAction extends Action {
 		if (menu == null) {
 
 			menu = new InventoryMenu(actor.getInventory());
+			dialog = new InventoryDialog(menu);
 
-			Game.current().setActiveDialog(new InventoryDialog(menu));
-
-			InputManager.setActiveKeybindings(Menu.KeyBindings);
+			dialog.show();
 
 		} else {
-			InputCommand nextCommand = InputManager.nextCommandPreserveKeyData();
-			if (nextCommand != null) {
+
+			DialogResult<Item> choice = dialog.result();
+			if (choice != null) {
 
 				ActionResult result;
-				switch (nextCommand) {
-				case CONFIRM:
+				if (choice.isCanceled()) {
 
-					Item activeItem = menu.getActiveItem();
+					result = ActionResult.failure().setMessage("Closed inventory menu");
+
+				} else {
+
+					Item activeItem = choice.item();
 					if (activeItem != null) {
 
 						// TODO: change this to something else, equip it for now
 						ItemSlot.RIGHT_ARM.equipItem(actor, activeItem);
-
 						result = ActionResult.success().setMessage("Selected item: " + activeItem.getName());
 
 					} else {
 						result = ActionResult.failure().setMessage("Empty inventory...");
 
 					}
-
-				case CANCEL:
-					result = ActionResult.failure().setMessage("Closed inventory menu");
-
-					// No break statement since we fall through to this from either cancel or confirm
-					InputManager.setActiveKeybindings(InputManager.DefaultKeyBindings);
-					return result;
-
-				default:
-					menu.processCommand(nextCommand);
 				}
+				return result;
 			}
+
 		}
 		return ActionResult.incomplete();
 	}

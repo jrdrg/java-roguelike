@@ -177,7 +177,7 @@ public class MapArea {
 	public boolean removeItem(Item item, int x, int y) {
 		Inventory items = getItemsAt(x, y);
 		if (!items.any()) {
-			Log.debug("Failed! no items at " + x + "," + y);
+			Log.warning("Failed! no items at " + x + "," + y);
 			return false;
 		}
 		boolean removed = items.remove(item);
@@ -291,7 +291,7 @@ public class MapArea {
 		Coordinate pos = actor.getPosition();
 		Tile tile = getTileAt(pos.x, pos.y);
 		if (tile.getActor() == null) {
-			Log.debug("Failed!  actor=" + actor.getName());
+			Log.warning("Failed!  actor=" + actor.getName());
 			return false;
 		}
 		Log.debug("Success!");

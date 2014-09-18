@@ -14,4 +14,9 @@ public class InventoryMenu extends Menu<Item> {
 	public int totalItems() {
 		return inventory.getCount();
 	}
+
+	@Override
+	protected String getTextFor(Item item, int position) {
+		return getCharForIndex(position) + ") " + item.getDescription();
+	}
 }

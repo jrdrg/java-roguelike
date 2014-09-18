@@ -7,11 +7,11 @@ import java.io.InputStream;
 import javax.swing.JLayeredPane;
 
 import roguelike.TitleScreen;
-import roguelike.ui.windows.CharEx;
 import roguelike.ui.windows.Terminal;
 import roguelike.ui.windows.SwingPaneTerminalView;
 import roguelike.ui.windows.TerminalBase;
 import roguelike.ui.windows.TerminalChangeNotification;
+import roguelike.util.CharEx;
 import squidpony.squidgrid.gui.SwingPane;
 import squidpony.squidgrid.gui.TextCellFactory;
 

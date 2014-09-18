@@ -28,7 +28,7 @@ public class WalkAction extends Action {
 	@Override
 	public ActionResult onPerform() {
 		if (!actor.isAlive()) {
-			Log.debug(">>> Actor is dead! " + actor.getName());
+			Log.warning(">>> Actor is dead! " + actor.getName());
 			return ActionResult.success().setMessage("Actor is dead");
 		}
 

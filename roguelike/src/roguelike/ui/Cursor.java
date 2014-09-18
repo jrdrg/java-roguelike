@@ -37,6 +37,13 @@ public class Cursor {
 		if (terminal == null)
 			throw new IllegalArgumentException("terminal cannot be null");
 
+		if (!screenArea.contains(position)) {
+			int px = (int) Math.max(screenArea.getMinX(), Math.min(position.x, screenArea.getMaxX() - 1));
+			int py = (int) Math.max(screenArea.getMinY(), Math.min(position.y, screenArea.getMaxY() - 1));
+
+			setPosition(px, py);
+		}
+
 		int sx = position.x - screenArea.x;
 		int sy = position.y - screenArea.y;
 

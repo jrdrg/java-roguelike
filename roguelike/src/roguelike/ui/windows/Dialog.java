@@ -3,7 +3,11 @@ package roguelike.ui.windows;
 import java.awt.Point;
 import java.awt.Rectangle;
 
-public abstract class Dialog {
+import roguelike.ui.InputManager;
+import roguelike.ui.KeyMap;
+import roguelike.ui.Menu;
+
+public abstract class Dialog<T> {
 	// Box drawing tiles: "┻┗┛┫┳┣┃━┏┓╋"
 
 	protected Rectangle size;
@@ -50,6 +54,22 @@ public abstract class Dialog {
 			}
 		}
 	}
+
+	protected DialogResult<T> ok(T item) {
+		InputManager.previousKeyMap();
+		return DialogResult.ok(item);
+	}
+
+	protected DialogResult<T> cancel() {
+		InputManager.previousKeyMap();
+		return DialogResult.cancel();
+	}
+
+	public KeyMap getKeyBindings() {
+		return Menu.KeyBindings;
+	}
+
+	public abstract DialogResult<T> result();
 
 	protected abstract void onDraw();
 }

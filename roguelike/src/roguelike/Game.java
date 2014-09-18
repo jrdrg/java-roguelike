@@ -12,6 +12,7 @@ import roguelike.data.DataFactory;
 import roguelike.maps.MapArea;
 import roguelike.ui.Cursor;
 import roguelike.ui.DisplayManager;
+import roguelike.ui.InputManager;
 import roguelike.ui.windows.Dialog;
 import roguelike.util.Coordinate;
 import roguelike.util.Log;
@@ -148,8 +149,9 @@ public class Game {
 		currentTurnResult.addEvent(event);
 	}
 
-	public void setActiveDialog(Dialog dialog) {
+	public void setActiveDialog(Dialog<?> dialog) {
 		currentTurnResult.setWindow(dialog);
+		InputManager.setActiveKeybindings(dialog.getKeyBindings());
 	}
 
 	public void waitingForAction(boolean waiting) {
@@ -275,10 +277,10 @@ public class Game {
 
 			} else {
 
-				Log.debug("Game: Actor=" + currentActor.getName());
-				Log.debug("Game: Energy=" + currentActor.isAlive());
-				Log.debug("Game: Remaining energy: " + currentActor.getEnergy().getCurrent() + " Result=" + result);
-				Log.debug("Game: " + result.getMessage() + ", " + result.isSuccess() + ", " + result.isCompleted());
+				Log.warning("Game: Actor=" + currentActor.getName());
+				Log.warning("Game: Energy=" + currentActor.isAlive());
+				Log.warning("Game: Remaining energy: " + currentActor.getEnergy().getCurrent() + " Result=" + result);
+				Log.warning("Game: " + result.getMessage() + ", " + result.isSuccess() + ", " + result.isCompleted());
 			}
 
 		} else { // incomplete action

@@ -12,7 +12,7 @@ public class TurnResult {
 	boolean playerActed;
 	ArrayList<MessageDisplayProperties> messages;
 	ArrayList<TurnEvent> events;
-	Dialog activeWindow;
+	Dialog<?> activeWindow;
 	boolean needsInput;
 	private Cursor activeCursor;
 
@@ -60,11 +60,11 @@ public class TurnResult {
 		return this;
 	}
 
-	public Dialog getActiveWindow() {
+	public Dialog<?> getActiveWindow() {
 		return activeWindow;
 	}
 
-	public TurnResult setWindow(Dialog window) {
+	public TurnResult setWindow(Dialog<?> window) {
 		this.activeWindow = window;
 		return this;
 	}

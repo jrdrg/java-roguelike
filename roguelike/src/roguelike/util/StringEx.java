@@ -1,4 +1,4 @@
-package roguelike.ui.windows;
+package roguelike.util;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +21,8 @@ public class StringEx extends ArrayList<CharEx> {
 
 	private static final long serialVersionUID = -276852334648421745L;
 
+	private String text;
+
 	public StringEx() {
 	}
 
@@ -33,6 +35,7 @@ public class StringEx extends ArrayList<CharEx> {
 	}
 
 	public StringEx(String text, SColor foreground, SColor background) {
+		this.text = text;
 		SColor fg = foreground;
 		SColor bg = background;
 		CharacterParseResult res = new CharacterParseResult();
@@ -75,5 +78,10 @@ public class StringEx extends ArrayList<CharEx> {
 		String s = new String(chars);
 
 		return SColorFactory.colorForName(s);
+	}
+
+	@Override
+	public String toString() {
+		return text;
 	}
 }

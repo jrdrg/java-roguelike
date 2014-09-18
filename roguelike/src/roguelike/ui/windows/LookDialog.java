@@ -8,11 +8,12 @@ import roguelike.items.Inventory;
 import roguelike.items.Item;
 import roguelike.items.Equipment.ItemSlot;
 import roguelike.maps.MapArea;
+import roguelike.ui.InputCommand;
 import roguelike.ui.InputManager;
 import squidpony.squidcolor.SColor;
 import squidpony.squidcolor.SColorFactory;
 
-public class LookDialog extends Dialog {
+public class LookDialog extends Dialog<InputCommand> {
 
 	private MapArea mapArea;
 	private int x;
@@ -76,7 +77,11 @@ public class LookDialog extends Dialog {
 		}
 	}
 
-	public boolean shouldClose() {
-		return InputManager.nextCommand() != null;
+	@Override
+	public DialogResult<InputCommand> result() {
+		if (InputManager.nextCommand() != null)
+			return ok(InputCommand.CONFIRM);
+
+		return null;
 	}
 }

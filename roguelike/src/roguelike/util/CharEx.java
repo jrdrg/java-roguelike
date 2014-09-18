@@ -1,4 +1,4 @@
-package roguelike.ui.windows;
+package roguelike.util;
 
 import squidpony.squidcolor.SColor;
 

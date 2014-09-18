@@ -1,5 +1,6 @@
 package roguelike.ui.windows;
 
+import roguelike.util.CharEx;
 import squidpony.squidgrid.gui.SwingPane;
 
 public class SwingPaneTerminalView {

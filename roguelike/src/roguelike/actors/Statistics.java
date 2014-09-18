@@ -67,7 +67,7 @@ public class Statistics {
 
 	/**
 	 * Influences whether opponents decide to flee from combat, attempts to bribe and intimidate, anything having to do
-	 * with social interaction
+	 * with social interaction. Also influences the bonuses gained from taverns, brothels, etc.
 	 */
 	public final Statistic presence = new Statistic(10, 0);
 
@@ -76,7 +76,7 @@ public class Statistics {
 	public int aimingBonus;
 
 	/**
-	 * Determines how difficult it is to knock the character down
+	 * Determines how difficult it is to knock the character down or disarm him
 	 * 
 	 * @return
 	 */

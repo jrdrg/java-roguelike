@@ -36,7 +36,7 @@ public abstract class Menu<T> {
 	}
 
 	public void processCommand(InputCommand command) {
-		int maxItems = getLastItemIndex() - getFirstItemIndex() + 1;
+		int maxItems = getLastItemIndex() - getFirstItemIndex();
 		pageIndex = activeIndex % pageSize;
 
 		if (items.size() > 0) {
@@ -92,7 +92,6 @@ public abstract class Menu<T> {
 	}
 
 	public int getLastItemIndex() {
-		// return getFirstItemIndex() + Math.min(pageSize, items.size());
 		return getPageOffset(pageSize);
 	}
 
@@ -108,7 +107,23 @@ public abstract class Menu<T> {
 		return items.size();
 	}
 
-	public char getCharForIndex(int index) {
+	public List<MenuItem<T>> currentPageItems() {
+		ArrayList<MenuItem<T>> menuItems = new ArrayList<MenuItem<T>>();
+		int firstIndex = getFirstItemIndex();
+		int lastIndex = getLastItemIndex();
+
+		for (int x = firstIndex; x < lastIndex; x++) {
+			T item = items.get(x);
+			if (item == null)
+				break;
+
+			boolean isActive = (x == activeIndex);
+			menuItems.add(new MenuItem<T>(getTextFor(item, x - firstIndex), item, isActive));
+		}
+		return menuItems;
+	}
+
+	protected char getCharForIndex(int index) {
 		return (char) (index + 65);
 	}
 
@@ -124,4 +139,6 @@ public abstract class Menu<T> {
 
 		return -1; // invalid character pressed
 	}
+
+	protected abstract String getTextFor(T item, int position);
 }

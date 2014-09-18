@@ -55,7 +55,7 @@ public class TargetedAttackBehavior extends Behavior {
 				if (actor.getEquipment().getEquippedWeapons()[0] != null)
 					return this;
 				else {
-					Log.debug(String.format("%s has no weapon!", actor.getName()));
+					Log.warning(String.format("%s has no weapon!", actor.getName()));
 				}
 			}
 			// TODO: figure out what to do when target is dead or out of sight
