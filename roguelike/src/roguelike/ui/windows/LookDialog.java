@@ -78,9 +78,9 @@ public class LookDialog extends Dialog<InputCommand> {
 	}
 
 	@Override
-	public DialogResult<InputCommand> result() {
+	protected DialogResult<InputCommand> onResult() {
 		if (InputManager.nextCommand() != null)
-			return ok(InputCommand.CONFIRM);
+			return DialogResult.ok(InputCommand.CONFIRM);
 
 		return null;
 	}

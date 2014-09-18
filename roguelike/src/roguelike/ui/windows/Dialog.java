@@ -55,21 +55,21 @@ public abstract class Dialog<T> {
 		}
 	}
 
-	protected DialogResult<T> ok(T item) {
-		InputManager.previousKeyMap();
-		return DialogResult.ok(item);
-	}
-
-	protected DialogResult<T> cancel() {
-		InputManager.previousKeyMap();
-		return DialogResult.cancel();
-	}
-
 	public KeyMap getKeyBindings() {
 		return Menu.KeyBindings;
 	}
 
-	public abstract DialogResult<T> result();
+	public final DialogResult<T> result() {
+		DialogResult<T> result = onResult();
+
+		if (result != null) {
+			InputManager.previousKeyMap();
+		}
+
+		return result;
+	}
+
+	protected abstract DialogResult<T> onResult();
 
 	protected abstract void onDraw();
 }

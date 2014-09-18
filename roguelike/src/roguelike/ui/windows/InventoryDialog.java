@@ -53,7 +53,7 @@ public class InventoryDialog extends Dialog<Item> {
 	}
 
 	@Override
-	public DialogResult<Item> result() {
+	protected DialogResult<Item> onResult() {
 		DialogResult<Item> result = null;
 
 		InputCommand nextCommand = InputManager.nextCommandPreserveKeyData();
@@ -63,16 +63,16 @@ public class InventoryDialog extends Dialog<Item> {
 
 				Item activeItem = menu.getActiveItem();
 				if (activeItem != null) {
-					result = ok(activeItem);
+					result = DialogResult.ok(activeItem);
 
 				} else {
-					result = ok(null);
+					result = DialogResult.ok(null);
 
 				}
 
 			case CANCEL:
 				if (result == null)
-					result = cancel();
+					result = DialogResult.cancel();
 
 				break;
 
