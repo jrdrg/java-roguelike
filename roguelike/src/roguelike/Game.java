@@ -2,6 +2,7 @@ package roguelike;
 
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.Stack;
 
 import roguelike.actions.Action;
 import roguelike.actions.ActionResult;
@@ -10,10 +11,7 @@ import roguelike.actors.Energy;
 import roguelike.actors.Player;
 import roguelike.data.DataFactory;
 import roguelike.maps.MapArea;
-import roguelike.ui.Cursor;
 import roguelike.ui.DisplayManager;
-import roguelike.ui.InputManager;
-import roguelike.ui.windows.Dialog;
 import roguelike.util.Coordinate;
 import roguelike.util.Log;
 import squidpony.squidcolor.SColor;
@@ -39,6 +37,10 @@ public class Game {
 	private Queue<Action> queuedActions;
 	private TurnResult currentTurnResult;
 
+	Stack<Dialog<?>> windows;
+	Dialog<?> activeWindow;
+	Cursor activeCursor;
+
 	final DataFactory dataFactory;
 
 	/**
@@ -50,8 +52,10 @@ public class Game {
 		GameLoader gameLoader = GameLoader.instance();
 		this.player = gameLoader.createPlayer();
 
-		queuedActions = new LinkedList<Action>();
-		rng = gameLoader.getRandom();
+		this.queuedActions = new LinkedList<Action>();
+		this.rng = gameLoader.getRandom();
+		this.windows = new Stack<Dialog<?>>();
+
 		currentGame = this;
 		Log.debug("Created Game");
 
@@ -105,10 +109,6 @@ public class Game {
 		// this.player.setPosition(1, 1);
 	}
 
-	public void setCursor(Cursor cursor) {
-		currentTurnResult.setCursor(cursor);
-	}
-
 	public void initialize() {
 		Log.debug("Initializing Game");
 
@@ -149,13 +149,43 @@ public class Game {
 		currentTurnResult.addEvent(event);
 	}
 
-	public void setActiveDialog(Dialog<?> dialog) {
-		currentTurnResult.setWindow(dialog);
-		InputManager.setActiveKeybindings(dialog.getKeyBindings());
-	}
-
+	@Deprecated
 	public void waitingForAction(boolean waiting) {
 		currentTurnResult.setNeedsInput(waiting);
+	}
+
+	/**
+	 * Sets the currently active dialog window. If there was an active window prior to this call, it gets pushed on the
+	 * stack. Passing null to this method will cause the active dialog to be set to the next value in the stack, or null
+	 * if it's empty.
+	 * 
+	 * @param dialog
+	 *            A window to make active, or null to close the current one.
+	 * @return
+	 */
+	boolean setActiveDialog(Dialog<?> dialog) {
+		if (activeWindow != null && activeWindow.equals(dialog))
+			return false;
+
+		if (dialog != null) {
+			if (activeWindow != null)
+				windows.push(activeWindow);
+
+			activeWindow = dialog;
+		}
+		else {
+			activeWindow = windows.size() > 0 ? windows.pop() : null;
+		}
+		return true;
+	}
+
+	/**
+	 * Sets the current cursor, which will be drawn until it's set to null.
+	 * 
+	 * @param cursor
+	 */
+	void setCursor(Cursor cursor) {
+		activeCursor = cursor;
 	}
 
 	/**
@@ -164,18 +194,19 @@ public class Game {
 	 * @return
 	 */
 	private TurnResult onProcessing() {
-		TurnResult turnResult;
-		// if (currentTurnResult != null && currentTurnResult.isInputRequired())
-		// {
-		// turnResult = currentTurnResult;
-		// } else
-		{
-			turnResult = new TurnResult(running);
-			if (currentTurnResult != null && currentTurnResult.activeWindow != null) {
+		TurnResult turnResult = null;
 
-				turnResult.setWindow(currentTurnResult.getActiveWindow());
-			}
+		if (activeWindow != null) {
+			turnResult = processActiveWindow();
+
+		} else if (activeCursor != null) {
+			turnResult = processCursor();
+
 		}
+		if (turnResult != null)
+			return turnResult;
+
+		turnResult = new TurnResult(running);
 		currentTurnResult = turnResult;
 
 		while (true) {
@@ -194,7 +225,36 @@ public class Game {
 
 			if (playerDead)
 				return turnResult;
+
 		}
+	}
+
+	/**
+	 * Processes the active window, if there is one. If this method returns null, it means that the active window has
+	 * received some input and has returned a result.
+	 * 
+	 * @return The current turn result if there is an active window waiting for input, null otherwise.
+	 */
+	private TurnResult processActiveWindow() {
+		if (activeWindow.waitingForResult()) {
+			if (!activeWindow.process())
+				return currentTurnResult;
+		}
+		return null;
+	}
+
+	/**
+	 * Processes the active cursor, if there is one. If this method returns null, it means that the player has either
+	 * selected a tile or has canceled the cursor.
+	 * 
+	 * @return The current turn result if there is an active cursor, null otherwise.
+	 */
+	private TurnResult processCursor() {
+		if (activeCursor.waitingForResult()) {
+			if (!activeCursor.process())
+				return currentTurnResult;
+		}
+		return null;
 	}
 
 	/**
@@ -211,7 +271,7 @@ public class Game {
 			actor = currentMapArea.getCurrentActor();
 		}
 
-		int speed = actor.getStatistics().speed.getTotalValue();
+		int speed = actor.effectiveSpeed(currentMapArea);
 		Energy energy = actor.getEnergy();
 
 		if (energy.canAct() || energy.increase(speed)) {
@@ -256,8 +316,6 @@ public class Game {
 		 * if the result is completed we can proceed, else put it back on the queue
 		 */
 		if (result.isCompleted()) {
-			// clear any dialogs
-			turnResult.setWindow(null);
 
 			while (result.getAlternateAction() != null) {
 				result = result.getAlternateAction().perform();

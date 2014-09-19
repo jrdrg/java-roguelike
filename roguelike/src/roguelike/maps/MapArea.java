@@ -319,6 +319,13 @@ public class MapArea {
 		return map[x][y];
 	}
 
+	public int getSpeedModifier(Coordinate position) {
+		if (!isWithinBounds(position.x, position.y))
+			return 0;
+
+		return map[position.x][position.y].speedModifier;
+	}
+
 	/**
 	 * Determines if the actor can move to the specified position.
 	 * 

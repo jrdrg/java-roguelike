@@ -64,6 +64,14 @@ public abstract class Actor {
 		return conditions;
 	}
 
+	public int effectiveSpeed(MapArea map) {
+		int tileSpeedModifier = map.getSpeedModifier(getPosition());
+		int speed = statistics.speed.getTotalValue();
+		speed = Math.max(1, speed + tileSpeedModifier); // always at least 1 speed even if 0 or negative
+
+		return speed;
+	}
+
 	public Energy getEnergy() {
 		return this.energy;
 	}

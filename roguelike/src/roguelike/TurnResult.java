@@ -3,8 +3,6 @@ package roguelike;
 import java.util.ArrayList;
 import java.util.List;
 
-import roguelike.ui.Cursor;
-import roguelike.ui.windows.Dialog;
 import squidpony.squidcolor.SColor;
 
 public class TurnResult {
@@ -12,9 +10,7 @@ public class TurnResult {
 	boolean playerActed;
 	ArrayList<MessageDisplayProperties> messages;
 	ArrayList<TurnEvent> events;
-	Dialog<?> activeWindow;
 	boolean needsInput;
-	private Cursor activeCursor;
 
 	public TurnResult(boolean running) {
 		this.running = running;
@@ -28,10 +24,6 @@ public class TurnResult {
 
 	public void playerActed() {
 		this.playerActed = true;
-	}
-
-	public boolean isInputRequired() {
-		return this.needsInput;
 	}
 
 	public TurnResult setNeedsInput(boolean needsInput) {
@@ -61,21 +53,11 @@ public class TurnResult {
 	}
 
 	public Dialog<?> getActiveWindow() {
-		return activeWindow;
-	}
-
-	public TurnResult setWindow(Dialog<?> window) {
-		this.activeWindow = window;
-		return this;
+		return Game.current().activeWindow;
 	}
 
 	public Cursor getCursor() {
-		return activeCursor;
-	}
-
-	public TurnResult setCursor(Cursor cursor) {
-		this.activeCursor = cursor;
-		return this;
+		return Game.current().activeCursor;
 	}
 
 	public boolean isRunning() {

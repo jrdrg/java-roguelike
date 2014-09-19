@@ -100,7 +100,7 @@ public class StatsDisplay {
 		displayTerm.write(15, 11, String.format("%3d", player.getStatistics().perception.getTotalValue()));
 
 		headerTerm.write(1, 12, "Qu");
-		displayTerm.write(3, 12, String.format("%3d", player.getStatistics().quickness.getTotalValue()));
+		displayTerm.write(3, 12, String.format("%3d", player.getStatistics().agility.getTotalValue()));
 		headerTerm.write(7, 12, "Wi");
 		displayTerm.write(9, 12, String.format("%3d", player.getStatistics().willpower.getTotalValue()));
 		headerTerm.write(13, 12, "Pr");

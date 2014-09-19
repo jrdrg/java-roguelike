@@ -55,17 +55,29 @@ public class WeaponData {
 	@CsvField(pos = 11)
 	public int slashDamageRating;
 
+	public int[] slash() {
+		return getTargetNumberAndDamage(slashTargetNumber, slashDamageRating);
+	}
+
 	@CsvField(pos = 12)
 	public int thrustTargetNumber; // TN when thrusting
 
 	@CsvField(pos = 13)
 	public int thrustDamageRating;
 
+	public int[] thrust() {
+		return getTargetNumberAndDamage(thrustTargetNumber, thrustDamageRating);
+	}
+
 	@CsvField(pos = 14)
 	public int bluntTargetNumber; // TN when dealing blunt damage
 
 	@CsvField(pos = 15)
 	public int bluntDamageRating;
+
+	public int[] blunt() {
+		return getTargetNumberAndDamage(bluntTargetNumber, bluntDamageRating);
+	}
 
 	/**
 	 * Determines how many squares constitute each range (point blank, near, medium, far)
@@ -142,5 +154,12 @@ public class WeaponData {
 		this.type = type;
 		this.attackDescription = attackDescription;
 		return this;
+	}
+
+	private int[] getTargetNumberAndDamage(int targetNumber, int damageRating) {
+		int[] data = new int[2];
+		data[0] = targetNumber;
+		data[1] = damageRating;
+		return data;
 	}
 }

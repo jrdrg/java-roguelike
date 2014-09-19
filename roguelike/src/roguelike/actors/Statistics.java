@@ -1,6 +1,7 @@
 package roguelike.actors;
 
 import roguelike.data.EnemyData;
+import roguelike.maps.MapArea;
 import squidpony.squidutility.Pair;
 
 public class Statistics {
@@ -58,7 +59,7 @@ public class Statistics {
 	/**
 	 * The ability to dodge attacks and avoid effects of traps
 	 */
-	public final Statistic quickness = new Statistic(10, 0);
+	public final Statistic agility = new Statistic(10, 0);
 
 	/**
 	 * Determines how the character resists various conditions, as well as resistance to sorcery
@@ -91,7 +92,7 @@ public class Statistics {
 	 * @return
 	 */
 	public int reflexes() {
-		return ((perception.getTotalValue() + quickness.getTotalValue()) / 2) + reflexBonus;
+		return ((perception.getTotalValue() + agility.getTotalValue()) / 2) + reflexBonus;
 	}
 
 	/**
@@ -117,7 +118,7 @@ public class Statistics {
 		this.toughness.setBase(data.toughness);
 		this.conditioning.setBase(data.conditioning);
 		this.perception.setBase(data.perception);
-		this.quickness.setBase(data.quickness);
+		this.agility.setBase(data.agility);
 		this.willpower.setBase(data.willpower);
 		this.presence.setBase(data.presence);
 

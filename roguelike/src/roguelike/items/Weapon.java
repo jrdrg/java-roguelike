@@ -26,6 +26,10 @@ public abstract class Weapon extends Item {
 			}
 		}
 
+		public DamageValue(DamageType type, int[] values) {
+			this(type, values[0], values[1]);
+		}
+
 		@Override
 		public int compareTo(DamageValue o) {
 			float f = targetNumber;
@@ -49,9 +53,9 @@ public abstract class Weapon extends Item {
 		super();
 
 		this.damageValues = new HashMap<DamageType, DamageValue>();
-		damageValues.put(DamageType.SLASHING, new DamageValue(DamageType.SLASHING, data.slashTargetNumber, data.slashDamageRating));
-		damageValues.put(DamageType.PIERCING, new DamageValue(DamageType.PIERCING, data.thrustTargetNumber, data.thrustDamageRating));
-		damageValues.put(DamageType.BLUNT, new DamageValue(DamageType.BLUNT, data.bluntTargetNumber, data.bluntDamageRating));
+		damageValues.put(DamageType.SLASHING, new DamageValue(DamageType.SLASHING, data.slash()));
+		damageValues.put(DamageType.PIERCING, new DamageValue(DamageType.PIERCING, data.thrust()));
+		damageValues.put(DamageType.BLUNT, new DamageValue(DamageType.BLUNT, data.blunt()));
 
 		DamageType sortedDv = damageValues
 				.values()

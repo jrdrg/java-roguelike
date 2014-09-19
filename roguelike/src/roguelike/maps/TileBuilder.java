@@ -43,7 +43,7 @@ public class TileBuilder {
 			return new Door().setValues(tile, false, SColor.BIRCH_BROWN, true);
 
 		case 'T':
-			t.setValues(trees.random(), true, SColor.KELLY_GREEN).setLighting(0.5f);// .setBackground(SColor.GREEN);
+			t.setValues(trees.random(), true, SColor.KELLY_GREEN).setLighting(0.5f).setSpeedModifier(-15);// .setBackground(SColor.GREEN);
 			break;
 
 		case '=': // floor of building
@@ -51,7 +51,7 @@ public class TileBuilder {
 			break;
 
 		case '~': // water
-			t.setValues(water.random(), false, SColorFactory.asSColor(50, 150, 255)).setLighting(0f);// .setBackground(SColor.DARK_BLUE);
+			t.setValues(water.random(), false, SColorFactory.asSColor(50, 150, 255)).setLighting(0f).setBackground(SColor.DARK_BLUE);
 			break;
 
 		case 'M': // mountain

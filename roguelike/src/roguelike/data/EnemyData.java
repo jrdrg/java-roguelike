@@ -60,7 +60,7 @@ public class EnemyData {
 	public int perception;
 
 	@CsvField(pos = 14, required = true)
-	public int quickness;
+	public int agility;
 
 	@CsvField(pos = 15, required = true)
 	public int willpower;

@@ -27,7 +27,7 @@ public class Tile implements Serializable {
 	private Actor actor;
 
 	// TODO: implement tile speed modifiers (i.e. mud might reduce speed by 10, ice might increase it)
-	private int speedModifier;
+	int speedModifier;
 
 	Tile() {
 		this.visible = false;
@@ -58,6 +58,11 @@ public class Tile implements Serializable {
 		this.visible = visible;
 		if (visible)
 			this.explored = true;
+	}
+
+	public Tile setSpeedModifier(int speedModifier) {
+		this.speedModifier = speedModifier;
+		return this;
 	}
 
 	/**

@@ -1,10 +1,10 @@
 package roguelike.ui.windows;
 
-import roguelike.Game;
+import roguelike.Dialog;
+import roguelike.DialogResult;
 import roguelike.items.InventoryMenu;
 import roguelike.items.Item;
 import roguelike.ui.InputCommand;
-import roguelike.ui.InputManager;
 import roguelike.ui.MenuItem;
 import squidpony.squidcolor.SColor;
 import squidpony.squidcolor.SColorFactory;
@@ -16,10 +16,6 @@ public class InventoryDialog extends Dialog<Item> {
 	public InventoryDialog(InventoryMenu menu) {
 		super(40, 10);
 		this.menu = menu;
-	}
-
-	public void show() {
-		Game.current().setActiveDialog(this);
 	}
 
 	@Override
@@ -53,12 +49,11 @@ public class InventoryDialog extends Dialog<Item> {
 	}
 
 	@Override
-	protected DialogResult<Item> onResult() {
+	protected DialogResult<Item> onProcess(InputCommand command) {
 		DialogResult<Item> result = null;
 
-		InputCommand nextCommand = InputManager.nextCommandPreserveKeyData();
-		if (nextCommand != null) {
-			switch (nextCommand) {
+		if (command != null) {
+			switch (command) {
 			case CONFIRM:
 
 				Item activeItem = menu.getActiveItem();
@@ -77,7 +72,7 @@ public class InventoryDialog extends Dialog<Item> {
 				break;
 
 			default:
-				menu.processCommand(nextCommand);
+				menu.processCommand(command);
 			}
 		}
 		return result;

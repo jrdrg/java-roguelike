@@ -2,6 +2,8 @@ package roguelike.ui.windows;
 
 import java.util.ArrayList;
 
+import roguelike.Dialog;
+import roguelike.DialogResult;
 import roguelike.actors.Actor;
 import roguelike.actors.Statistics;
 import roguelike.items.Inventory;
@@ -10,7 +12,6 @@ import roguelike.items.Equipment.ItemSlot;
 import roguelike.items.Weapon;
 import roguelike.maps.MapArea;
 import roguelike.ui.InputCommand;
-import roguelike.ui.InputManager;
 import squidpony.squidcolor.SColor;
 import squidpony.squidcolor.SColorFactory;
 
@@ -51,12 +52,12 @@ public class LookDialog extends Dialog<InputCommand> {
 
 			Statistics stats = actor.getStatistics();
 			textList.add(String.format(" `Bronze`MP:`White`%3d `Bronze`RP:`White`%3d `Bronze`Ref:`White`%3d `Bronze`Aim:`White`%3d `Bronze`Spd:`White`%3d",
-					stats.baseMeleePool(0), stats.baseRangedPool(0), stats.reflexes(), stats.aiming(), stats.speed.getTotalValue()));
+					stats.baseMeleePool(0), stats.baseRangedPool(0), stats.reflexes(), stats.aiming(), actor.effectiveSpeed(mapArea)));
 
 			textList.add(String.format(" `Bronze`To:`White`%3d `Bronze`Co:`White`%3d `Bronze`Pe:`White`%3d " +
 					"`Bronze`Qu:`White`%3d `Bronze`Wi:`White`%3d `Bronze`Pr:`White`%3d",
 					stats.toughness.getTotalValue(), stats.conditioning.getTotalValue(), stats.perception.getTotalValue(),
-					stats.quickness.getTotalValue(), stats.willpower.getTotalValue(), stats.presence.getTotalValue()));
+					stats.agility.getTotalValue(), stats.willpower.getTotalValue(), stats.presence.getTotalValue()));
 
 			textList.add(String.format(" `Red`H:`White`%3d", actor.getHealth().getCurrent()));
 		}
@@ -72,16 +73,16 @@ public class LookDialog extends Dialog<InputCommand> {
 
 		for (int x = 0; x < textList.size(); x++) {
 			text.write(2, x + textY, textList.get(x));
-			if (x >= 15) {
-				text.write(3, x + 1, "...");
+			if ((x + textY) >= this.size.height - 4) {
+				text.write(3, x + textY + 2, "...");
 				break;
 			}
 		}
 	}
 
 	@Override
-	protected DialogResult<InputCommand> onResult() {
-		if (InputManager.nextCommand() != null)
+	protected DialogResult<InputCommand> onProcess(InputCommand command) {
+		if (command != null)
 			return DialogResult.ok(InputCommand.CONFIRM);
 
 		return null;

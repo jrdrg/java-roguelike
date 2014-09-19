@@ -16,13 +16,20 @@ public abstract class Action {
 		return actor;
 	}
 
-	public ActionResult perform() {
+	public final ActionResult perform() {
+		if (checkForIncomplete())
+			return ActionResult.incomplete();
+
 		ActionResult result = onPerform();
 
 		if (result.success && this.usesEnergy)
 			actor.getEnergy().act();
 
 		return result;
+	}
+
+	protected boolean checkForIncomplete() {
+		return false;
 	}
 
 	protected abstract ActionResult onPerform();

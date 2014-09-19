@@ -1,84 +1,57 @@
 package roguelike.actions;
 
+import roguelike.Cursor;
+import roguelike.CursorResult;
 import roguelike.Game;
 import roguelike.actors.Actor;
 import roguelike.maps.MapArea;
-import roguelike.ui.Cursor;
 import roguelike.ui.InputCommand;
-import roguelike.ui.InputManager;
 import roguelike.ui.windows.LookDialog;
 import roguelike.util.Coordinate;
-import squidpony.squidgrid.util.DirectionIntercardinal;
 
-public class LookAction extends Action {
-
-	private MapArea mapArea;
-	private Cursor lookCursor;
-	private LookDialog lookDialog;
+public class LookAction extends InputRequiredAction<InputCommand> {
 
 	public LookAction(Actor actor, MapArea mapArea) {
 		super(actor);
-		this.mapArea = mapArea;
 		this.usesEnergy = false;
-		this.lookCursor = new Cursor(actor.getPosition());
+		this.cursor = new Cursor(actor.getPosition(), mapArea);
+
+		cursor.show();
 	}
 
 	@Override
 	protected ActionResult onPerform() {
 
-		if (lookDialog != null) {
-			Game.current().setActiveDialog(lookDialog);
+		if (dialog != null) {
 
-			if (lookDialog.result() != null)
+			if (dialog.result() != null)
 				return ActionResult.success();
 
 		} else {
-			Game.current().setCursor(lookCursor);
 
-			InputCommand cmd = InputManager.nextCommand();
-			if (cmd != null) {
-				DirectionIntercardinal direction = cmd.toDirection();
-				if (direction != DirectionIntercardinal.NONE) {
+			CursorResult result = cursor.result();
+			if (result.isCanceled())
+				return ActionResult.failure().setMessage("Canceled look");
 
-					Coordinate newPosition = lookCursor.getPosition().createOffsetPosition(direction);
+			if (!lookAt(result.position())) // nothing to look at, return
+				return ActionResult.success();
 
-					if (mapArea.isWithinBounds(newPosition.x, newPosition.y)) {
-						lookCursor.setPosition(newPosition);
-					}
-
-				} else {
-					switch (cmd) {
-					case CONFIRM:
-						// look at whatever's under the cursor
-						Game.current().setCursor(null);
-						if (!lookAt())
-							return ActionResult.success();
-
-						break;
-
-					case CANCEL:
-						Game.current().setCursor(null);
-						return ActionResult.failure().setMessage("Canceled look");
-
-					default:
-					}
-				}
-			}
 		}
 		return ActionResult.incomplete();
 	}
 
-	private boolean lookAt() {
-		int x = lookCursor.getPosition().x;
-		int y = lookCursor.getPosition().y;
+	private boolean lookAt(Coordinate position) {
+		int x = position.x;
+		int y = position.y;
 		Game game = Game.current();
 
 		MapArea map = game.getCurrentMapArea();
 		if (map.getActorAt(x, y) == null && !map.getItemsAt(x, y).any())
 			return false;
 
-		lookDialog = new LookDialog(game.getCurrentMapArea(), x, y);
-		game.setActiveDialog(lookDialog);
+		dialog = new LookDialog(game.getCurrentMapArea(), x, y);
+		dialog.show();
+
 		return true;
 	}
 }

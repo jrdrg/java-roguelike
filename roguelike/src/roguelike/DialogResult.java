@@ -1,4 +1,4 @@
-package roguelike.ui.windows;
+package roguelike;
 
 public class DialogResult<T> {
 
@@ -18,11 +18,11 @@ public class DialogResult<T> {
 		return item;
 	}
 
-	static <T> DialogResult<T> ok(T item) {
+	public static <T> DialogResult<T> ok(T item) {
 		return new DialogResult<T>(item, false);
 	}
 
-	static <T> DialogResult<T> cancel() {
+	public static <T> DialogResult<T> cancel() {
 		return new DialogResult<T>(null, true);
 	}
 }

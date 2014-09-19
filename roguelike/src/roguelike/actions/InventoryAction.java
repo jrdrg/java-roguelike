@@ -1,62 +1,48 @@
 package roguelike.actions;
 
+import roguelike.DialogResult;
 import roguelike.actors.Actor;
 import roguelike.items.Equipment.ItemSlot;
 import roguelike.items.InventoryMenu;
 import roguelike.items.Item;
-import roguelike.ui.windows.DialogResult;
 import roguelike.ui.windows.InventoryDialog;
 
-public class InventoryAction extends Action {
-
-	private InventoryMenu menu;
-	private InventoryDialog dialog;
+public class InventoryAction extends InputRequiredAction<Item> {
 
 	public InventoryAction(Actor actor) {
 		super(actor);
 
 		this.usesEnergy = false;
+		dialog = new InventoryDialog(new InventoryMenu(actor.getInventory()));
+		dialog.show();
 	}
 
 	@Override
 	protected ActionResult onPerform() {
-		/*
-		 * if we don't have a menu drawn yet then just return incomplete to give the UI a chance to show it
-		 */
-		if (menu == null) {
 
-			menu = new InventoryMenu(actor.getInventory());
-			dialog = new InventoryDialog(menu);
+		DialogResult<Item> choice = dialog.result();
+		if (choice != null) {
 
-			dialog.show();
+			ActionResult result;
+			if (choice.isCanceled()) {
 
-		} else {
+				result = ActionResult.failure().setMessage("Closed inventory menu");
 
-			DialogResult<Item> choice = dialog.result();
-			if (choice != null) {
+			} else {
 
-				ActionResult result;
-				if (choice.isCanceled()) {
+				Item activeItem = choice.item();
+				if (activeItem != null) {
 
-					result = ActionResult.failure().setMessage("Closed inventory menu");
+					// TODO: change this to something else, equip it for now
+					ItemSlot.RIGHT_ARM.equipItem(actor, activeItem);
+					result = ActionResult.success().setMessage("Selected item: " + activeItem.getName());
 
 				} else {
+					result = ActionResult.failure().setMessage("Empty inventory...");
 
-					Item activeItem = choice.item();
-					if (activeItem != null) {
-
-						// TODO: change this to something else, equip it for now
-						ItemSlot.RIGHT_ARM.equipItem(actor, activeItem);
-						result = ActionResult.success().setMessage("Selected item: " + activeItem.getName());
-
-					} else {
-						result = ActionResult.failure().setMessage("Empty inventory...");
-
-					}
 				}
-				return result;
 			}
-
+			return result;
 		}
 		return ActionResult.incomplete();
 	}

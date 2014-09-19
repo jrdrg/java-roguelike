@@ -87,6 +87,7 @@ public class CombatHandler {
 
 		// TODO: need to switch this penalty to the combatant who was damaged
 		// most recently
+		// TODO: maybe can use a Condition for this? with a duration of 1 turn
 		Weapon defendingWeapon = ItemSlot.RIGHT_ARM.getEquippedWeapon(actor);
 		int attackingReach = attack.getWeapon().reach;
 		int defendingReach = defendingWeapon == null ? 0 : defendingWeapon.reach;
