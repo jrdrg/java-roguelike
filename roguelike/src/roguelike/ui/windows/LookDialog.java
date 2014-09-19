@@ -7,6 +7,7 @@ import roguelike.actors.Statistics;
 import roguelike.items.Inventory;
 import roguelike.items.Item;
 import roguelike.items.Equipment.ItemSlot;
+import roguelike.items.Weapon;
 import roguelike.maps.MapArea;
 import roguelike.ui.InputCommand;
 import roguelike.ui.InputManager;
@@ -45,7 +46,8 @@ public class LookDialog extends Dialog<InputCommand> {
 		if (actor != null) {
 			textList.add("`" + actor.getColor().getName() + "`" + actor.getDescription());
 			textList.add("");
-			textList.add(" `Gray`Weapon: `White`" + ItemSlot.RIGHT_ARM.getEquippedWeapon(actor).getDescription());
+			Weapon equipped = ItemSlot.RIGHT_ARM.getEquippedWeapon(actor);
+			textList.add(" `Gray`Weapon: `White`" + equipped.getDescription() + " (" + equipped.defaultDamageType().name() + ")");
 
 			Statistics stats = actor.getStatistics();
 			textList.add(String.format(" `Bronze`MP:`White`%3d `Bronze`RP:`White`%3d `Bronze`Ref:`White`%3d `Bronze`Aim:`White`%3d `Bronze`Spd:`White`%3d",

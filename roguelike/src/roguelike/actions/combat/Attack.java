@@ -17,7 +17,7 @@ public abstract class Attack {
 		this.weapon = weapon;
 
 		// TODO: put this in constructor parameter
-		damageType = weapon.getDefaultDamageType();
+		damageType = weapon.defaultDamageType();
 	}
 
 	public int getDamage() {

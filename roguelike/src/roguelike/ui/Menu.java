@@ -1,9 +1,8 @@
 package roguelike.ui;
 
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.sun.glass.events.KeyEvent;
 
 public abstract class Menu<T> {
 
@@ -124,7 +123,7 @@ public abstract class Menu<T> {
 	}
 
 	protected char getCharForIndex(int index) {
-		return (char) (index + 65);
+		return (char) (index + 97);
 	}
 
 	private int getPageOffset(int index) {

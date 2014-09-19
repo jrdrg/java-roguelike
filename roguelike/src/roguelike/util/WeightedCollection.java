@@ -1,7 +1,6 @@
 package roguelike.util;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 
 import squidpony.squidutility.Pair;
 
@@ -44,11 +43,6 @@ public class WeightedCollection<T> {
 		table.add(new Pair<Integer, T>(weight, item));
 		total += weight;
 
-		table.sort(new Comparator<Pair<Integer, T>>() {
-			@Override
-			public int compare(Pair<Integer, T> o1, Pair<Integer, T> o2) {
-				return o1.getFirst().compareTo(o2.getFirst());
-			}
-		});
+		table.sort(((Pair<Integer, T> o1, Pair<Integer, T> o2) -> o1.getFirst().compareTo(o2.getFirst())));
 	}
 }

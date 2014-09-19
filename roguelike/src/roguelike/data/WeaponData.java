@@ -53,37 +53,76 @@ public class WeaponData {
 	public int slashTargetNumber; // TN when slashing
 
 	@CsvField(pos = 11)
-	public int slashDamageRating; // slashing modifier to dice pool
+	public int slashDamageRating;
 
 	@CsvField(pos = 12)
 	public int thrustTargetNumber; // TN when thrusting
 
 	@CsvField(pos = 13)
-	public int thrustDamageRating; // thrusting modifier to dice pool
+	public int thrustDamageRating;
 
 	@CsvField(pos = 14)
 	public int bluntTargetNumber; // TN when dealing blunt damage
 
 	@CsvField(pos = 15)
-	public int bluntDamageRating; // blunt modifier to dice pool
+	public int bluntDamageRating;
 
+	/**
+	 * Determines how many squares constitute each range (point blank, near, medium, far)
+	 */
 	@CsvField(pos = 16)
-	public int rangedTargetNumber;
+	public String rangedType;
 
 	@CsvField(pos = 17)
-	public int rangedDamageRating;
+	public int pointBlankTN;
 
 	@CsvField(pos = 18)
-	public boolean requiresAmmunition;
+	public int nearTN;
 
 	@CsvField(pos = 19)
-	public String ammunitionType;
+	public int mediumTN;
 
 	@CsvField(pos = 20)
-	public int quality;
+	public int farTN;
 
 	@CsvField(pos = 21)
+	public int rangedDamageRating;
+
+	@CsvField(pos = 22)
+	public boolean requiresAmmunition;
+
+	@CsvField(pos = 23)
+	public String ammunitionType;
+
+	@CsvField(pos = 24)
+	public int quality;
+
+	@CsvField(pos = 25)
 	public int defenseTargetNumber;
+
+	/**
+	 * The condition that can be caused by this weapon with net successes equal or greater than netSuccesses
+	 */
+	@CsvField(pos = 26)
+	public String condition;
+
+	/**
+	 * The net successes necessary to cause the condition
+	 */
+	@CsvField(pos = 27)
+	public int attackSuccesses;
+
+	/**
+	 * The attribute to check against to see
+	 */
+	@CsvField(pos = 28)
+	public String attribute;
+
+	/**
+	 * The number of successes needed against the attribute to avoid the condition
+	 */
+	@CsvField(pos = 29)
+	public int attrSuccesses;
 
 	/**
 	 * Used when deserializing from CSV file
