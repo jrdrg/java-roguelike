@@ -15,6 +15,7 @@ import javax.swing.JPanel;
 
 import roguelike.Screen;
 import roguelike.TitleScreen;
+import roguelike.util.Log;
 import squidpony.squidcolor.SColor;
 
 public class MainWindow {
@@ -63,6 +64,9 @@ public class MainWindow {
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
+			} else {
+				Log.warning("SLEEPTIME < 0, skipping next keypress");
+				InputManager.nextCommand();
 			}
 		}
 	}
@@ -82,6 +86,8 @@ public class MainWindow {
 
 				.bindKey(KeyEvent.VK_ENTER, InputCommand.CONFIRM)
 				.bindKey(KeyEvent.VK_ESCAPE, InputCommand.CANCEL)
+
+				.bindKey(KeyEvent.VK_R, InputCommand.RANGED_ATTACK)
 
 				.bindKey(KeyEvent.VK_PERIOD, InputCommand.REST)
 				.bindKey(KeyEvent.VK_C, InputCommand.CLOSE_DOOR)

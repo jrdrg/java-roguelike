@@ -2,11 +2,12 @@ package roguelike.actions.combat;
 
 import roguelike.actions.Action;
 import roguelike.actors.Actor;
+import roguelike.items.RangedWeapon;
 import roguelike.items.Weapon;
 
 public class RangedAttack extends Attack {
 
-	protected RangedAttack(String description, int baseDamage, Weapon weapon) {
+	public RangedAttack(String description, int baseDamage, RangedWeapon weapon) {
 		super(description, baseDamage, weapon);
 	}
 

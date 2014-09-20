@@ -9,26 +9,15 @@ public class MeleeWeapon extends Weapon {
 
 	private static final long serialVersionUID = 682348343481995648L;
 
-	protected int baseDamage;
-	protected String name;
-	protected String description;
-	protected String attackDescription;
-
 	public MeleeWeapon(WeaponData data) {
 		super(data);
-		this.name = data.name;
-		this.description = data.description;
-		this.baseDamage = data.baseDamage;
-
-		this.droppable = data.droppable;
-		this.symbol = data.symbol();
-		this.color = data.color();
 
 		if (data.attackDescription == null || data.attackDescription.length() == 0) {
 			this.attackDescription = "%s swings " + getName() + " at %s";
 		} else {
 			this.attackDescription = data.attackDescription;
 		}
+
 	}
 
 	@Override

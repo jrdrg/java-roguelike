@@ -23,6 +23,7 @@ public enum InputCommand {
 	LOOK,
 
 	ATTACK,
+	RANGED_ATTACK,
 	SEARCH,
 	REST,
 

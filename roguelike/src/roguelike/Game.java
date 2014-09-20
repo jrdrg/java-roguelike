@@ -335,10 +335,9 @@ public class Game {
 
 			} else {
 
-				Log.warning("Game: Actor=" + currentActor.getName());
-				Log.warning("Game: Energy=" + currentActor.isAlive());
+				Log.warning(String.format("Game: Actor=%s Alive=%s Action=%s", currentActor.getName(), currentActor.isAlive(), currentAction));
 				Log.warning("Game: Remaining energy: " + currentActor.getEnergy().getCurrent() + " Result=" + result);
-				Log.warning("Game: " + result.getMessage() + ", " + result.isSuccess() + ", " + result.isCompleted());
+				Log.warning("Game: M=" + result.getMessage() + ", S=" + result.isSuccess() + ", C=" + result.isCompleted());
 			}
 
 		} else { // incomplete action

@@ -7,9 +7,13 @@ import roguelike.actions.GetItemAction;
 import roguelike.actions.InventoryAction;
 import roguelike.actions.LookAction;
 import roguelike.actions.QuitAction;
+import roguelike.actions.RangedAttackAction;
 import roguelike.actions.RestAction;
 import roguelike.actions.WalkAction;
+import roguelike.actions.combat.RangedAttack;
 import roguelike.actors.Player;
+import roguelike.items.Equipment.ItemSlot;
+import roguelike.items.RangedWeapon;
 import roguelike.ui.InputCommand;
 import roguelike.ui.InputManager;
 import squidpony.squidgrid.util.DirectionIntercardinal;
@@ -70,6 +74,11 @@ public class PlayerInputBehavior extends Behavior {
 
 		case LOOK:
 			return new LookAction(actor, Game.current().getCurrentMapArea());
+
+		case RANGED_ATTACK:
+			RangedWeapon right = actor.getEquipment().getRangedWeapon(ItemSlot.RIGHT_ARM);
+			if (right != null)
+				return new RangedAttackAction(actor, Game.current().getCurrentMapArea(), right);
 
 		default:
 			return null;

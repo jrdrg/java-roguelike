@@ -85,7 +85,7 @@ public abstract class Dialog<T> {
 				if (y == 0 || y == height - 1)
 					term.put(x, y, '-');
 				else if (x == 0 || x == width - 1)
-					term.put(x, y, '|');
+					term.put(x, y, '│');
 			}
 		}
 	}

@@ -45,12 +45,25 @@ public abstract class Weapon extends Item {
 		}
 	}
 
+	protected Map<DamageType, DamageValue> damageValues;
+	protected WeaponType weaponType;
+
 	protected DamageType defaultDamageType;
-	private Map<DamageType, DamageValue> damageValues;
-	private WeaponType weaponType;
+	protected int baseDamage;
+	protected String name;
+	protected String description;
+	protected String attackDescription;
 
 	protected Weapon(WeaponData data) {
 		super();
+
+		this.name = data.name;
+		this.description = data.description;
+		this.baseDamage = data.baseDamage;
+
+		this.droppable = data.droppable;
+		this.symbol = data.symbol();
+		this.color = data.color();
 
 		this.damageValues = new HashMap<DamageType, DamageValue>();
 		damageValues.put(DamageType.SLASHING, new DamageValue(DamageType.SLASHING, data.slash()));

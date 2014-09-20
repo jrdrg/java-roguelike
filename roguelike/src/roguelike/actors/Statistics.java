@@ -1,7 +1,6 @@
 package roguelike.actors;
 
 import roguelike.data.EnemyData;
-import roguelike.maps.MapArea;
 import squidpony.squidutility.Pair;
 
 public class Statistics {

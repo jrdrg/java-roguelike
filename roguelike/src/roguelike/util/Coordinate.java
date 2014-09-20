@@ -3,6 +3,7 @@ package roguelike.util;
 import java.awt.Point;
 
 import squidpony.squidgrid.util.DirectionIntercardinal;
+import squidpony.squidgrid.util.RadiusStrategy;
 
 public class Coordinate extends Point {
 	/**
@@ -38,5 +39,9 @@ public class Coordinate extends Point {
 
 	public boolean isPosition(int x, int y) {
 		return this.x == x && this.y == y;
+	}
+
+	public float distance(Point other, RadiusStrategy radiusStrategy) {
+		return radiusStrategy.radius(x, y, other.x, other.y);
 	}
 }

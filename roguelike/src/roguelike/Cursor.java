@@ -8,24 +8,43 @@ import roguelike.ui.InputManager;
 import roguelike.ui.windows.TerminalBase;
 import roguelike.util.Coordinate;
 import squidpony.squidcolor.SColor;
+import squidpony.squidgrid.util.BasicRadiusStrategy;
 import squidpony.squidgrid.util.DirectionIntercardinal;
+import squidpony.squidgrid.util.RadiusStrategy;
 
 public class Cursor {
 
 	private boolean isActive;
 
+	protected RadiusStrategy radiusStrategy = BasicRadiusStrategy.SQUARE;
 	protected char symbol;
 	protected SColor color;
 	protected Coordinate position;
 	protected MapArea mapArea;
-
 	protected CursorResult result;
+
+	protected int maxRadius = 0;
 
 	public Cursor(Coordinate initialPosition, MapArea mapArea) {
 		this.mapArea = mapArea;
 		this.symbol = '_';
 		this.color = SColor.INDIGO_DYE;
 		this.position = new Coordinate(initialPosition.x, initialPosition.y);
+	}
+
+	public Cursor(Coordinate initialPosition, MapArea mapArea, int maxRadius) {
+		this(initialPosition, mapArea);
+		this.maxRadius = maxRadius;
+	}
+
+	public final boolean waitingForResult() {
+		return isActive;
+	}
+
+	public final void show() {
+		Game.current().setCursor(this);
+		isActive = true;
+		onShow();
 	}
 
 	public final void draw(TerminalBase terminal, Rectangle screenArea) {
@@ -45,16 +64,6 @@ public class Cursor {
 		onDraw(terminal, sx, sy);
 	}
 
-	public final boolean waitingForResult() {
-		return isActive;
-	}
-
-	public final void show() {
-		Game.current().setCursor(this);
-		isActive = true;
-		onShow();
-	}
-
 	public final boolean process() {
 		CursorResult processed = onProcess();
 
@@ -68,6 +77,9 @@ public class Cursor {
 
 	public final CursorResult result() {
 		return result;
+	}
+
+	protected void onShow() {
 	}
 
 	protected void onDraw(TerminalBase terminal, int sx, int sy) {
@@ -85,7 +97,7 @@ public class Cursor {
 			if (direction != DirectionIntercardinal.NONE) {
 
 				Coordinate newPosition = position.createOffsetPosition(direction);
-				if (mapArea.isWithinBounds(newPosition.x, newPosition.y)) {
+				if (isWithinBounds(newPosition)) {
 					setPosition(newPosition);
 				}
 
@@ -106,9 +118,6 @@ public class Cursor {
 		return result;
 	}
 
-	protected void onShow() {
-	}
-
 	private void setPosition(int x, int y) {
 		position.x = x;
 		position.y = y;
@@ -119,4 +128,15 @@ public class Cursor {
 		this.position.y = position.y;
 	}
 
+	private boolean isWithinBounds(Coordinate position) {
+		if (mapArea.isWithinBounds(position.x, position.y)) {
+			if (maxRadius > 0) {
+				Coordinate playerLocation = Game.current().getPlayer().getPosition();
+				float distance = playerLocation.distance(position, radiusStrategy);
+				return distance <= maxRadius;
+			}
+			return true;
+		}
+		return false;
+	}
 }

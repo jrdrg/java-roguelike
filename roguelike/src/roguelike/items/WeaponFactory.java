@@ -9,8 +9,10 @@ public class WeaponFactory {
 		if (isMeleeWeapon(data)) {
 			MeleeWeapon mWpn = new MeleeWeapon(data);
 			return mWpn;
+		} else {
+			RangedWeapon rWpn = new RangedWeapon(data);
+			return rWpn;
 		}
-		return null;
 	}
 
 	public static Weapon create(String key) {
@@ -22,7 +24,7 @@ public class WeaponFactory {
 	}
 
 	private static boolean isMeleeWeapon(WeaponData data) {
-		if (!data.type.equals("ranged")) {
+		if (!data.type.equals("bow")) {
 			return true;
 		}
 		return false;

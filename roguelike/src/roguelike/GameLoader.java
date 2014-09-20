@@ -4,6 +4,7 @@ import roguelike.actors.Player;
 import roguelike.data.DataFactory;
 import roguelike.items.Equipment.ItemSlot;
 import roguelike.items.MeleeWeapon;
+import roguelike.items.RangedWeapon;
 import roguelike.items.WeaponFactory;
 import roguelike.maps.MapArea;
 import roguelike.maps.MapBuilder;
@@ -50,8 +51,10 @@ public class GameLoader {
 
 		MeleeWeapon sword = (MeleeWeapon) WeaponFactory.create("sword");
 		MeleeWeapon spear = (MeleeWeapon) WeaponFactory.create("spear");
+		RangedWeapon bow = (RangedWeapon) WeaponFactory.create("short bow");
 
 		player.getInventory().add(spear);
+		player.getInventory().add(bow);
 
 		ItemSlot.RIGHT_ARM.equipItem(player, sword);
 

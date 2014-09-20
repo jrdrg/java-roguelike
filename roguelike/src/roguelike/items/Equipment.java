@@ -39,6 +39,15 @@ public class Equipment {
 		return equippedWeapons;
 	}
 
+	public RangedWeapon getRangedWeapon(ItemSlot slot) {
+		Weapon wpn = getEquippedWeapon(slot);
+		if (wpn != null) {
+			if (wpn instanceof RangedWeapon)
+				return (RangedWeapon) wpn;
+		}
+		return null;
+	}
+
 	Item equipItem(ItemSlot slot, Item item, Inventory inventory) {
 		Item oldItem = equipped.put(slot, item);
 		if (oldItem != null) {
