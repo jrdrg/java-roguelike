@@ -16,10 +16,12 @@ public class RangedAttackAction extends InputRequiredAction<InputCommand> {
 
 	private MapArea mapArea;
 	private Actor target;
+	private RangedWeapon weapon;
 
 	public RangedAttackAction(Actor actor, MapArea mapArea, RangedWeapon weapon) {
 		super(actor);
 		this.mapArea = mapArea;
+		this.weapon = weapon;
 
 		int maxRange = 10; // TODO: replace with weapon's max range
 		this.cursor = new AttackCursor(actor.getPosition(), mapArea, maxRange, BasicRadiusStrategy.CUBE);
@@ -54,7 +56,7 @@ public class RangedAttackAction extends InputRequiredAction<InputCommand> {
 			return ActionResult.alternate(new RestAction(actor)).setMessage(">>> onPerform() >>> Target " + target.getName() + " is dead!");
 		}
 
-		Attack attack = actor.getCombatHandler().getAttack(target);
+		Attack attack = weapon.getAttack();
 		if (attack != null) {
 			boolean isTargetDead = attack.perform(this, target);
 

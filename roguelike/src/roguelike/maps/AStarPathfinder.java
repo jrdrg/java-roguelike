@@ -267,7 +267,7 @@ public class AStarPathfinder {
 	 */
 	public float getHeuristicCost(int x, int y, int tx, int ty) {
 		// return MapHelper.distance(x, y, tx, ty);
-		return MapHelpers.distanceSq(x, y, tx, ty);
+		return (float) Math.floor(MapHelpers.distanceSq(x, y, tx, ty));
 		// return heuristic.getCost(map, mover, x, y, tx, ty);
 	}
 

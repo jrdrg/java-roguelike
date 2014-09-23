@@ -2,7 +2,6 @@ package roguelike.items;
 
 import roguelike.Game;
 import roguelike.actions.combat.Attack;
-import roguelike.actions.combat.MeleeAttack;
 import roguelike.actions.combat.RangedAttack;
 import roguelike.data.WeaponData;
 

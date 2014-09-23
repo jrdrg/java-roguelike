@@ -3,8 +3,6 @@ package roguelike;
 import java.util.ArrayList;
 import java.util.List;
 
-import squidpony.squidcolor.SColor;
-
 public class TurnResult {
 	boolean running;
 	boolean playerActed;
@@ -31,20 +29,6 @@ public class TurnResult {
 		return this;
 	}
 
-	public TurnResult addMessage(String message) {
-		if (message != null) {
-			messages.add(new MessageDisplayProperties(message));
-		}
-		return this;
-	}
-
-	public TurnResult addMessage(String message, SColor color) {
-		if (message != null) {
-			messages.add(new MessageDisplayProperties(message, color));
-		}
-		return this;
-	}
-
 	public TurnResult addEvent(TurnEvent event) {
 		if (event != null) {
 			events.add(event);
@@ -62,10 +46,6 @@ public class TurnResult {
 
 	public boolean isRunning() {
 		return this.running;
-	}
-
-	public List<MessageDisplayProperties> getMessages() {
-		return messages;
 	}
 
 	public List<TurnEvent> getEvents() {

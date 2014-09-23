@@ -3,7 +3,6 @@ package roguelike.actions.combat;
 import roguelike.actions.Action;
 import roguelike.actors.Actor;
 import roguelike.items.RangedWeapon;
-import roguelike.items.Weapon;
 
 public class RangedAttack extends Attack {
 

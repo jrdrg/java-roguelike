@@ -4,6 +4,8 @@ import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
 
+import roguelike.util.StringEx;
+
 public abstract class Menu<T> {
 
 	public static KeyMap KeyBindings = new KeyMap("Menu")
@@ -11,10 +13,10 @@ public abstract class Menu<T> {
 			.bindKey(KeyEvent.VK_ESCAPE, InputCommand.CANCEL)
 			.bindKey(KeyEvent.VK_UP, InputCommand.UP)
 			.bindKey(KeyEvent.VK_DOWN, InputCommand.DOWN)
-			.bindKey(KeyEvent.VK_LEFT, InputCommand.LEFT)
-			.bindKey(KeyEvent.VK_RIGHT, InputCommand.RIGHT);
+			.bindKey(KeyEvent.VK_LEFT, InputCommand.PREVIOUS_PAGE)
+			.bindKey(KeyEvent.VK_RIGHT, InputCommand.NEXT_PAGE);
 
-	private ArrayList<T> items;
+	protected ArrayList<T> items;
 	private int activeIndex;
 	private int currentPage;
 	private int pageCount;
@@ -31,7 +33,7 @@ public abstract class Menu<T> {
 		this.currentPage = 1;
 		this.pageSize = pageSize;
 
-		pageCount = (int) Math.ceil(items.size() / (float) pageSize);
+		recalculatePageCount();
 	}
 
 	public void processCommand(InputCommand command) {
@@ -48,11 +50,11 @@ public abstract class Menu<T> {
 				pageIndex = Math.min(maxItems - 1, pageIndex + 1);
 				break;
 
-			case LEFT:
+			case PREVIOUS_PAGE:
 				currentPage = Math.max(currentPage - 1, 1);
 				break;
 
-			case RIGHT:
+			case NEXT_PAGE:
 				currentPage = Math.min(currentPage + 1, pageCount);
 				break;
 
@@ -126,6 +128,10 @@ public abstract class Menu<T> {
 		return (char) (index + 97);
 	}
 
+	protected void recalculatePageCount() {
+		pageCount = (int) Math.ceil(items.size() / (float) pageSize);
+	}
+
 	private int getPageOffset(int index) {
 		return Math.min(((currentPage - 1) * pageSize) + index, items.size());
 	}
@@ -139,5 +145,5 @@ public abstract class Menu<T> {
 		return -1; // invalid character pressed
 	}
 
-	protected abstract String getTextFor(T item, int position);
+	protected abstract StringEx getTextFor(T item, int position);
 }

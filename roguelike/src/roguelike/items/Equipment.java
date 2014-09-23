@@ -7,7 +7,7 @@ import roguelike.util.Log;
 
 public class Equipment {
 	public enum ItemSlot {
-		HEAD, TORSO, LEFT_ARM, RIGHT_ARM, LEGS;
+		HEAD, TORSO, LEFT_ARM, RIGHT_ARM, LEGS, RANGED;
 
 		public Item getItem(Actor actor) {
 			return actor.getEquipment().getEquipped(this);
@@ -39,8 +39,8 @@ public class Equipment {
 		return equippedWeapons;
 	}
 
-	public RangedWeapon getRangedWeapon(ItemSlot slot) {
-		Weapon wpn = getEquippedWeapon(slot);
+	public RangedWeapon getRangedWeapon() {
+		Weapon wpn = getEquippedWeapon(ItemSlot.RANGED);
 		if (wpn != null) {
 			if (wpn instanceof RangedWeapon)
 				return (RangedWeapon) wpn;
@@ -71,7 +71,7 @@ public class Equipment {
 	}
 
 	Weapon getEquippedWeapon(ItemSlot slot) {
-		if (slot == ItemSlot.RIGHT_ARM || slot == ItemSlot.LEFT_ARM) {
+		if (slot == ItemSlot.RIGHT_ARM || slot == ItemSlot.LEFT_ARM || slot == ItemSlot.RANGED) {
 			Item weapon = equipped.getOrDefault(slot, null);
 			if (weapon instanceof Weapon)
 				return (Weapon) weapon;

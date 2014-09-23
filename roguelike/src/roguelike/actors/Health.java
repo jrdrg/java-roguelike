@@ -27,7 +27,7 @@ public class Health {
 	}
 
 	public void setMaximum(int maximum) {
-		setMaximum(maximum, false);
+		setMaximum(maximum, maximum < current);
 	}
 
 	public void setMaximum(int maximum, boolean setCurrentToMax) {

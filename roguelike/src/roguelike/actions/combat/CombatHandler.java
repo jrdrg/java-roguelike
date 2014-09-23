@@ -1,6 +1,7 @@
 package roguelike.actions.combat;
 
 import roguelike.Game;
+import roguelike.MessageDisplayProperties;
 import roguelike.TurnEvent;
 import roguelike.actions.Action;
 import roguelike.actors.Actor;
@@ -101,6 +102,9 @@ public class CombatHandler {
 		Log.debug("Attacker reach: " + attackingReach);
 		Log.debug("Defender reach: " + defendingReach);
 
+		logCombatMessage(String.format("%s has reach of %d, %s has reach of %d",
+				attacker.getName(), attackingReach, actor.getName(), defendingReach));
+
 		// This determines whether the attack landed or not
 		int attackerSuccesses = DiceRolls.roll(attackSuccessPool, attackWeaponTN);
 		int defenderSuccesses = DiceRolls.roll(defendSuccessPool, defendWeaponTN);
@@ -109,9 +113,8 @@ public class CombatHandler {
 		Log.debug("S (A): " + attackerSuccesses + ", TN=" + attackWeaponTN + ", pool=" + attackSuccessPool);
 		Log.debug("S (D): " + defenderSuccesses + ", TN=" + defendWeaponTN + ", pool=" + defendSuccessPool);
 
-		String attackMsg = String.format("%s successes: %d", attacker.getName(), total);
-
-		Game.current().displayMessage(attackMsg);
+		logCombatMessage(String.format("%s rolls %d successes, %s rolls %d: total %d (%s)",
+				attacker.getName(), attackerSuccesses, actor.getName(), defenderSuccesses, total, (total > 0 ? "Hit" : "Miss")));
 
 		if (total > 0) {
 
@@ -175,5 +178,9 @@ public class CombatHandler {
 		Game.current().displayMessage(message, color);
 
 		return isDead;
+	}
+
+	private void logCombatMessage(String message) {
+		Game.current().messages().add(new MessageDisplayProperties(message));
 	}
 }

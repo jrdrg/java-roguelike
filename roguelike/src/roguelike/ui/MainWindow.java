@@ -86,8 +86,10 @@ public class MainWindow {
 
 				.bindKey(KeyEvent.VK_ENTER, InputCommand.CONFIRM)
 				.bindKey(KeyEvent.VK_ESCAPE, InputCommand.CANCEL)
+				.bindKey(KeyEvent.VK_M, InputCommand.SHOW_MESSAGES)
 
 				.bindKey(KeyEvent.VK_R, InputCommand.RANGED_ATTACK)
+				.bindKey(KeyEvent.VK_A, InputCommand.ATTACK)
 
 				.bindKey(KeyEvent.VK_PERIOD, InputCommand.REST)
 				.bindKey(KeyEvent.VK_C, InputCommand.CLOSE_DOOR)

@@ -9,10 +9,9 @@ import roguelike.actions.LookAction;
 import roguelike.actions.QuitAction;
 import roguelike.actions.RangedAttackAction;
 import roguelike.actions.RestAction;
+import roguelike.actions.ShowMessagesAction;
 import roguelike.actions.WalkAction;
-import roguelike.actions.combat.RangedAttack;
 import roguelike.actors.Player;
-import roguelike.items.Equipment.ItemSlot;
 import roguelike.items.RangedWeapon;
 import roguelike.ui.InputCommand;
 import roguelike.ui.InputManager;
@@ -75,10 +74,11 @@ public class PlayerInputBehavior extends Behavior {
 		case LOOK:
 			return new LookAction(actor, Game.current().getCurrentMapArea());
 
+		case SHOW_MESSAGES:
+			return new ShowMessagesAction(actor);
+
 		case RANGED_ATTACK:
-			RangedWeapon right = actor.getEquipment().getRangedWeapon(ItemSlot.RIGHT_ARM);
-			if (right != null)
-				return new RangedAttackAction(actor, Game.current().getCurrentMapArea(), right);
+			return getRangedAttackAction();
 
 		default:
 			return null;
@@ -90,4 +90,13 @@ public class PlayerInputBehavior extends Behavior {
 		return this;
 	}
 
+	private RangedAttackAction getRangedAttackAction() {
+		RangedWeapon rangedWeapon = actor.getEquipment().getRangedWeapon();
+		if (rangedWeapon != null)
+			return new RangedAttackAction(actor, Game.current().getCurrentMapArea(), rangedWeapon);
+		else {
+			Game.current().displayMessage("You don't have a ranged weapon equipped.");
+		}
+		return null;
+	}
 }

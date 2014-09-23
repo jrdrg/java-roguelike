@@ -12,6 +12,8 @@ public class MessageDisplayProperties {
 	}
 
 	public MessageDisplayProperties(String text, SColor color) {
+		if (text == null)
+			throw new IllegalArgumentException("text cannot be null");
 		this.text = text;
 		this.color = color;
 	}

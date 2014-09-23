@@ -89,7 +89,7 @@ public class Cursor {
 			terminal.withColor(SColor.TRANSPARENT, color).put(sx, sy, ' ');
 	}
 
-	protected CursorResult onProcess() {
+	protected final CursorResult onProcess() {
 		InputCommand cmd = InputManager.nextCommand();
 		if (cmd != null) {
 
@@ -129,7 +129,7 @@ public class Cursor {
 	}
 
 	private boolean isWithinBounds(Coordinate position) {
-		if (mapArea.isWithinBounds(position.x, position.y)) {
+		if (mapArea.isWithinBounds(position.x, position.y) && onUpdatePosition(position)) {
 			if (maxRadius > 0) {
 				Coordinate playerLocation = Game.current().getPlayer().getPosition();
 				float distance = playerLocation.distance(position, radiusStrategy);
@@ -138,5 +138,14 @@ public class Cursor {
 			return true;
 		}
 		return false;
+	}
+
+	/**
+	 * Return false if the cursor can't be moved to the desired position, i.e. outside field of vision
+	 * 
+	 * @return
+	 */
+	protected boolean onUpdatePosition(Coordinate position) {
+		return true;
 	}
 }

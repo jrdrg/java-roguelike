@@ -5,6 +5,7 @@ import roguelike.actors.Actor;
 import roguelike.items.Equipment.ItemSlot;
 import roguelike.items.InventoryMenu;
 import roguelike.items.Item;
+import roguelike.items.RangedWeapon;
 import roguelike.ui.windows.InventoryDialog;
 
 public class InventoryAction extends InputRequiredAction<Item> {
@@ -34,8 +35,13 @@ public class InventoryAction extends InputRequiredAction<Item> {
 				if (activeItem != null) {
 
 					// TODO: change this to something else, equip it for now
-					ItemSlot.RIGHT_ARM.equipItem(actor, activeItem);
-					result = ActionResult.success().setMessage("Selected item: " + activeItem.getName());
+					if (activeItem instanceof RangedWeapon) {
+						ItemSlot.RANGED.equipItem(actor, activeItem);
+						result = ActionResult.success().setMessage("Equipped ranged weapon: " + activeItem.getName());
+					} else {
+						ItemSlot.RIGHT_ARM.equipItem(actor, activeItem);
+						result = ActionResult.success().setMessage("Selected item: " + activeItem.getName());
+					}
 
 				} else {
 					result = ActionResult.failure().setMessage("Empty inventory...");

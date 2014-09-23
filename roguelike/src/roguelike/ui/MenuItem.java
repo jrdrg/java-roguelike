@@ -8,9 +8,14 @@ public class MenuItem<T> {
 	private T item;
 	private boolean active;
 
-	public MenuItem(String text, T item) {
-		this.text = new StringEx(text);
+	public MenuItem(StringEx text, T item, boolean active) {
+		this.text = text;
 		this.item = item;
+		this.active = active;
+	}
+
+	public MenuItem(String text, T item) {
+		this(new StringEx(text), item, false);
 	}
 
 	public MenuItem(String text, T item, boolean active) {

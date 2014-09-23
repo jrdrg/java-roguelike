@@ -32,14 +32,15 @@ public class Game {
 	private RNG rng;
 	private boolean running;
 	private boolean playerDead;
-	private MapArea currentMapArea;
 	private Player player;
+	private MapArea currentMapArea;
 	private Queue<Action> queuedActions;
 	private TurnResult currentTurnResult;
 
 	Stack<Dialog<?>> windows;
 	Dialog<?> activeWindow;
 	Cursor activeCursor;
+	MessageLog messages;
 
 	final DataFactory dataFactory;
 
@@ -60,6 +61,7 @@ public class Game {
 		Log.debug("Created Game");
 
 		this.dataFactory = gameLoader.dataFactory;
+		this.messages = new MessageLog();
 	}
 
 	/**
@@ -69,6 +71,10 @@ public class Game {
 	 */
 	public static Game current() {
 		return currentGame;
+	}
+
+	public MessageLog messages() {
+		return messages;
 	}
 
 	public RNG random() {
@@ -137,12 +143,12 @@ public class Game {
 	 * @param message
 	 */
 	public void displayMessage(String message) {
-		currentTurnResult.addMessage(message);
+		messages.add(message);
 		Log.debug("> " + message);
 	}
 
 	public void displayMessage(String message, SColor color) {
-		currentTurnResult.addMessage(message, color);
+		messages.add(new MessageDisplayProperties(message, color));
 	}
 
 	public void addEvent(TurnEvent event) {
@@ -310,7 +316,7 @@ public class Game {
 		}
 
 		ActionResult result = currentAction.perform();
-		turnResult.addMessage(result.getMessage());
+		messages.add(result.getMessage());
 
 		/*
 		 * if the result is completed we can proceed, else put it back on the queue
@@ -319,7 +325,7 @@ public class Game {
 
 			while (result.getAlternateAction() != null) {
 				result = result.getAlternateAction().perform();
-				turnResult.addMessage(result.getMessage());
+				messages.add(result.getMessage());
 			}
 
 			Actor currentActor = currentAction.getActor();

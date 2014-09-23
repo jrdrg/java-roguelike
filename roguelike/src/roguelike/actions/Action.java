@@ -33,8 +33,4 @@ public abstract class Action {
 	}
 
 	protected abstract ActionResult onPerform();
-
-	protected int getEnergyCost() {
-		return 0;
-	}
 }

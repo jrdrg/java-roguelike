@@ -1,10 +1,12 @@
 package roguelike.items;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class Inventory {
+public class Inventory implements Serializable {
+	private static final long serialVersionUID = 2003563004618547276L;
 
 	private ArrayList<Item> items;
 

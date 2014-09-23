@@ -61,49 +61,60 @@ public class StatsDisplay {
 
 	private void drawEquipped() {
 
+		int leftX = 4;
+
 		SColor headerColor = SColor.BLOOD;
 		TerminalBase headerTerm = terminal.withColor(headerColor);
 
 		headerTerm.write(1, 7, "L  ");
 		headerTerm.write(1, 8, "R  ");
 		headerTerm.write(1, 9, "Ar ");
+		headerTerm.write(1, 10, "Rn ");
 
 		Weapon left = ItemSlot.LEFT_ARM.getEquippedWeapon(player);
 		Weapon right = ItemSlot.RIGHT_ARM.getEquippedWeapon(player);
+		Weapon ranged = ItemSlot.RANGED.getEquippedWeapon(player);
 
 		if (left != null)
-			terminal.write(3, 7, String.format("%1$-15s", left.getName()));
+			terminal.write(leftX, 7, String.format("%1$-15s", left.getName()));
 
 		if (right != null)
-			terminal.write(3, 8, String.format("%1$-15s", right.getName()));
+			terminal.write(leftX, 8, String.format("%1$-15s", right.getName()));
 
-		headerTerm.write(1, 14, "MP");
+		if (ranged != null)
+			terminal.write(leftX, 10, String.format("%1$-15s", ranged.getName()));
+
+		headerTerm.write(1, 15, "MP");
 		int weaponProficiency = 0; // TODO: calculate this
-		terminal.write(3, 14, String.format("%3d", player.getStatistics().baseMeleePool(weaponProficiency)));
+		terminal.write(leftX, 15, String.format("%3d", player.getStatistics().baseMeleePool(weaponProficiency)));
 
-		headerTerm.write(1, 15, "RP");
+		headerTerm.write(1, 16, "RP");
 		int rangedProficiency = 0; // TODO: calculate this
-		terminal.write(3, 15, String.format("%3d", player.getStatistics().baseMeleePool(rangedProficiency)));
+		terminal.write(leftX, 16, String.format("%3d", player.getStatistics().baseMeleePool(rangedProficiency)));
 	}
 
 	private void drawStats() {
+
+		int startY = 12;
 
 		SColor headerColor = SColor.BRONZE;
 		TerminalBase headerTerm = terminal.withColor(headerColor);
 		TerminalBase displayTerm = terminal;
 		// toughness conditioning perception quickness willpower presence
-		headerTerm.write(1, 11, "To");
-		displayTerm.write(3, 11, String.format("%3d", player.getStatistics().toughness.getTotalValue()));
-		headerTerm.write(7, 11, "Co");
-		displayTerm.write(9, 11, String.format("%3d", player.getStatistics().conditioning.getTotalValue()));
-		headerTerm.write(13, 11, "Pe");
-		displayTerm.write(15, 11, String.format("%3d", player.getStatistics().perception.getTotalValue()));
+		headerTerm.write(1, startY, "To");
+		displayTerm.write(3, startY, String.format("%3d", player.getStatistics().toughness.getTotalValue()));
+		headerTerm.write(7, startY, "Co");
+		displayTerm.write(9, startY, String.format("%3d", player.getStatistics().conditioning.getTotalValue()));
+		headerTerm.write(13, startY, "Pe");
+		displayTerm.write(15, startY, String.format("%3d", player.getStatistics().perception.getTotalValue()));
 
-		headerTerm.write(1, 12, "Qu");
-		displayTerm.write(3, 12, String.format("%3d", player.getStatistics().agility.getTotalValue()));
-		headerTerm.write(7, 12, "Wi");
-		displayTerm.write(9, 12, String.format("%3d", player.getStatistics().willpower.getTotalValue()));
-		headerTerm.write(13, 12, "Pr");
-		displayTerm.write(15, 12, String.format("%3d", player.getStatistics().presence.getTotalValue()));
+		startY++;
+
+		headerTerm.write(1, startY, "Qu");
+		displayTerm.write(3, startY, String.format("%3d", player.getStatistics().agility.getTotalValue()));
+		headerTerm.write(7, startY, "Wi");
+		displayTerm.write(9, startY, String.format("%3d", player.getStatistics().willpower.getTotalValue()));
+		headerTerm.write(13, startY, "Pr");
+		displayTerm.write(15, startY, String.format("%3d", player.getStatistics().presence.getTotalValue()));
 	}
 }

@@ -64,15 +64,14 @@ public class MainScreen extends Screen {
 		TerminalBase statsTerminal =
 				fullTerminal.getWindow(width - MainWindow.statWidth, 0, MainWindow.statWidth, height);
 
-		messageDisplay = new MessageDisplay(messageTerminal, outputLines);
-		statsDisplay = new StatsDisplay(statsTerminal);
-
 		gameLoader = GameLoader.instance();
 
 		game = gameLoader.newGame();
-		statsDisplay.setPlayer(game.getPlayer());
-
 		game.initialize();
+
+		messageDisplay = new MessageDisplay(Game.current().messages, messageTerminal, outputLines);
+		statsDisplay = new StatsDisplay(statsTerminal);
+		statsDisplay.setPlayer(game.getPlayer());
 
 		doFOV();
 		drawMap();
@@ -320,9 +319,6 @@ public class MainScreen extends Screen {
 	}
 
 	private void drawMessages(TurnResult run) {
-		for (MessageDisplayProperties msg : run.getMessages()) {
-			messageDisplay.display(msg);
-		}
 		messageDisplay.draw();
 	}
 
