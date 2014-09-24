@@ -20,8 +20,8 @@ public class SwingPaneTerminalView {
 			@Override
 			public void onChanged(int x, int y, CharEx c) {
 
-				foreground.put(x, y, c.symbol(), c.foregroundColor());
 				background.put(x, y, c.backgroundColor());
+				foreground.put(x, y, c.symbol(), c.foregroundColor());
 			}
 		});
 	}

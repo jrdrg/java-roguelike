@@ -19,7 +19,7 @@ public class MessageLogWindow extends Dialog<InputCommand> {
 	public MessageLogWindow(int width, int height, MessageLog messages) {
 		super(width, height);
 
-		messageMenu = new Menu<MessageDisplayProperties>(messages.getAll(), 29) {
+		messageMenu = new Menu<MessageDisplayProperties>(messages.getAll(), 25) {
 
 			@Override
 			protected StringEx getTextFor(MessageDisplayProperties item, int position) {
@@ -50,11 +50,14 @@ public class MessageLogWindow extends Dialog<InputCommand> {
 
 		terminal.withColor(SColor.MOUSY_INDIGO).fill(0, 0, size.width, size.height, ' ');
 		List<MenuItem<MessageDisplayProperties>> currentPage = messageMenu.currentPageItems();
-		int y = 0;
+		int y = 1;
 		for (MenuItem<MessageDisplayProperties> item : currentPage) {
-			terminal.write(1, y, item.getText());
-
-			y++;
+			StringEx text = item.getText();
+			StringEx[] lines = text.wordWrap(size.width - 1);
+			for (int x = 0; x < lines.length; x++) {
+				terminal.write(1, y, text);
+				y++;
+			}
 		}
 	}
 }

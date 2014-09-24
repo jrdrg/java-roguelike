@@ -3,11 +3,17 @@ package roguelike.ui;
 import java.awt.Rectangle;
 
 import roguelike.Cursor;
+import roguelike.CursorResult;
 import roguelike.Game;
+import roguelike.actors.Actor;
+import roguelike.actors.Player;
 import roguelike.maps.MapArea;
+import roguelike.maps.Tile;
 import roguelike.ui.windows.TerminalBase;
 import roguelike.util.ArrayUtils;
 import roguelike.util.Coordinate;
+import roguelike.util.CurrentItemTracker;
+import roguelike.util.Log;
 import squidpony.squidcolor.SColor;
 import squidpony.squidcolor.SColorFactory;
 import squidpony.squidgrid.fov.FOVSolver;
@@ -22,8 +28,12 @@ public class AttackCursor extends Cursor {
 	private Coordinate initialPosition;
 
 	boolean fovDrawn = false;
+	boolean determinedActors = false;
 	Rectangle screenArea;
 	float[][] incomingLight;
+
+	private CurrentItemTracker<Actor> targets;
+	private Actor startTarget = null;
 
 	public AttackCursor(Coordinate initialPosition, MapArea mapArea, int maxRadius, RadiusStrategy radiusStrategy) {
 		super(initialPosition, mapArea, maxRadius);
@@ -32,6 +42,7 @@ public class AttackCursor extends Cursor {
 		this.initialPosition = initialPosition;
 
 		this.radiusStrategy = radiusStrategy;
+		this.targets = new CurrentItemTracker<Actor>();
 	}
 
 	@Override
@@ -44,6 +55,7 @@ public class AttackCursor extends Cursor {
 		}
 		drawFOV(terminal);
 		super.onDraw(terminal, sx, sy);
+		DisplayManager.instance().setDirty(); // update
 	}
 
 	private void determineFOVTiles(TerminalBase terminal) {
@@ -61,6 +73,7 @@ public class AttackCursor extends Cursor {
 				initialPosition.x - screenArea.x,
 				initialPosition.y - screenArea.y,
 				maxRadius + 1);
+
 	}
 
 	private void drawFOV(TerminalBase terminal) {
@@ -71,12 +84,27 @@ public class AttackCursor extends Cursor {
 				int cX = x - screenArea.x;
 				int cY = y - screenArea.y;
 
-				if (incomingLight[cX][cY] > 0 && currentMap.getTileAt(x, y).isVisible()) {
-					terminal.withColor(SColor.TRANSPARENT, SColorFactory.dimmest(background)).fill(cX, cY, 1, 1);
-				}
+				Tile t = currentMap.getTileAt(x, y);
+				if (incomingLight[cX][cY] > 0 && t.isVisible()) {
 
+					if (!t.isWall())
+						terminal.withColor(SColor.TRANSPARENT, SColorFactory.dimmest(background)).fill(cX, cY, 1, 1);
+
+					if (!determinedActors) {
+						Actor a = t.getActor();
+						if (a != null && !(a instanceof Player)) {
+							targets.add(a);
+							if (startTarget == null) {
+								startTarget = a;
+								position.setLocation(a.getPosition());
+								Log.debug("set attack cursor position=" + position.x + "," + position.y);
+							}
+						}
+					}
+				}
 			}
 		}
+		determinedActors = true;
 	}
 
 	@Override
@@ -88,5 +116,29 @@ public class AttackCursor extends Cursor {
 			return true;
 
 		return false;
+	}
+
+	@Override
+	protected CursorResult onProcessCommand(InputCommand command) {
+		switch (command) {
+		case PREVIOUS_TARGET:
+			// move to previous target
+			targets.previous();
+			break;
+
+		case NEXT_TARGET:
+			// move to next target
+			targets.advance();
+			break;
+
+		default:
+			return null;
+		}
+
+		Actor tgt = targets.getCurrent();
+		if (tgt != null)
+			position.setLocation(tgt.getPosition());
+
+		return null;
 	}
 }

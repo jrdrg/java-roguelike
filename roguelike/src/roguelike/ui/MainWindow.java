@@ -84,8 +84,12 @@ public class MainWindow {
 				.bindKey(KeyEvent.VK_DOWN, true, InputCommand.DOWN_RIGHT)
 				.bindKey(KeyEvent.VK_LEFT, true, InputCommand.DOWN_LEFT)
 
+				.bindKey(KeyEvent.VK_GREATER, InputCommand.USE_STAIRS)
+
 				.bindKey(KeyEvent.VK_ENTER, InputCommand.CONFIRM)
 				.bindKey(KeyEvent.VK_ESCAPE, InputCommand.CANCEL)
+				.bindKey(KeyEvent.VK_SLASH, true, InputCommand.PREVIOUS_TARGET)
+				.bindKey(KeyEvent.VK_SLASH, InputCommand.NEXT_TARGET)
 				.bindKey(KeyEvent.VK_M, InputCommand.SHOW_MESSAGES)
 
 				.bindKey(KeyEvent.VK_R, InputCommand.RANGED_ATTACK)

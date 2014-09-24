@@ -16,6 +16,8 @@ public enum InputCommand {
 	DOWN_LEFT,
 	DOWN_RIGHT,
 
+	USE_STAIRS,
+
 	NEXT_PAGE,
 	PREVIOUS_PAGE,
 
@@ -28,6 +30,9 @@ public enum InputCommand {
 
 	ATTACK,
 	RANGED_ATTACK,
+	PREVIOUS_TARGET,
+	NEXT_TARGET,
+
 	SEARCH,
 	REST,
 

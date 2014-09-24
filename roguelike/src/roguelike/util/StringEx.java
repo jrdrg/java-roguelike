@@ -2,6 +2,7 @@ package roguelike.util;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import squidpony.squidcolor.SColor;
 import squidpony.squidcolor.SColorFactory;
@@ -51,6 +52,88 @@ public class StringEx extends ArrayList<CharEx> {
 		}
 	}
 
+	@Override
+	public String toString() {
+		return text;
+	}
+
+	public StringEx[] wordWrap(int lineWidth) {
+		List<StringEx> lines = new ArrayList<StringEx>();
+		StringEx line;
+
+		int lastWrapPoint = 0;
+		int thisLineStart = 0;
+		for (int i = 0; i < size(); i++)
+		{
+			CharEx c = this.get(i);
+
+			if (c.isWhitespace())
+			{
+				lastWrapPoint = i;
+			}
+
+			// wrap if we got too long
+			if (i - thisLineStart >= lineWidth)
+			{
+				if (lastWrapPoint != 0)
+				{
+					// have a recent point to wrap at, so word wrap
+					line = substring(thisLineStart, lastWrapPoint - thisLineStart);
+					thisLineStart = lastWrapPoint;
+				}
+				else
+				{
+					// no convenient point to word wrap, so character wrap
+					line = substring(thisLineStart, i - thisLineStart);
+					thisLineStart = i;
+				}
+
+				line = line.trim();
+				lines.add(line);
+			}
+		}
+
+		// add the last bit
+		line = substring(thisLineStart);
+		line = line.trim();
+		lines.add(line);
+
+		return lines.toArray(new StringEx[0]);
+	}
+
+	public StringEx substring(int startIndex, int length)
+	{
+		StringEx substring = new StringEx();
+		// substring.AddRange(this.Where((c, index) => (index >= startIndex) && (index < startIndex + length)));
+		substring.addAll(this.stream().skip(startIndex).limit(startIndex + length).collect(Collectors.toList()));
+
+		return substring;
+	}
+
+	public StringEx substring(int startIndex)
+	{
+		return substring(startIndex, size() - startIndex);
+	}
+
+	public StringEx trim()
+	{
+		StringEx trimmed = new StringEx(this);
+
+		// trim from the front
+		while ((trimmed.size() > 0) && (trimmed.get(0).isWhitespace()))
+		{
+			trimmed.remove(0);
+		}
+
+		// trim from the end
+		while ((trimmed.size() > 0) && (trimmed.get(trimmed.size() - 1).isWhitespace()))
+		{
+			trimmed.remove(trimmed.size() - 1);
+		}
+
+		return trimmed;
+	}
+
 	private CharacterParseResult parseColor(Character c, List<Character> read) {
 		CharacterParseResult res = new CharacterParseResult();
 		if (c == '`') {
@@ -78,10 +161,5 @@ public class StringEx extends ArrayList<CharEx> {
 		String s = new String(chars);
 
 		return SColorFactory.colorForName(s);
-	}
-
-	@Override
-	public String toString() {
-		return text;
 	}
 }

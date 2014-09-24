@@ -18,16 +18,15 @@ public class Tile implements Serializable {
 	protected float lighting;
 	protected boolean isPassable;
 	protected char symbol;
+	protected int speedModifier;
 
 	protected Inventory items;
 
 	protected SColor lightValue;
 	protected SColor color;
 	protected SColor background;
-	private Actor actor;
 
-	// TODO: implement tile speed modifiers (i.e. mud might reduce speed by 10, ice might increase it)
-	int speedModifier;
+	private Actor actor;
 
 	Tile() {
 		this.visible = false;

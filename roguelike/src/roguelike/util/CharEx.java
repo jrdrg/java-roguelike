@@ -53,4 +53,8 @@ public class CharEx {
 		}
 		return super.equals(obj);
 	}
+
+	public boolean isWhitespace() {
+		return this.symbol == ' ';
+	}
 }

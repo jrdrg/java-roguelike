@@ -112,6 +112,7 @@ public class Cursor {
 					break;
 
 				default:
+					result = onProcessCommand(cmd);
 				}
 			}
 		}
@@ -147,5 +148,15 @@ public class Cursor {
 	 */
 	protected boolean onUpdatePosition(Coordinate position) {
 		return true;
+	}
+
+	/**
+	 * Allow derived cursors to implement additional commands (for instance, to select a target)
+	 * 
+	 * @param command
+	 * @return
+	 */
+	protected CursorResult onProcessCommand(InputCommand command) {
+		return null;
 	}
 }

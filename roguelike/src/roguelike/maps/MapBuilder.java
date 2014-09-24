@@ -10,9 +10,7 @@ import squidpony.squidmath.PerlinNoise;
 import squidpony.squidmath.RNG;
 import squidpony.squidutility.SCollections;
 
-public class MapBuilder {
-	private RNG random = Game.current().random();
-	private TileBuilder tb = new TileBuilder();
+public class MapBuilder extends MapBuilderBase {
 	private ArrayList<Rectangle> buildings = new ArrayList<Rectangle>();
 
 	public void buildMap(Tile[][] map) {
@@ -54,6 +52,8 @@ public class MapBuilder {
 		}
 
 		Point playerPos = SCollections.getRandomElement(startingPoints);
+		
+		//place stairs
 
 		Game.current().getPlayer().setPosition(playerPos.x, playerPos.y);
 	}

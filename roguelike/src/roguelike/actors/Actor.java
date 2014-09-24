@@ -25,6 +25,7 @@ public abstract class Actor {
 
 	protected Stack<AttackAttempt> attacked;
 	protected Stack<AttackAttempt> attackedBy;
+	protected boolean attackedThisRound;
 
 	private Energy energy;
 	private Statistics statistics;
@@ -70,6 +71,10 @@ public abstract class Actor {
 		speed = Math.max(1, speed + tileSpeedModifier); // always at least 1 speed even if 0 or negative
 
 		return speed;
+	}
+
+	public boolean wasAttackedThisRound() {
+		return attackedThisRound;
 	}
 
 	public Energy getEnergy() {
@@ -171,6 +176,8 @@ public abstract class Actor {
 		while (attackedBy.size() > 1)
 			((Stack<AttackAttempt>) attackedBy).remove(0);
 
+		attackedThisRound = false;
+
 		Log.debug("Actor.finishTurn(): " + getName());
 
 		onTurnFinished();
@@ -188,6 +195,7 @@ public abstract class Actor {
 
 	public final void onAttacked(Actor attacker) {
 		attackedBy.add(new AttackAttempt(attacker));
+		attackedThisRound = true;
 		onAttackedInternal(attacker);
 	}
 

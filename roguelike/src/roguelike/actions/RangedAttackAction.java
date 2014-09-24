@@ -39,7 +39,7 @@ public class RangedAttackAction extends InputRequiredAction<InputCommand> {
 		int y = result.position().y;
 
 		target = mapArea.getActorAt(x, y);
-		if (target != null) {
+		if (target != null && !(target instanceof Player)) {
 			// TODO: insert animation here
 			return attackTarget();
 		}

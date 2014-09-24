@@ -31,6 +31,9 @@ public class CurrentItemTracker<T> {
 	}
 
 	public T getCurrent() {
+		if (list.size() == 0)
+			return null;
+
 		return list.get(currentItem);
 	}
 
@@ -39,6 +42,14 @@ public class CurrentItemTracker<T> {
 	}
 
 	public void advance() {
+		if (list.size() == 0)
+			return;
 		currentItem = (currentItem + 1) % list.size();
+	}
+
+	public void previous() {
+		if (list.size() == 0)
+			return;
+		currentItem = (currentItem + (list.size() - 1)) % list.size();
 	}
 }

@@ -86,13 +86,21 @@ public class CombatHandler {
 		int attackSuccessPool = attackerStats.baseMeleePool(aWeaponProficiency) + attackManeuver;
 		int defendSuccessPool = defenderStats.baseMeleePool(dWeaponProficiency) + defenseManeuver;
 
-		// TODO: need to switch this penalty to the combatant who was damaged
-		// most recently
-		// TODO: maybe can use a Condition for this? with a duration of 1 turn
+		// TODO: need to switch this penalty to the combatant who was damaged most recently
+		// TODO: maybe can use a Condition for this? with a duration of 1 turn that removes itself when an attack hits
+
 		Weapon defendingWeapon = ItemSlot.RIGHT_ARM.getEquippedWeapon(actor);
 		int attackingReach = attack.getWeapon().reach;
 		int defendingReach = defendingWeapon == null ? 0 : defendingWeapon.reach;
 		int reachDiff = attackingReach - defendingReach;
+		if (attacker.wasAttackedThisRound()) {
+			reachDiff *= -1;
+			logCombatMessage(String.format("Reach advantage applied to %s", actor.getName()));
+		}
+		else if (actor.wasAttackedThisRound()) {
+
+		}
+
 		if (reachDiff > 0) {
 			attackSuccessPool += reachDiff;
 		} else if (reachDiff < 0) {

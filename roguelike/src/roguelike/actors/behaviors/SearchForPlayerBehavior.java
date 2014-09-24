@@ -28,6 +28,10 @@ public class SearchForPlayerBehavior extends Behavior {
 
 	@Override
 	public Action getAction() {
+
+		// TODO: if the npc can see the player, just walk in his direction. if blocked or out of sight range, pathfind
+		// to the last place it saw the player
+
 		Actor player = Game.current().getPlayer();
 		if (actor.canSee(player, map)) {
 			// go towards player

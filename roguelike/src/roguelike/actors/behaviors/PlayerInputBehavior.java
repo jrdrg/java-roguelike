@@ -36,28 +36,28 @@ public class PlayerInputBehavior extends Behavior {
 			return new QuitAction(actor);
 
 		case LEFT:
-			return new WalkAction(actor, Game.current().getCurrentMapArea(), DirectionIntercardinal.LEFT);
+			return walk(DirectionIntercardinal.LEFT);
 
 		case DOWN_LEFT:
-			return new WalkAction(actor, Game.current().getCurrentMapArea(), DirectionIntercardinal.DOWN_LEFT);
+			return walk(DirectionIntercardinal.DOWN_LEFT);
 
 		case UP_RIGHT:
-			return new WalkAction(actor, Game.current().getCurrentMapArea(), DirectionIntercardinal.UP_RIGHT);
+			return walk(DirectionIntercardinal.UP_RIGHT);
 
 		case RIGHT:
-			return new WalkAction(actor, Game.current().getCurrentMapArea(), DirectionIntercardinal.RIGHT);
+			return walk(DirectionIntercardinal.RIGHT);
 
 		case UP_LEFT:
-			return new WalkAction(actor, Game.current().getCurrentMapArea(), DirectionIntercardinal.UP_LEFT);
+			return walk(DirectionIntercardinal.UP_LEFT);
 
 		case UP:
-			return new WalkAction(actor, Game.current().getCurrentMapArea(), DirectionIntercardinal.UP);
+			return walk(DirectionIntercardinal.UP);
 
 		case DOWN_RIGHT:
-			return new WalkAction(actor, Game.current().getCurrentMapArea(), DirectionIntercardinal.DOWN_RIGHT);
+			return walk(DirectionIntercardinal.DOWN_RIGHT);
 
 		case DOWN:
-			return new WalkAction(actor, Game.current().getCurrentMapArea(), DirectionIntercardinal.DOWN);
+			return walk(DirectionIntercardinal.DOWN);
 
 		case REST:
 			return new RestAction(actor);
@@ -67,6 +67,9 @@ public class PlayerInputBehavior extends Behavior {
 
 		case CLOSE_DOOR:
 			return new CloseDoorAction(actor, Game.current().getCurrentMapArea());
+
+		case USE_STAIRS:
+			return useStairs();
 
 		case PICK_UP:
 			return new GetItemAction(actor, Game.current().getCurrentMapArea());
@@ -88,6 +91,14 @@ public class PlayerInputBehavior extends Behavior {
 	@Override
 	public Behavior getNextBehavior() {
 		return this;
+	}
+
+	private WalkAction walk(DirectionIntercardinal direction) {
+		return new WalkAction(actor, Game.current().getCurrentMapArea(), direction);
+	}
+
+	private Action useStairs() {
+		return null;
 	}
 
 	private RangedAttackAction getRangedAttackAction() {

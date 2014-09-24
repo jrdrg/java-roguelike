@@ -73,8 +73,8 @@ public abstract class Weapon extends Item {
 		DamageType sortedDv = damageValues
 				.values()
 				.stream()
-				.filter((DamageValue dv) -> dv.targetNumber > 0)
-				.sorted((DamageValue d1, DamageValue d2) -> {
+				.filter(dv -> dv.targetNumber > 0)
+				.sorted((d1, d2) -> {
 					if (d1.targetNumber < d2.targetNumber)
 						return -1;
 					if (d1.targetNumber > d2.targetNumber)

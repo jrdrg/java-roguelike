@@ -1,6 +1,7 @@
 package roguelike.maps;
 
 import java.awt.Rectangle;
+import java.io.Serializable;
 import java.util.List;
 
 import roguelike.Game;
@@ -15,7 +16,9 @@ import roguelike.util.Log;
 import squidpony.squidcolor.SColor;
 import squidpony.squidmath.RNG;
 
-public class MapArea {
+public class MapArea implements Serializable {
+
+	private static final long serialVersionUID = -4489131745717955264L;
 
 	private Tile[][] map;
 	private float[][] lightResistances;
@@ -27,7 +30,7 @@ public class MapArea {
 
 	// private PointGraph pointGraph;
 
-	public MapArea(int width, int height, MapBuilder mapBuilder) {
+	public MapArea(int width, int height, MapBuilderBase mapBuilder) {
 		actors = new CurrentItemTracker<Actor>();
 		this.width = width;
 		this.height = height;
@@ -381,7 +384,7 @@ public class MapArea {
 	 * @param mapBuilder
 	 *            The MapBuilder used to construct this map.
 	 */
-	private void buildMapArea(MapBuilder mapBuilder) {
+	private void buildMapArea(MapBuilderBase mapBuilder) {
 		map = new Tile[width][height];
 
 		mapBuilder.buildMap(map);

@@ -62,6 +62,10 @@ public class TileBuilder {
 			t.setValues('.', true, SColor.BENI_DYE).setLighting(0);
 			break;
 
+		case '-': // dungeon floor
+			t.setValues('.', true, SColor.BOILED_RED_BEAN_BROWN);
+			break;
+
 		case '.': // ground
 		default:
 			t.setValues(ground.random(), true, SColorFactory.asSColor(50, 200, 100));// .setBackground(SColor.DARK_GREEN);

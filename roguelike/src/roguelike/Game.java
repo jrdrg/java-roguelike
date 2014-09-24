@@ -344,6 +344,15 @@ public class Game {
 				Log.warning(String.format("Game: Actor=%s Alive=%s Action=%s", currentActor.getName(), currentActor.isAlive(), currentAction));
 				Log.warning("Game: Remaining energy: " + currentActor.getEnergy().getCurrent() + " Result=" + result);
 				Log.warning("Game: M=" + result.getMessage() + ", S=" + result.isSuccess() + ", C=" + result.isCompleted());
+
+				/*
+				 * bug fix for infinite loop with enemy pathfinding where they can't move to a square they want to and
+				 * fail the walk action
+				 */
+				if (!result.isSuccess())
+					currentMapArea.nextActor("executeQueueActions, can act but not success");
+
+				return turnResult;
 			}
 
 		} else { // incomplete action
