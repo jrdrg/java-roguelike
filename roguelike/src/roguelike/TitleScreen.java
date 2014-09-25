@@ -18,7 +18,7 @@ public class TitleScreen extends Screen {
 		Log.debug("TitleScreen: terminal size " + terminal.size().width + "x" + terminal.size().height);
 
 		this.terminal = terminal.withColor(SColor.WHITE, SColor.BLACK);
-		this.nextScreen = this;
+		this.setNextScreen(this);
 
 		terminal.fill(0, 0, terminal.size().width, terminal.size().height, ' ');
 
@@ -47,7 +47,7 @@ public class TitleScreen extends Screen {
 			switch (cmd) {
 
 			case CONFIRM:
-				nextScreen = new MainScreen(DisplayManager.instance().getTerminal());
+				setNextScreen(new MainScreen(DisplayManager.instance().getTerminal()));
 				break;
 
 			case CANCEL:
@@ -60,6 +60,6 @@ public class TitleScreen extends Screen {
 
 	@Override
 	public Screen getScreen() {
-		return nextScreen;
+		return nextScreen();
 	}
 }

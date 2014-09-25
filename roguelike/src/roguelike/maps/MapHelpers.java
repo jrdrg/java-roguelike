@@ -2,6 +2,10 @@ package roguelike.maps;
 
 import java.awt.Point;
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Queue;
+
+import squidpony.squidmath.RNG;
 
 public class MapHelpers {
 	public static ArrayList<Point> getNeighbors(MapArea map, int xPos, int yPos, int range) {
@@ -40,5 +44,32 @@ public class MapHelpers {
 		int b = Math.abs(y1 - y0);
 
 		return (float) Math.sqrt((a * a) + (b * b));
+	}
+
+	public static Queue<Point> findPath(RNG random, Point p1, Point p2) {
+		Queue<Point> points = new LinkedList<Point>();
+		int xDist = p2.x - p1.x;
+		int yDist = p2.y - p1.y;
+
+		Point curPoint = (Point) p1.clone();
+		while (curPoint.x != p2.x || curPoint.y != p2.y) {
+
+			if (curPoint.x != p2.x && curPoint.y != p2.y) {
+				if (random.nextBoolean()) {
+					curPoint.x += Math.signum(xDist);
+				} else {
+					curPoint.y += Math.signum(yDist);
+				}
+
+			} else if (curPoint.x != p2.x) {
+				curPoint.x += Math.signum(xDist);
+
+			} else if (curPoint.y != p2.y) {
+				curPoint.y += Math.signum(yDist);
+			}
+
+			points.add(new Point(curPoint.x, curPoint.y));
+		}
+		return points;
 	}
 }

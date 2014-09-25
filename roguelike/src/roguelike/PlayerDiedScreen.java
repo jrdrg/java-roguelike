@@ -14,12 +14,12 @@ public class PlayerDiedScreen extends Screen {
 	private Actor killedBy;
 
 	public PlayerDiedScreen(Actor killedBy, TerminalBase terminal) {
-		this.nextScreen = this;
+		setNextScreen(this);
 
 		this.killedBy = killedBy;
 		this.fullTerminal = terminal;
 		this.terminal = fullTerminal.withColor(SColor.RED, SColor.BLACK);
-		this.nextScreen = this;
+		setNextScreen(this);
 
 		terminal.fill(0, 0, terminal.size().width, terminal.size().height, ' ');
 
@@ -48,7 +48,7 @@ public class PlayerDiedScreen extends Screen {
 			switch (cmd) {
 
 			case CONFIRM:
-				nextScreen = new TitleScreen(DisplayManager.instance().getTerminal());
+				setNextScreen(new TitleScreen(DisplayManager.instance().getTerminal()));
 				break;
 
 			case CANCEL:
@@ -61,7 +61,7 @@ public class PlayerDiedScreen extends Screen {
 
 	@Override
 	public Screen getScreen() {
-		return nextScreen;
+		return nextScreen();
 	}
 
 }

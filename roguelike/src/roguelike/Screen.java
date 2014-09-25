@@ -2,6 +2,7 @@ package roguelike;
 
 import javax.swing.JPanel;
 
+import roguelike.ui.DisplayManager;
 import roguelike.ui.MainWindow;
 
 public abstract class Screen {
@@ -12,12 +13,21 @@ public abstract class Screen {
 	int height = MainWindow.height;
 	int outputLines = MainWindow.outputLines;
 
-	protected JPanel panel;
+	private Screen nextScreen;
 
-	protected Screen nextScreen;
+	protected JPanel panel;
 
 	public Screen() {
 		this.panel = new JPanel();
+	}
+
+	protected Screen nextScreen() {
+		return nextScreen;
+	}
+
+	protected final void setNextScreen(Screen screen) {
+		nextScreen = screen;
+		DisplayManager.instance().setDirty();
 	}
 
 	public abstract long draw();

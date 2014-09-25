@@ -1,5 +1,6 @@
 package roguelike.ui.windows;
 
+import roguelike.ui.DisplayManager;
 import roguelike.util.CharEx;
 import squidpony.squidgrid.gui.SwingPane;
 
@@ -22,6 +23,7 @@ public class SwingPaneTerminalView {
 
 				background.put(x, y, c.backgroundColor());
 				foreground.put(x, y, c.symbol(), c.foregroundColor());
+
 			}
 		});
 	}

@@ -67,7 +67,7 @@ public class DisplayManager {
 		}
 	}
 
-	public void setDirty() {
+	public synchronized void setDirty() {
 		dirty = true;
 	}
 

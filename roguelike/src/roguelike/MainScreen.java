@@ -49,7 +49,7 @@ public class MainScreen extends Screen {
 	public MainScreen(TerminalBase fullTerminal) {
 		this.fullTerminal = fullTerminal;
 		this.terminal = fullTerminal.getWindow(0, 0, windowWidth, windowHeight);
-		this.nextScreen = this;
+		this.setNextScreen(this);
 
 		/* used for FOV lighting */
 		SColorFactory.addPallet("light",
@@ -96,7 +96,7 @@ public class MainScreen extends Screen {
 			AttackAttempt killedBy = player.getLastAttackedBy();
 
 			System.out.println("Switching to game over screen");
-			nextScreen = new PlayerDiedScreen(killedBy.getActor(), this.fullTerminal);
+			setNextScreen(new PlayerDiedScreen(killedBy.getActor(), this.fullTerminal));
 
 		} else {
 
@@ -105,7 +105,7 @@ public class MainScreen extends Screen {
 			currentTurn = run;
 
 			if (!run.isRunning()) {
-				nextScreen = new TitleScreen(fullTerminal);
+				setNextScreen(new TitleScreen(fullTerminal));
 			}
 
 			/* recalculate FOV if player moved/acted */
@@ -117,7 +117,7 @@ public class MainScreen extends Screen {
 
 	@Override
 	public Screen getScreen() {
-		return nextScreen;
+		return nextScreen();
 	}
 
 	private long drawFrame() {
@@ -238,6 +238,9 @@ public class MainScreen extends Screen {
 	}
 
 	private void drawEvents(TurnResult run) {
+		if (run == null)
+			return;
+
 		Rectangle screenArea = game
 				.getCurrentMapArea()
 				.getVisibleAreaInTiles(windowWidth, windowHeight, game.getCenterScreenPosition());
@@ -292,6 +295,8 @@ public class MainScreen extends Screen {
 			}
 
 		}
+		// prevent processing multiple times
+		run.getEvents().clear();
 	}
 
 	private void drawCursor(TurnResult run) {

@@ -30,7 +30,7 @@ public class MainWindow {
 
 	private JFrame frame;
 
-	final int FRAMES_PER_SECOND = 40;
+	final int FRAMES_PER_SECOND = 60;
 	final int SKIP_TICKS = 1000 / FRAMES_PER_SECOND;
 
 	private Screen currentScreen;
@@ -49,15 +49,43 @@ public class MainWindow {
 		currentScreen = new TitleScreen(displayManager.getTerminal());
 
 		long nextTick = System.currentTimeMillis();
-		while (true) {
-			currentScreen.process();
-			currentScreen = currentScreen.getScreen();
-			currentScreen.draw();
 
+		Thread t = new Thread(() -> {
+			long tt = System.currentTimeMillis();
+			while (true) {
+				currentScreen.process();
+				currentScreen = currentScreen.getScreen();
+
+				// tt += SKIP_TICKS;
+				// long sleepTime = tt - System.currentTimeMillis();
+				// if (sleepTime >= 0) {
+				// try {
+				// Thread.sleep(SKIP_TICKS);
+				//
+				// } catch (InterruptedException e) {
+				// e.printStackTrace();
+				// }
+				// } else {
+				// Log.warning("i SLEEPTIME < 0, skipping next keypress: " + sleepTime);
+				// InputManager.nextCommand();
+				// }
+
+				displayManager.setDirty();
+			}
+		});
+		t.start();
+
+		while (true) {
+			// currentScreen.process();
+			// currentScreen = currentScreen.getScreen();
+			long drawTicks = currentScreen.draw();
+
+			displayManager.setDirty();
 			displayManager.refresh();
 
-			nextTick += SKIP_TICKS;
-			long sleepTime = nextTick - System.currentTimeMillis();
+			// nextTick += SKIP_TICKS;
+			// long sleepTime = nextTick - System.currentTimeMillis();
+			long sleepTime = SKIP_TICKS - drawTicks;
 			if (sleepTime >= 0) {
 				try {
 					Thread.sleep(sleepTime);
@@ -65,8 +93,9 @@ public class MainWindow {
 					e.printStackTrace();
 				}
 			} else {
-				Log.warning("SLEEPTIME < 0, skipping next keypress");
-				InputManager.nextCommand();
+				// Log.warning("d SLEEPTIME < 0, skipping next keypress: " + sleepTime);
+				// InputManager.nextCommand();
+				Log.warning("draw SLEEPTIME < 0: " + sleepTime + " drawTicks=" + drawTicks);
 			}
 		}
 	}

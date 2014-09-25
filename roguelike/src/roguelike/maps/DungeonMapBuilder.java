@@ -3,10 +3,13 @@ package roguelike.maps;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Queue;
 
 import roguelike.Game;
 import roguelike.util.Log;
 import squidpony.squidgrid.util.DirectionCardinal;
+import squidpony.squidutility.ProbabilityTable;
 
 public class DungeonMapBuilder extends MapBuilderBase {
 
@@ -71,7 +74,7 @@ public class DungeonMapBuilder extends MapBuilderBase {
 		}
 		DirectionCardinal direction = getRandomDirection();
 
-		Point door = getDoorCoordinate(room, direction);
+		Point door = room.getDoorCoordinate(map, direction);
 		if (door != null) {
 			Room newRoom = generateJoinedTo(room, direction, door);
 			if (newRoom != null) {
@@ -123,36 +126,16 @@ public class DungeonMapBuilder extends MapBuilderBase {
 		Room newRoom = new Room(rect);
 		fillRoom(newRoom, '-');
 
+		Point joinToTile = newRoom.getRandomFloorTile();
+		if (joinToTile != null) {
+			Queue<Point> path = MapHelpers.findPath(random, pt, joinToTile);
+			fillPath(path, '.');
+		}
+
 		map[pt.x][pt.y] = tb.buildTile('-');
 
 		return newRoom;
 
-	}
-
-	private Point getDoorCoordinate(Room room, DirectionCardinal direction) {
-		Point p = null;
-		switch (direction) {
-		case DOWN:
-			p = new Point(room.getRandomX(), room.bottom());
-			break;
-		case UP:
-			p = new Point(room.getRandomX(), room.top());
-			break;
-		case LEFT:
-			p = new Point(room.left(), room.getRandomY());
-			break;
-		case RIGHT:
-			p = new Point(room.right(), room.getRandomY());
-			break;
-		default:
-			return null;
-		}
-
-		if (map[p.x][p.y].isWall()) {
-			room.doors.add(p);
-			return p;
-		}
-		return null;
 	}
 
 	private boolean canCreateRoom(Rectangle rect) {
@@ -167,6 +150,14 @@ public class DungeonMapBuilder extends MapBuilderBase {
 
 	private void fillRoom(Room room, char tile) {
 		room.fillRoom(map, tb, tile);
+	}
+
+	private void fillPath(Queue<Point> points, char tile) {
+		Point p = points.poll();
+		while (p != null) {
+			map[p.x][p.y] = tb.buildTile(tile);
+			p = points.poll();
+		}
 	}
 
 	private DirectionCardinal getRandomDirection() {
