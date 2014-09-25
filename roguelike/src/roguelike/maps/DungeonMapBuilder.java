@@ -10,40 +10,6 @@ import squidpony.squidgrid.util.DirectionCardinal;
 
 public class DungeonMapBuilder extends MapBuilderBase {
 
-	private class Room {
-		public Rectangle area;
-		public ArrayList<Point> doors;
-
-		public Room(Rectangle area) {
-			this.area = area;
-			doors = new ArrayList<Point>();
-		}
-
-		public int bottom() {
-			return (int) area.getMaxY() - 1;
-		}
-
-		public int top() {
-			return (int) area.getMinY();
-		}
-
-		public int left() {
-			return (int) area.getMinX();
-		}
-
-		public int right() {
-			return (int) area.getMaxX() - 1;
-		}
-
-		public int getRandomX() {
-			return (int) random.between(area.getMinX() + 1, area.getMaxX() - 1);
-		}
-
-		public int getRandomY() {
-			return (int) random.between(area.getMinY() + 1, area.getMaxY() - 1);
-		}
-	}
-
 	private int width;
 	private int height;
 
@@ -84,6 +50,8 @@ public class DungeonMapBuilder extends MapBuilderBase {
 
 		// TODO: create the main path through the dungeon first by passing in the most recently created room, then
 		// create random rooms
+
+		// TODO: create loops in the map so that there are multiple paths to get to a room
 
 		for (int x = 0; x < 100; x++) {
 			createRandomRoom();
@@ -144,9 +112,6 @@ public class DungeonMapBuilder extends MapBuilderBase {
 		if (direction.deltaX < 0)
 			x1 -= (width - 1);
 
-		int x2 = x1 + width;
-		int y2 = y1 + height;
-
 		Rectangle rect = new Rectangle(x1, y1, width, height);
 		if (!mapRect.contains(rect))
 			return null;
@@ -162,15 +127,6 @@ public class DungeonMapBuilder extends MapBuilderBase {
 
 		return newRoom;
 
-	}
-
-	private void fillRoom(Room room, char tile) {
-		Rectangle rect = room.area;
-		for (int x = (int) rect.getMinX() + 1; x < rect.getMaxX() - 1; x++) {
-			for (int y = (int) rect.getMinY() + 1; y < rect.getMaxY() - 1; y++) {
-				map[x][y] = tb.buildTile('-');
-			}
-		}
 	}
 
 	private Point getDoorCoordinate(Room room, DirectionCardinal direction) {
@@ -207,6 +163,10 @@ public class DungeonMapBuilder extends MapBuilderBase {
 			}
 		}
 		return true;
+	}
+
+	private void fillRoom(Room room, char tile) {
+		room.fillRoom(map, tb, tile);
 	}
 
 	private DirectionCardinal getRandomDirection() {

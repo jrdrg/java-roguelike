@@ -126,9 +126,15 @@ public class CombatHandler {
 
 		if (total > 0) {
 
-			// Currently just return the original attack - need to take other stuff into account later
+			// determine damage of the attack based on how successful it was and the stats of attacker/defender
+			int baseDamage = total + attack.getWeapon().getDamageRating(attack.getDamageType());
+			baseDamage += (attacker.getStatistics().toughness.getTotalValue() / 2.0f);
+			baseDamage -= (actor.getStatistics().toughness.getTotalValue() / 2.0f);
 
-			attack.baseDamage -= armorValue; // placeholder logic here
+			// TODO: get armor here
+			baseDamage -= armorValue;
+
+			attack.baseDamage = baseDamage;
 			return attack;
 		}
 		else {
@@ -176,7 +182,7 @@ public class CombatHandler {
 		boolean isDead = actor.getHealth().damage(attack.baseDamage);
 
 		String attackDescription = String.format(attack.description, attacker.getName(), actor.getName());
-		String message = String.format("%s for %d damage!", attackDescription, attack.baseDamage);
+		String message = String.format("%s for %d %s damage!", attackDescription, attack.baseDamage, attack.damageType);
 		message += "(" + actor.getHealth().getCurrent() + " left)";
 
 		SColor color = SColor.ORANGE;

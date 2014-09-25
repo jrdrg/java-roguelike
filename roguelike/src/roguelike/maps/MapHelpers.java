@@ -13,8 +13,10 @@ public class MapHelpers {
 
 				if (x == xPos && y == yPos)
 					continue;
-				if (x != xPos && y != yPos)
-					continue;
+
+				/* diagonals */
+				// if (x != xPos && y != yPos)
+				// continue;
 
 				if (x >= 0 && y >= 0 && x < map.width() && y < map.height())
 					neighbors.add(new Point(x, y));

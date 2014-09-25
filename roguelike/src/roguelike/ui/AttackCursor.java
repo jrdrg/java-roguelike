@@ -13,7 +13,6 @@ import roguelike.ui.windows.TerminalBase;
 import roguelike.util.ArrayUtils;
 import roguelike.util.Coordinate;
 import roguelike.util.CurrentItemTracker;
-import roguelike.util.Log;
 import squidpony.squidcolor.SColor;
 import squidpony.squidcolor.SColorFactory;
 import squidpony.squidgrid.fov.FOVSolver;
@@ -58,6 +57,41 @@ public class AttackCursor extends Cursor {
 		DisplayManager.instance().setDirty(); // update
 	}
 
+	@Override
+	protected boolean onUpdatePosition(Coordinate position) {
+		int x = position.x - screenArea.x;
+		int y = position.y - screenArea.y;
+
+		if (incomingLight[x][y] > 0)
+			return true;
+
+		return false;
+	}
+
+	@Override
+	protected CursorResult onProcessCommand(InputCommand command) {
+		switch (command) {
+		case PREVIOUS_TARGET:
+			// move to previous target
+			targets.previous();
+			break;
+
+		case NEXT_TARGET:
+			// move to next target
+			targets.advance();
+			break;
+
+		default:
+			return null;
+		}
+
+		Actor tgt = targets.getCurrent();
+		if (tgt != null)
+			position.setLocation(tgt.getPosition());
+
+		return null;
+	}
+
 	private void determineFOVTiles(TerminalBase terminal) {
 		int width = maxRadius;
 		int height = maxRadius;
@@ -94,51 +128,34 @@ public class AttackCursor extends Cursor {
 						Actor a = t.getActor();
 						if (a != null && !(a instanceof Player)) {
 							targets.add(a);
-							if (startTarget == null) {
-								startTarget = a;
-								position.setLocation(a.getPosition());
-								Log.debug("set attack cursor position=" + position.x + "," + position.y);
-							}
 						}
 					}
 				}
 			}
 		}
+		if (!determinedActors && startTarget == null) {
+			targetNearestEnemy();
+		}
 		determinedActors = true;
 	}
 
-	@Override
-	protected boolean onUpdatePosition(Coordinate position) {
-		int x = position.x - screenArea.x;
-		int y = position.y - screenArea.y;
+	/**
+	 * Sets the cursor position to the enemy nearest to the player
+	 */
+	private void targetNearestEnemy() {
+		startTarget = targets
+				.getAll()
+				.stream()
+				.sorted((t1, t2) -> {
+					return Double.compare(
+							t1.getPosition().distance(this.initialPosition),
+							t2.getPosition().distance(this.initialPosition));
+				})
+				.findFirst()
+				.orElse(null);
 
-		if (incomingLight[x][y] > 0)
-			return true;
-
-		return false;
-	}
-
-	@Override
-	protected CursorResult onProcessCommand(InputCommand command) {
-		switch (command) {
-		case PREVIOUS_TARGET:
-			// move to previous target
-			targets.previous();
-			break;
-
-		case NEXT_TARGET:
-			// move to next target
-			targets.advance();
-			break;
-
-		default:
-			return null;
+		if (startTarget != null) {
+			position.setLocation(startTarget.getPosition());
 		}
-
-		Actor tgt = targets.getCurrent();
-		if (tgt != null)
-			position.setLocation(tgt.getPosition());
-
-		return null;
 	}
 }

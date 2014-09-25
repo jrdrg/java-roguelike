@@ -55,7 +55,7 @@ public class MessageLogWindow extends Dialog<InputCommand> {
 			StringEx text = item.getText();
 			StringEx[] lines = text.wordWrap(size.width - 1);
 			for (int x = 0; x < lines.length; x++) {
-				terminal.write(1, y, text);
+				terminal.write(1, y, lines[x]);
 				y++;
 			}
 		}
