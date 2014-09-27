@@ -48,9 +48,10 @@ public class MapArea implements Serializable {
 	}
 
 	public void spawnMonsters() {
-		Log.debug("spawnMonsters");
-		int maxActors = 70;
-		if (actors.count() < maxActors) {
+		Log.verboseDebug("spawnMonsters");
+		// int maxActors = 70;
+		int maxActors = 10;
+		if (actors.count() < maxActors && Game.current().random().nextInt(10) > 6) {
 			/* create a new one somewhere close to the player */
 
 			Coordinate position = findRandomNonVisibleTile();
@@ -78,7 +79,7 @@ public class MapArea implements Serializable {
 			y = Math.max(0, Math.min(y, height - 1));
 
 			Tile tile = getTileAt(x, y);
-			if (!tile.visible) {
+			if (!tile.visible && !tile.isWall() && tile.canPass()) {
 				return new Coordinate(x, y);
 			}
 		}

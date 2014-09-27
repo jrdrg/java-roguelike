@@ -1,26 +1,24 @@
 package roguelike;
 
 import java.awt.Point;
-import java.awt.Rectangle;
 
 import roguelike.ui.InputCommand;
 import roguelike.ui.InputManager;
 import roguelike.ui.KeyMap;
 import roguelike.ui.Menu;
 import roguelike.ui.windows.TerminalBase;
+import roguelike.ui.windows.TextWindow;
 
-public abstract class Dialog<T> {
+public abstract class Dialog<T> extends TextWindow {
 	// Box drawing tiles: "┻┗┛┫┳┣┃━┏┓╋"
 
 	private boolean isOpen;
-
-	protected Rectangle size;
 	protected TerminalBase terminal;
 
 	private DialogResult<T> result;
 
 	protected Dialog(int width, int height) {
-		this.size = new Rectangle(0, 0, width, height);
+		super(width, height);
 		this.isOpen = false;
 	}
 
@@ -74,20 +72,6 @@ public abstract class Dialog<T> {
 
 	public final DialogResult<T> result() {
 		return this.result;
-	}
-
-	protected void drawBoxShape(TerminalBase term) {
-		int width = size.width;
-		int height = size.height;
-
-		for (int x = 0; x < width; x++) {
-			for (int y = 0; y < height; y++) {
-				if (y == 0 || y == height - 1)
-					term.put(x, y, '-');
-				else if (x == 0 || x == width - 1)
-					term.put(x, y, '│');
-			}
-		}
 	}
 
 	protected Point getLocation(int width, int height) {

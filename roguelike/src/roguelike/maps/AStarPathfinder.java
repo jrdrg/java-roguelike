@@ -51,7 +51,7 @@ public class AStarPathfinder {
 	 */
 	public Path findPath(MapArea map, int sx, int sy, int tx, int ty) {
 
-		Log.debug("Finding path from " + sx + "," + sy + " to " + tx + "," + ty);
+		Log.verboseDebug("Finding path from " + sx + "," + sy + " to " + tx + "," + ty);
 
 		// easy first check, if the destination is blocked, we can't get there
 		// if (map.blocked(mover, tx, ty)) {

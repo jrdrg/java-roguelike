@@ -49,6 +49,8 @@ public class MessageLogWindow extends Dialog<InputCommand> {
 	protected void onDraw() {
 
 		terminal.withColor(SColor.MOUSY_INDIGO).fill(0, 0, size.width, size.height, ' ');
+		drawBoxShape(terminal);
+
 		List<MenuItem<MessageDisplayProperties>> currentPage = messageMenu.currentPageItems();
 		int y = 1;
 		for (MenuItem<MessageDisplayProperties> item : currentPage) {

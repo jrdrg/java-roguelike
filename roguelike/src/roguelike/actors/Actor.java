@@ -1,5 +1,6 @@
 package roguelike.actors;
 
+import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
@@ -49,7 +50,7 @@ public abstract class Actor {
 		this.energy = new Energy();
 		this.statistics = new Statistics();
 		this.combat = new CombatHandler(this);
-		this.health = new Health(100);
+		this.health = new Health(20);
 		this.inventory = new Inventory();
 		this.equipment = new Equipment();
 
@@ -81,7 +82,7 @@ public abstract class Actor {
 		return this.energy;
 	}
 
-	public Statistics getStatistics() {
+	public Statistics statistics() {
 		return this.statistics;
 	}
 
@@ -151,13 +152,21 @@ public abstract class Actor {
 		return 15;
 	}
 
+	public boolean isAdjacentTo(Actor other) {
+		Point actorPos = position;
+		Point otherPos = other.position;
+
+		return Math.floor(actorPos.distance(otherPos)) <= 1;
+	}
+
 	public boolean canSee(Actor other, MapArea mapArea) {
 
 		int startx = position.x, starty = position.y, targetx = other.position.x, targety = other.position.y;
 		float force = 1;
 		float decay = 1 / this.getVisionRadius();
 		boolean visible = losSolver.isReachable(mapArea.getLightValues(), startx, starty, targetx, targety, force, decay, BasicRadiusStrategy.CIRCLE);
-		Log.debug(this.getName() + " canSee " + other.getName() + "=" + visible);
+
+		Log.verboseDebug(this.getName() + " canSee " + other.getName() + "=" + visible);
 
 		return visible;
 	}
@@ -178,7 +187,7 @@ public abstract class Actor {
 
 		attackedThisRound = false;
 
-		Log.debug("Actor.finishTurn(): " + getName());
+		Log.verboseDebug("Actor.finishTurn(): " + getName());
 
 		onTurnFinished();
 	}

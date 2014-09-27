@@ -14,7 +14,7 @@ public class Player extends Actor {
 	public Player() {
 		super('@', SColor.WHITE);
 		// TODO: load these during character creation somewhere
-		this.getStatistics().speed.setBase(20);
+		this.statistics().speed.setBase(20);
 
 		this.behavior = new PlayerInputBehavior(this);
 	}
@@ -51,8 +51,8 @@ public class Player extends Actor {
 
 	@Override
 	public void onAttackedInternal(Actor attacker) {
-		Log.debug("Player attacked by " + attacker.getName());
-		Log.debug("AttackedBy count=" + attackedBy.size());
+		Log.verboseDebug("Player attacked by " + attacker.getName());
+		Log.verboseDebug("AttackedBy count=" + attackedBy.size());
 	}
 
 	@Override

@@ -112,6 +112,14 @@ public class Statistics {
 		return aiming() + weaponProficiency;
 	}
 
+	public int baseEvadePool() {
+		// get evade type
+		// - partial evade: -2 to MP for this turn, but TN=6
+		// - full evade: 0 MP penalty, TN=7
+
+		return reflexes();
+	}
+
 	void setValues(EnemyData data) {
 		this.speed.setBase(data.speed);
 		this.toughness.setBase(data.toughness);

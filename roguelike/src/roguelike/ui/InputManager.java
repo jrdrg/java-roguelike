@@ -14,7 +14,7 @@ public class InputManager {
 
 	public static KeyMap DefaultKeyBindings;
 
-	private static SGKeyListener keyListener = new SGKeyListener(true, CaptureType.DOWN);
+	private static SGKeyListener keyListener = new SGKeyListener(false, CaptureType.DOWN);
 	private static boolean inputReceived;
 	private static boolean inputEnabled = true;
 	private static KeyMap activeKeyMap = new KeyMap(".");

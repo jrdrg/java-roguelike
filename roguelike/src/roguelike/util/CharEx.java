@@ -49,7 +49,7 @@ public class CharEx {
 	public boolean equals(Object obj) {
 		if (obj instanceof CharEx) {
 			CharEx other = (CharEx) obj;
-			return (other.symbol == this.symbol && other.background.equals(this.background) && other.foreground.equals(this.foreground));
+			return (Character.compare(other.symbol, this.symbol) == 0 && other.background.equals(this.background) && other.foreground.equals(this.foreground));
 		}
 		return super.equals(obj);
 	}

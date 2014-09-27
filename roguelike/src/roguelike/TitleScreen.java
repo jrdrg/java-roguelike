@@ -3,7 +3,6 @@ package roguelike;
 import roguelike.ui.DisplayManager;
 import roguelike.ui.InputCommand;
 import roguelike.ui.InputManager;
-import roguelike.ui.windows.SwingPaneTerminalView;
 import roguelike.ui.windows.TerminalBase;
 import roguelike.util.Log;
 import squidpony.squidcolor.SColor;
@@ -11,10 +10,10 @@ import squidpony.squidcolor.SColor;
 public class TitleScreen extends Screen {
 
 	private TerminalBase terminal;
-	private SwingPaneTerminalView terminalView;
 
 	public TitleScreen(TerminalBase terminal) {
-		terminalView = DisplayManager.instance().getTerminalView();
+		DisplayManager.instance().getTerminalView();
+
 		Log.debug("TitleScreen: terminal size " + terminal.size().width + "x" + terminal.size().height);
 
 		this.terminal = terminal.withColor(SColor.WHITE, SColor.BLACK);

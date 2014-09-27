@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import roguelike.Dialog;
 import roguelike.DialogResult;
+import roguelike.Game;
 import roguelike.actors.Actor;
 import roguelike.actors.Statistics;
 import roguelike.items.Inventory;
@@ -50,7 +51,7 @@ public class LookDialog extends Dialog<InputCommand> {
 			Weapon equipped = ItemSlot.RIGHT_ARM.getEquippedWeapon(actor);
 			textList.add(" `Gray`Weapon: `White`" + equipped.getDescription() + " (" + equipped.defaultDamageType().name() + ")");
 
-			Statistics stats = actor.getStatistics();
+			Statistics stats = actor.statistics();
 			textList.add(String.format(" `Bronze`MP:`White`%3d `Bronze`RP:`White`%3d `Bronze`Ref:`White`%3d `Bronze`Aim:`White`%3d `Bronze`Spd:`White`%3d",
 					stats.baseMeleePool(0), stats.baseRangedPool(0), stats.reflexes(), stats.aiming(), actor.effectiveSpeed(mapArea)));
 
@@ -60,6 +61,8 @@ public class LookDialog extends Dialog<InputCommand> {
 					stats.agility.getTotalValue(), stats.willpower.getTotalValue(), stats.presence.getTotalValue()));
 
 			textList.add(String.format(" `Red`H:`White`%3d", actor.getHealth().getCurrent()));
+			textList.add("");
+			textList.add(String.format(" Can see player? `Red`%s", actor.canSee(Game.current().getPlayer(), mapArea)));
 		}
 		int textY = 2;
 		Inventory inventory = mapArea.getItemsAt(x, y);

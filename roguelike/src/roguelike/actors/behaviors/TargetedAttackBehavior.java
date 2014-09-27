@@ -3,20 +3,19 @@ package roguelike.actors.behaviors;
 import roguelike.Game;
 import roguelike.actions.Action;
 import roguelike.actions.AttackAction;
-import roguelike.actions.WalkAction;
+import roguelike.actions.RestAction;
 import roguelike.actors.Actor;
-import roguelike.maps.MapArea;
 import roguelike.util.Coordinate;
 import roguelike.util.Log;
 import squidpony.squidcolor.SColor;
 import squidpony.squidgrid.fov.BasicRadiusStrategy;
 import squidpony.squidgrid.fov.RadiusStrategy;
-import squidpony.squidgrid.util.DirectionIntercardinal;
 
 public class TargetedAttackBehavior extends Behavior {
 
 	private Actor target;
 	private RadiusStrategy radiusStrategy = BasicRadiusStrategy.CIRCLE;
+	private boolean canSeeTarget;
 
 	protected TargetedAttackBehavior(Actor actor, Actor target) {
 		super(actor);
@@ -34,23 +33,30 @@ public class TargetedAttackBehavior extends Behavior {
 		float radius = radiusStrategy.radius(actorPos.x, actorPos.y, targetPos.x, targetPos.y);
 
 		if (canAttackTarget(radius)) {
-			if (actor.canSee(target, Game.current().getCurrentMapArea()))
+
+			if (actor.canSee(target, Game.current().getCurrentMapArea())) {
+				canSeeTarget = true;
 				return new AttackAction(actor, target);
-			else
+			}
+			else {
 				Game.current().displayMessage(target.getName() + "is no longer in sight range.");
+			}
 		}
 
-		// walk towards the target
-		Coordinate diff = actorPos.createOffsetPosition(-targetPos.x, -targetPos.y);
+		// if we can't attack, do a rest action and switch behavior to searching for the player
+		canSeeTarget = false;
 
-		DirectionIntercardinal direction = DirectionIntercardinal.getDirection(-diff.x, -diff.y);
-		MapArea mapArea = Game.current().getCurrentMapArea();
-		return new WalkAction(actor, mapArea, direction);
+		return new RestAction(actor);
 	}
 
 	@Override
 	public Behavior getNextBehavior() {
 		if (actor.isAlive()) {
+
+			if (!canSeeTarget) {
+				return new SearchForPlayerBehavior(actor);
+			}
+
 			if (target.isAlive() && isTargetVisible()) {
 				if (actor.getEquipment().getEquippedWeapons()[0] != null)
 					return this;
@@ -58,10 +64,8 @@ public class TargetedAttackBehavior extends Behavior {
 					Log.warning(String.format("%s has no weapon!", actor.getName()));
 				}
 			}
-			// TODO: figure out what to do when target is dead or out of sight
-			// range
-			Game.current().displayMessage(actor.getName() + " is no longer targeting " + target.getName() + "...", SColor.GRAY);
-			return new RandomWalkBehavior(actor);
+
+			return new SearchForPlayerBehavior(actor);
 		}
 		return null;
 	}

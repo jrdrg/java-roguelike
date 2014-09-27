@@ -136,6 +136,7 @@ public class AttackCursor extends Cursor {
 		if (!determinedActors && startTarget == null) {
 			targetNearestEnemy();
 		}
+
 		determinedActors = true;
 	}
 

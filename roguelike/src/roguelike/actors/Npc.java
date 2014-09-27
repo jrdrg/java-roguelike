@@ -25,7 +25,7 @@ public class Npc extends Actor {
 		super(data.symbol(), data.color());
 		this.name = data.name;
 
-		Statistics stats = getStatistics();
+		Statistics stats = statistics();
 		stats.setValues(data);
 
 		this.getHealth().setMaximum(data.health);

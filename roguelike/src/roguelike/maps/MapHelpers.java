@@ -5,10 +5,15 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
 
+import roguelike.util.CharacterGlyph;
 import squidpony.squidmath.RNG;
 
 public class MapHelpers {
 	public static ArrayList<Point> getNeighbors(MapArea map, int xPos, int yPos, int range) {
+		return getNeighbors(map.width(), map.height(), xPos, yPos, range);
+	}
+
+	public static ArrayList<Point> getNeighbors(int width, int height, int xPos, int yPos, int range) {
 		int size = range * 2 + 1;
 		ArrayList<Point> neighbors = new ArrayList<Point>(size * size + 1);
 
@@ -22,7 +27,7 @@ public class MapHelpers {
 				// if (x != xPos && y != yPos)
 				// continue;
 
-				if (x >= 0 && y >= 0 && x < map.width() && y < map.height())
+				if (x >= 0 && y >= 0 && x < width && y < height)
 					neighbors.add(new Point(x, y));
 
 			}
@@ -71,5 +76,19 @@ public class MapHelpers {
 			points.add(new Point(curPoint.x, curPoint.y));
 		}
 		return points;
+	}
+
+	public static int getAdjacentTiles(Tile[][] map, int x, int y, CharacterGlyph tile) {
+		int count = 0;
+
+		ArrayList<Point> neighbors = getNeighbors(map.length, map[0].length, x, y, 1);
+
+		for (Point p : neighbors) {
+			if (map[p.x][p.y].symbol == tile.symbol()) {
+				count++;
+			}
+		}
+
+		return count;
 	}
 }

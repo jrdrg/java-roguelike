@@ -1,6 +1,5 @@
 package roguelike.ui;
 
-import java.awt.BorderLayout;
 import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
@@ -9,83 +8,60 @@ import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
-import javax.swing.JLayeredPane;
-import javax.swing.JPanel;
 
 import roguelike.Screen;
 import roguelike.TitleScreen;
 import roguelike.util.Log;
-import squidpony.squidcolor.SColor;
 
 public class MainWindow {
 	public static final int screenWidth = 1200;
-	public static final int screenHeight = 700;
-	public static final int cellWidth = 14;
-	public static final int cellHeight = 20;
+	public static final int screenHeight = 690;
+	public static final int cellWidth = 9; // in AsciiPanel, this is constant
+	public static final int cellHeight = 16;
 
 	public static final int width = screenWidth / cellWidth;
 	public static final int height = screenHeight / cellHeight;
-	public static final int statWidth = 25, fontSize = 20, outputLines = 5;
+	public static final int statWidth = 50, fontSize = 14, outputLines = 5;
 
 	private JFrame frame;
 
-	final int FRAMES_PER_SECOND = 60;
+	final int FRAMES_PER_SECOND = 50;
 	final int SKIP_TICKS = 1000 / FRAMES_PER_SECOND;
 
+	private JComponent displayPane;
 	private Screen currentScreen;
 	private DisplayManager displayManager;
-
-	private JLayeredPane layeredPane;
 
 	public MainWindow() {
 
 		System.out.println("SKIP_TICKS: " + SKIP_TICKS);
-		displayManager = new DisplayManager(fontSize, cellWidth, cellHeight);
+		displayManager = new DisplayManager(fontSize);
 
 		initFrame();
 		setKeyBindings();
 
+		/* draw the title screen once before loop, since it won't process until the player presses a key */
 		currentScreen = new TitleScreen(displayManager.getTerminal());
+		currentScreen.draw();
+		displayManager.setDirty();
+		displayManager.refresh();
 
 		long nextTick = System.currentTimeMillis();
 
-		Thread t = new Thread(() -> {
-			long tt = System.currentTimeMillis();
-			while (true) {
-				currentScreen.process();
-				currentScreen = currentScreen.getScreen();
-
-				// tt += SKIP_TICKS;
-				// long sleepTime = tt - System.currentTimeMillis();
-				// if (sleepTime >= 0) {
-				// try {
-				// Thread.sleep(SKIP_TICKS);
-				//
-				// } catch (InterruptedException e) {
-				// e.printStackTrace();
-				// }
-				// } else {
-				// Log.warning("i SLEEPTIME < 0, skipping next keypress: " + sleepTime);
-				// InputManager.nextCommand();
-				// }
-
-				displayManager.setDirty();
-			}
-		});
-		t.start();
-
 		while (true) {
-			// currentScreen.process();
-			// currentScreen = currentScreen.getScreen();
+
+			currentScreen.process();
+			currentScreen = currentScreen.getScreen();
 			long drawTicks = currentScreen.draw();
 
 			displayManager.setDirty();
 			displayManager.refresh();
 
-			// nextTick += SKIP_TICKS;
-			// long sleepTime = nextTick - System.currentTimeMillis();
-			long sleepTime = SKIP_TICKS - drawTicks;
+			nextTick += SKIP_TICKS;
+			// long sleepTime = SKIP_TICKS - drawTicks;
+			long sleepTime = nextTick - System.currentTimeMillis();
 			if (sleepTime >= 0) {
 				try {
 					Thread.sleep(sleepTime);
@@ -147,19 +123,16 @@ public class MainWindow {
 		InputManager.registerWithFrame(frame);
 
 		displayManager.init(width, height);
+		displayPane = displayManager.displayPane();
 
-		layeredPane = displayManager.displayPane();
-
-		JPanel mainWinPanel = new JPanel();
-		mainWinPanel.setBackground(SColor.BLACK);
-		mainWinPanel.setLayout(new BorderLayout());
-		mainWinPanel.add(layeredPane, BorderLayout.WEST);
-
-		frame.add(mainWinPanel);
+		frame.add(displayPane);
 		frame.pack();
 
 		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
+		frame.setResizable(false);
+
+		Log.info("Window size: " + frame.getSize().width + "x" + frame.getSize().height);
 
 		hideMouseCursor();
 	}

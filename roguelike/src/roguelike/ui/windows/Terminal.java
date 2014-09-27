@@ -26,7 +26,9 @@ public class Terminal extends TerminalBase {
 			public boolean put(int x, int y, CharEx c) {
 				int sx = getX(x);
 				int sy = getY(y);
-				if (data[sx][sy] != null && data[sx][sy].equals(c)) {
+
+				CharEx existing = data[sx][sy];
+				if (existing != null && existing.equals(c)) {
 					return false;
 				}
 				data[sx][sy] = c;

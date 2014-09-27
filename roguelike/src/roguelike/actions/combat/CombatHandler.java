@@ -70,6 +70,8 @@ public class CombatHandler {
 	 */
 	public Attack defend(Actor attacker, Attack attack) {
 		// TODO: implement defending behavior, resistances, etc
+		Statistics attackerStats = attacker.statistics();
+		Statistics defenderStats = actor.statistics();
 
 		int aWeaponProficiency = 3;
 		int dWeaponProficiency = 3;
@@ -80,38 +82,16 @@ public class CombatHandler {
 		int attackWeaponTN = 7; // TODO: get these from weapon data or maneuver
 		int defendWeaponTN = 7;
 
-		Statistics attackerStats = attacker.getStatistics();
-		Statistics defenderStats = actor.getStatistics();
+		int attackSuccessPool = getAttackerSuccessPool(attackerStats, aWeaponProficiency, attackManeuver);
+		int defendSuccessPool = getDefenderSuccessPool(defenderStats, dWeaponProficiency, defenseManeuver, attack);
 
-		int attackSuccessPool = attackerStats.baseMeleePool(aWeaponProficiency) + attackManeuver;
-		int defendSuccessPool = defenderStats.baseMeleePool(dWeaponProficiency) + defenseManeuver;
-
-		// TODO: need to switch this penalty to the combatant who was damaged most recently
-		// TODO: maybe can use a Condition for this? with a duration of 1 turn that removes itself when an attack hits
-
-		Weapon defendingWeapon = ItemSlot.RIGHT_ARM.getEquippedWeapon(actor);
-		int attackingReach = attack.getWeapon().reach;
-		int defendingReach = defendingWeapon == null ? 0 : defendingWeapon.reach;
-		int reachDiff = attackingReach - defendingReach;
-		if (attacker.wasAttackedThisRound()) {
-			reachDiff *= -1;
-			logCombatMessage(String.format("Reach advantage applied to %s", actor.getName()));
-		}
-		else if (actor.wasAttackedThisRound()) {
-
-		}
+		int reachDiff = determineReachDifference(attacker, attack);
 
 		if (reachDiff > 0) {
 			attackSuccessPool += reachDiff;
 		} else if (reachDiff < 0) {
 			defendSuccessPool += -reachDiff;
 		}
-
-		Log.debug("Attacker reach: " + attackingReach);
-		Log.debug("Defender reach: " + defendingReach);
-
-		logCombatMessage(String.format("%s has reach of %d, %s has reach of %d",
-				attacker.getName(), attackingReach, actor.getName(), defendingReach));
 
 		// This determines whether the attack landed or not
 		int attackerSuccesses = DiceRolls.roll(attackSuccessPool, attackWeaponTN);
@@ -126,13 +106,7 @@ public class CombatHandler {
 
 		if (total > 0) {
 
-			// determine damage of the attack based on how successful it was and the stats of attacker/defender
-			int baseDamage = total + attack.getWeapon().getDamageRating(attack.getDamageType());
-			baseDamage += (attacker.getStatistics().toughness.getTotalValue() / 2.0f);
-			baseDamage -= (actor.getStatistics().toughness.getTotalValue() / 2.0f);
-
-			// TODO: get armor here
-			baseDamage -= armorValue;
+			int baseDamage = getTotalDamage(attacker, attack, armorValue, total);
 
 			attack.baseDamage = baseDamage;
 			return attack;
@@ -142,33 +116,15 @@ public class CombatHandler {
 		}
 	}
 
-	/**
-	 * Processes the attack after the target has defended it
-	 * 
-	 * @param action
-	 * @param attack
-	 * @param target
-	 * @return The result from onDamaged() - true if the attack killed the target
-	 */
-	boolean processAttack(Action action, Attack attack, Actor target) {
-		attack = target.getCombatHandler().defend(actor, attack);
-		boolean isDead;
-		if (attack.baseDamage > 0) {
-			isDead = target.getCombatHandler().onDamaged(attack, actor);
+	private int getAttackerSuccessPool(Statistics attackerStats, int aWeaponProficiency, int attackManeuver) {
+		return attackerStats.baseMeleePool(aWeaponProficiency) + attackManeuver;
+	}
 
-			/* add an event so we can show an animation */
-			Game.current().addEvent(TurnEvent.attack(actor, target, "" + attack.getDamage()));
-
-		} else {
-			isDead = false;
-			Game.current().displayMessage(actor.getName() + " missed " + target.getName() + "!", SColor.DARK_TAN);
-
-			Game.current().addEvent(TurnEvent.attackMissed(actor, target, "Missed"));
+	private int getDefenderSuccessPool(Statistics defenderStats, int dWeaponProficiency, int defenseManeuver, Attack attack) {
+		if (attack instanceof RangedAttack) {
+			return defenderStats.baseEvadePool();
 		}
-		target.onAttacked(actor);
-
-		// return true if this attack killed the target
-		return isDead;
+		return defenderStats.baseMeleePool(dWeaponProficiency) + defenseManeuver;
 	}
 
 	/**
@@ -192,6 +148,75 @@ public class CombatHandler {
 		Game.current().displayMessage(message, color);
 
 		return isDead;
+	}
+
+	/**
+	 * Processes the attack after the target has defended it
+	 * 
+	 * @param action
+	 * @param attack
+	 * @param target
+	 * @return The result from onDamaged() - true if the attack killed the target
+	 */
+	boolean processAttack(Action action, Attack attack, Actor target) {
+		attack = target.getCombatHandler().defend(actor, attack);
+		boolean isDead;
+		if (attack.baseDamage > 0) {
+			isDead = target.getCombatHandler().onDamaged(attack, actor);
+
+			/* add an event so we can show an animation */
+			Game.current().addEvent(TurnEvent.attack(actor, target, "" + attack.getDamage(), attack));
+
+		} else {
+			isDead = false;
+			Game.current().displayMessage(actor.getName() + " missed " + target.getName() + "!", SColor.DARK_TAN);
+
+			Game.current().addEvent(TurnEvent.attackMissed(actor, target, "Missed"));
+		}
+		target.onAttacked(actor);
+
+		// return true if this attack killed the target
+		return isDead;
+	}
+
+	private int determineReachDifference(Actor attacker, Attack attack) {
+
+		Weapon defendingWeapon = ItemSlot.RIGHT_ARM.getEquippedWeapon(actor);
+
+		int attackingReach = attack.getWeapon().reach;
+		int defendingReach = defendingWeapon == null ? 0 : defendingWeapon.reach;
+		int reachDiff = attackingReach - defendingReach;
+
+		// TODO: need to switch this penalty to the combatant who was damaged most recently
+		// TODO: maybe can use a Condition for this? with a duration of 1 turn that removes itself when an attack hits
+
+		if (attacker.wasAttackedThisRound()) {
+			reachDiff *= -1;
+			logCombatMessage(String.format("Reach advantage applied to %s", actor.getName()));
+		}
+		else if (actor.wasAttackedThisRound()) {
+
+		}
+
+		Log.debug("Attacker reach: " + attackingReach);
+		Log.debug("Defender reach: " + defendingReach);
+
+		logCombatMessage(String.format("%s has reach of %d, %s has reach of %d",
+				attacker.getName(), attackingReach, actor.getName(), defendingReach));
+		return reachDiff;
+	}
+
+	private int getTotalDamage(Actor attacker, Attack attack, int armorValue, int total) {
+
+		// determine damage of the attack based on how successful it was and the stats of attacker/defender
+		int baseDamage = total + attack.getWeapon().getDamageRating(attack.getDamageType());
+
+		baseDamage += (attacker.statistics().toughness.getTotalValue() / 2.0f);
+		baseDamage -= (actor.statistics().toughness.getTotalValue() / 2.0f);
+
+		// TODO: get armor here
+		baseDamage -= armorValue;
+		return baseDamage;
 	}
 
 	private void logCombatMessage(String message) {

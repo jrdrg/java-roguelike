@@ -1,6 +1,6 @@
 name,symbol,color,speed,behavior,weapon,category,health,dropTypes,difficulty,toughness,conditioning,perception,agility,willpower,presence,reflexBonus,aimingBonus
-fire ant,f,Red,15,SearchForPlayer,mandibles,insect,10,,1,4,3,4,4,4,4,,
-wolf,w,Light Gray,30,SearchForPlayer,bite,canine,20,,1,5,6,6,6,4,3,,
-bandit,b,Bright Pink,10,SearchForPlayer,Random,human,40,,1,6,7,7,5,6,6,,
-snake,s,Lime,20,SearchForPlayer,bite,reptile,25,,1,4,5,9,8,3,3,,
-archer,a,Brown,10,RandomWalk,short bow,human,40,,1,5,4,8,8,5,4,,1
+fire ant,f,Red,15,SearchForPlayer,mandibles,insect,8,,1,4,3,4,4,4,4,,
+wolf,w,Light Gray,30,SearchForPlayer,bite,canine,15,,1,5,6,6,6,4,3,,
+bandit,b,Bright Pink,10,SearchForPlayer,Random,human,25,,1,6,7,7,5,6,6,,
+snake,s,Lime,20,SearchForPlayer,bite,reptile,10,,1,4,5,9,8,3,3,,
+archer,a,Brown,10,RandomWalk,short bow,human,20,,1,5,4,8,8,5,4,,1

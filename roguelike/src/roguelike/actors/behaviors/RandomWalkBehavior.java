@@ -43,7 +43,7 @@ public class RandomWalkBehavior extends Behavior {
 	public Behavior getNextBehavior() {
 		AttackAttempt lastAttackedBy = actor.getLastAttackedBy();
 		if (lastAttackedBy != null) {
-			Log.debug("Switching to targeted attack behavior");
+			Log.debug("RandomWalkBehavior: Switching to targeted attack behavior");
 			return new TargetedAttackBehavior(actor, lastAttackedBy.getActor());
 		}
 

@@ -1,5 +1,6 @@
 package roguelike;
 
+import java.awt.Point;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Stack;
@@ -144,7 +145,6 @@ public class Game {
 	 */
 	public void displayMessage(String message) {
 		messages.add(message);
-		Log.debug("> " + message);
 	}
 
 	public void displayMessage(String message, SColor color) {
@@ -153,6 +153,10 @@ public class Game {
 
 	public void addEvent(TurnEvent event) {
 		currentTurnResult.addEvent(event);
+	}
+
+	public void setCurrentlyLookingAt(Point point) {
+		currentTurnResult.currentLook = point;
 	}
 
 	@Deprecated
@@ -293,7 +297,7 @@ public class Game {
 			if (Player.isPlayer(actor)) {
 				// TODO: process things that happen every turn after player queues actions
 				Game.currentGame.currentMapArea.spawnMonsters();
-				Log.debug("Game: Queue length: " + queuedActions.size());
+				Log.verboseDebug("Game: Queue length: " + queuedActions.size());
 			}
 		}
 

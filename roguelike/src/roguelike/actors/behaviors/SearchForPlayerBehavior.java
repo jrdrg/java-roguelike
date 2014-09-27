@@ -1,5 +1,7 @@
 package roguelike.actors.behaviors;
 
+import java.awt.Point;
+
 import roguelike.Game;
 import roguelike.actions.Action;
 import roguelike.actions.RestAction;
@@ -17,6 +19,7 @@ public class SearchForPlayerBehavior extends Behavior {
 
 	AStarPathfinder pathfinder;
 	Path pathToTarget;
+	private Point lastPlayerLocation;
 	private MapArea map;
 
 	public SearchForPlayerBehavior(Actor actor) {
@@ -29,16 +32,25 @@ public class SearchForPlayerBehavior extends Behavior {
 	@Override
 	public Action getAction() {
 
-		// TODO: if the npc can see the player, just walk in his direction. if blocked or out of sight range, pathfind
-		// to the last place it saw the player
+		// if the NPC can see the player, just walk in his direction. if blocked or out of sight range,
+		// find a path to the last place it saw the player
+
+		if (lastPlayerLocation != null && lastPlayerLocation.equals(actor.getPosition())) {
+			lastPlayerLocation = null;
+		}
 
 		Actor player = Game.current().getPlayer();
 		if (actor.canSee(player, map)) {
-			// go towards player
+			lastPlayerLocation = player.getPosition();
+		}
+
+		// go towards player location
+		if (lastPlayerLocation != null) {
+
 			int sx = actor.getPosition().x;
 			int sy = actor.getPosition().y;
-			int tx = player.getPosition().x;
-			int ty = player.getPosition().y;
+			int tx = lastPlayerLocation.x;
+			int ty = lastPlayerLocation.y;
 			pathToTarget = pathfinder.findPath(map, sx, sy, tx, ty);
 			if (pathToTarget != null) {
 				pathToTarget.nextStep();
@@ -50,22 +62,25 @@ public class SearchForPlayerBehavior extends Behavior {
 					return new WalkAction(actor, map, DirectionIntercardinal.getDirection(ssx, ssy));
 				}
 			}
-			Log.debug("Resting, can't find path...");
-			return new RestAction(actor);
 		}
-		else {
-			// try to find a path toward the player
-			Log.debug("Resting, can't see player...");
-			return new RestAction(actor);
-		}
+		Log.verboseDebug("Resting, no path to player...");
+		return new RestAction(actor);
 	}
 
 	@Override
 	public Behavior getNextBehavior() {
 		AttackAttempt lastAttackedBy = actor.getLastAttackedBy();
-		if (lastAttackedBy != null) {
-			Log.debug("Switching to targeted attack behavior");
+		if (lastAttackedBy != null && actor.isAdjacentTo(lastAttackedBy.getActor())) {
+
+			Log.debug("SearchForPlayerBehavior: Switching to targeted attack behavior");
 			return new TargetedAttackBehavior(actor, lastAttackedBy.getActor());
+		}
+
+		Actor player = Game.current().getPlayer();
+		if (actor.isAdjacentTo(player)) {
+
+			Log.debug("Attacking Player");
+			return new TargetedAttackBehavior(actor, player);
 		}
 
 		return this;

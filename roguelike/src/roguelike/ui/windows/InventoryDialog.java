@@ -14,7 +14,7 @@ public class InventoryDialog extends Dialog<Item> {
 	private InventoryMenu menu;
 
 	public InventoryDialog(InventoryMenu menu) {
-		super(40, 10);
+		super(60, 30);
 		this.menu = menu;
 	}
 
@@ -22,14 +22,15 @@ public class InventoryDialog extends Dialog<Item> {
 	protected void onDraw() {
 		SColor menuBgColor = SColorFactory.asSColor(30, 30, 30);
 
-		TerminalBase border = terminal.withColor(SColor.WHITE, SColor.GRAPE_MOUSE);
+		// TerminalBase border = terminal.withColor(SColor.WHITE, SColor.GRAPE_MOUSE);
+		TerminalBase border = terminal.withColor(SColor.WHITE, SColor.BLACK);
 		TerminalBase background = terminal.withColor(menuBgColor, menuBgColor);
 		TerminalBase text = terminal.withColor(SColor.WHITE, menuBgColor);
 
 		background.fill(0, 0, size.width, size.height, ' ');
 		border.fill(0, 0, size.width, 1, ' ');
 
-		// drawBoxShape(border);
+		drawBoxShape(border);
 
 		int currentPage = menu.getCurrentPage();
 		int pageCount = menu.getPageCount();
@@ -37,13 +38,13 @@ public class InventoryDialog extends Dialog<Item> {
 		border.write(1, 0, String.format("Inventory `Gray`(%d/%d)", currentPage, pageCount));
 
 		// TerminalBase activeText = terminal.withColor(SColor.ALIZARIN, menuBgColor);
-		int displayY = 3;
+		int displayY = 2;
 		for (MenuItem<Item> item : menu.currentPageItems()) {
 			String color = "";
 			if (item.isActive()) {
 				color = "`Alizarin`";
 			}
-			text.write(1, displayY, color + item.getText());
+			text.write(2, displayY, color + item.getText());
 			displayY++;
 		}
 	}

@@ -102,12 +102,12 @@ public class Tile implements Serializable {
 	}
 
 	public SColor getColor() {
-		if (!visible) {
-			if (explored)
-				return SColor.DARK_GRAY;
-
-			return SColor.BLACK;
-		}
+//		if (!visible) {
+//			if (explored)
+//				return SColor.DARK_GRAY;
+//
+//			return SColor.BLACK;
+//		}
 
 		if (actor != null)
 			return actor.getColor();

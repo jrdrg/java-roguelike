@@ -7,15 +7,19 @@ import roguelike.actors.Statistics;
 import roguelike.items.Equipment.ItemSlot;
 import roguelike.items.Weapon;
 import roguelike.ui.windows.TerminalBase;
+import roguelike.ui.windows.TextWindow;
 import squidpony.squidcolor.SColor;
 import squidpony.squidcolor.SColorFactory;
 
-public class StatsDisplay {
+public class StatsDisplay extends TextWindow {
+
+	private final int leftMargin = 1;
 
 	private TerminalBase terminal;
 	private Player player;
 
 	public StatsDisplay(TerminalBase terminal) {
+		super(terminal.size().width, terminal.size().height);
 		this.terminal = terminal;
 
 		System.out.println("Stats display: " + terminal.size().width + "x" + terminal.size().height);
@@ -30,10 +34,13 @@ public class StatsDisplay {
 			return;
 		}
 
-		terminal.withColor(SColor.TRANSPARENT, SColor.BLACK).fill(0, 0, terminal.size().width, terminal.size().height, ' ');
+		drawBoxShape(terminal.withColor(SColor.DARK_GRAY));
 
-		terminal.write(0, 0, String.format("P:%3d,%3d", player.getPosition().x, player.getPosition().y));
-		terminal.write(0, 1, String.format("E:%3d", player.getEnergy().getCurrent()));
+		// terminal.withColor(SColor.TRANSPARENT, SColor.BLACK).fill(0, 0, terminal.size().width,
+		// terminal.size().height, ' ');
+
+		terminal.write(leftMargin, 1, String.format("P:%3d,%3d", player.getPosition().x, player.getPosition().y));
+		terminal.write(leftMargin, 2, String.format("E:%3d", player.getEnergy().getCurrent()));
 
 		drawHealth();
 		drawEquipped();
@@ -43,8 +50,10 @@ public class StatsDisplay {
 	private void drawHealth() {
 		TerminalBase bracketTerm = terminal.withColor(SColor.WHITE);
 
-		bracketTerm.put(0, 4, '[');
-		bracketTerm.put(10, 4, ']');
+		int startY = 4;
+
+		bracketTerm.put(leftMargin, startY + 1, '[');
+		bracketTerm.put(leftMargin + 10, startY + 1, ']');
 
 		float floatPct = player.getHealth().getCurrent() / (float) player.getHealth().getMaximum();
 		int pct = Math.max(0, (int) (floatPct * 9));
@@ -56,10 +65,10 @@ public class StatsDisplay {
 		TerminalBase barTerm = terminal.withColor(SColorFactory.blend(SColor.RED, SColor.GREEN, floatPct));
 
 		String blank = "         ";
-		barTerm.withColor(SColor.BLACK).write(1, 4, blank);
-		barTerm.write(1, 4, result);
+		barTerm.withColor(SColor.BLACK).write(leftMargin + 1, 4, blank);
+		barTerm.write(leftMargin + 1, startY + 1, result);
 
-		bracketTerm.write(0, 3, String.format("H: %3d/%3d", player.getHealth().getCurrent(), player.getHealth().getMaximum()));
+		bracketTerm.write(leftMargin, startY, String.format("H: %3d/%3d", player.getHealth().getCurrent(), player.getHealth().getMaximum()));
 	}
 
 	private void drawEquipped() {
@@ -89,11 +98,11 @@ public class StatsDisplay {
 
 		headerTerm.write(1, 15, "MP");
 		int weaponProficiency = 0; // TODO: calculate this
-		terminal.write(leftX, 15, String.format("%3d", player.getStatistics().baseMeleePool(weaponProficiency)));
+		terminal.write(leftX, 15, String.format("%3d", player.statistics().baseMeleePool(weaponProficiency)));
 
 		headerTerm.write(1, 16, "RP");
 		int rangedProficiency = 0; // TODO: calculate this
-		terminal.write(leftX, 16, String.format("%3d", player.getStatistics().baseMeleePool(rangedProficiency)));
+		terminal.write(leftX, 16, String.format("%3d", player.statistics().baseMeleePool(rangedProficiency)));
 	}
 
 	private void drawStats() {
@@ -104,7 +113,7 @@ public class StatsDisplay {
 		TerminalBase headerTerm = terminal.withColor(headerColor);
 		TerminalBase displayTerm = terminal;
 
-		Statistics statistics = player.getStatistics();
+		Statistics statistics = player.statistics();
 
 		headerTerm.write(1, startY, "To");
 		displayTerm.write(3, startY, String.format("%3d", statistics.toughness.getTotalValue()));

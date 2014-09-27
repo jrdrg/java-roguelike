@@ -6,7 +6,7 @@ import roguelike.util.StringEx;
 public class InventoryMenu extends Menu<Item> {
 
 	public InventoryMenu(Inventory inventory) {
-		super(inventory.allItems(), 3);
+		super(inventory.allItems(), 26);
 	}
 
 	@Override

@@ -1,5 +1,6 @@
 package roguelike;
 
+import java.awt.Point;
 import java.awt.Rectangle;
 
 import roguelike.actors.Actor;
@@ -9,12 +10,14 @@ import roguelike.maps.MapArea;
 import roguelike.maps.Tile;
 import roguelike.ui.DisplayManager;
 import roguelike.ui.InputManager;
+import roguelike.ui.LookDisplay;
 import roguelike.ui.MainWindow;
 import roguelike.ui.MessageDisplay;
 import roguelike.ui.StatsDisplay;
 import roguelike.ui.animations.AnimationManager;
 import roguelike.ui.animations.AttackAnimation;
 import roguelike.ui.animations.AttackMissedAnimation;
+import roguelike.ui.animations.RangedAttackAnimation;
 import roguelike.ui.windows.TerminalBase;
 import roguelike.util.ArrayUtils;
 import roguelike.util.Coordinate;
@@ -41,6 +44,8 @@ public class MainScreen extends Screen {
 	GameLoader gameLoader;
 	MessageDisplay messageDisplay;
 	StatsDisplay statsDisplay;
+	LookDisplay lookDisplay;
+
 	DisplayManager displayManager;
 	AnimationManager animationManager;
 
@@ -59,7 +64,7 @@ public class MainScreen extends Screen {
 		displayManager = DisplayManager.instance();
 
 		TerminalBase messageTerminal =
-				fullTerminal.getWindow(0, height - outputLines, width, outputLines);
+				fullTerminal.getWindow(0, height - outputLines, width - MainWindow.statWidth, outputLines);
 
 		TerminalBase statsTerminal =
 				fullTerminal.getWindow(width - MainWindow.statWidth, 0, MainWindow.statWidth, height);
@@ -72,6 +77,9 @@ public class MainScreen extends Screen {
 		messageDisplay = new MessageDisplay(Game.current().messages, messageTerminal, outputLines);
 		statsDisplay = new StatsDisplay(statsTerminal);
 		statsDisplay.setPlayer(game.getPlayer());
+
+		Rectangle statsSize = statsTerminal.size();
+		lookDisplay = new LookDisplay(statsTerminal.getWindow(statsSize.x + 2, statsSize.height - 22, statsSize.width - 4, 22), statsSize.width - 4, 22);
 
 		doFOV();
 		drawMap();
@@ -124,7 +132,6 @@ public class MainScreen extends Screen {
 		long start = System.currentTimeMillis();
 
 		if (currentTurn == null) {
-			Log.debug("No current turn yet");
 			return 0;
 		}
 
@@ -137,6 +144,8 @@ public class MainScreen extends Screen {
 
 		drawCursor(currentTurn);
 
+		drawLookDisplay(currentTurn);
+
 		/*
 		 * this will only refresh if player input has occurred or something has reset the dirty flag
 		 */
@@ -145,7 +154,6 @@ public class MainScreen extends Screen {
 
 		if (animationProcessed || animationManager.shouldRefresh()) {
 			displayManager.setDirty();
-			Log.debug("Set dirty flag");
 		}
 
 		long end = System.currentTimeMillis();
@@ -161,10 +169,13 @@ public class MainScreen extends Screen {
 
 		for (int x = screenArea.x; x < screenArea.getMaxX(); x++) {
 			for (int y = screenArea.y; y < screenArea.getMaxY(); y++) {
+
 				Tile tile = currentMap.getTileAt(x, y);
 				int screenX = x - screenArea.x;
 				int screenY = y - screenArea.y;
+
 				if (tile.isVisible()) {
+
 					SColor color, bgColor;
 					SColor litColor = tile.getLightedColorValue();
 					if (tile.getColor() == null)
@@ -201,10 +212,8 @@ public class MainScreen extends Screen {
 	}
 
 	private void doFOV(MapArea currentMap, Rectangle screenArea, Coordinate player) {
-		// boolean[][] walls = new boolean[width][height];
 		float[][] lighting = new float[width][height];
 
-		// walls = ArrayUtils.getSubArray(currentMap.getWalls(), screenArea);
 		lighting = ArrayUtils.getSubArray(currentMap.getLightValues(), screenArea);
 
 		float lightForce = game.getPlayer().getVisionRadius();
@@ -218,6 +227,7 @@ public class MainScreen extends Screen {
 
 		for (int x = screenArea.x; x < screenArea.getMaxX(); x++) {
 			for (int y = screenArea.y; y < screenArea.getMaxY(); y++) {
+
 				int cX = x - screenArea.x;
 				int cY = y - screenArea.y;
 
@@ -225,14 +235,14 @@ public class MainScreen extends Screen {
 				tile.setVisible(fov.isLit(cX, cY));
 
 				if (incomingLight[cX][cY] > 0) {
+
 					float bright = 1 - incomingLight[cX][cY];
 					tile.setLightedColorValue(SColorFactory.fromPallet("light", bright));
-					// clean[x][y] = false;
-				} else if (!tile.getLightedColorValue().equals(SColor.BLACK)) {
-					tile.setLightedColorValue(SColor.BLACK);
-					// clean[x][y] = false;
-				}
 
+				} else if (!tile.getLightedColorValue().equals(SColor.BLACK)) {
+
+					tile.setLightedColorValue(SColor.BLACK);
+				}
 			}
 		}
 	}
@@ -278,17 +288,20 @@ public class MainScreen extends Screen {
 
 			case TurnEvent.ATTACK_MISSED:
 				targetPos = target.getPosition();
-				diff = initiator
-						.getPosition()
-						.createOffsetPosition(-targetPos.x, -targetPos.y);
-
-				direction = DirectionIntercardinal
-						.getDirection(-diff.x, -diff.y);
-
 				if (screenArea.contains(initiatorPos) && screenArea.contains(targetPos)) {
 
 					animationManager.addAnimation(new AttackMissedAnimation(target));
 					Log.debug("Added attack missed animation");
+
+				}
+				break;
+
+			case TurnEvent.RANGED_ATTACKED:
+				targetPos = target.getPosition();
+				if (screenArea.contains(initiatorPos) && screenArea.contains(targetPos)) {
+
+					animationManager.addAnimation(new RangedAttackAnimation(initiator, target, event.getMessage()));
+					Log.debug("Added attack animation");
 
 				}
 				break;
@@ -310,6 +323,7 @@ public class MainScreen extends Screen {
 				.getVisibleAreaInTiles(windowWidth, windowHeight, centerPosition);
 
 		activeCursor.draw(terminal, screenArea);
+		displayManager.setDirty();
 	}
 
 	private boolean drawActiveWindow(TurnResult run) {
@@ -331,4 +345,12 @@ public class MainScreen extends Screen {
 		statsDisplay.draw();
 	}
 
+	private void drawLookDisplay(TurnResult run) {
+		Point p = run.getCurrentLook();
+		if (p == null) {
+			lookDisplay.erase();
+			return;
+		}
+		lookDisplay.draw(game.getCurrentMapArea(), p.x, p.y);
+	}
 }

@@ -11,6 +11,8 @@ public class ShowMessagesAction extends InputRequiredAction<InputCommand> {
 	public ShowMessagesAction(Actor actor) {
 		super(actor);
 
+		this.usesEnergy = false;
+
 		dialog = new MessageLogWindow(60, 30, Game.current().messages());
 		dialog.show();
 	}

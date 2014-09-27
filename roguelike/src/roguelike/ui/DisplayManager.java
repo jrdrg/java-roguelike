@@ -4,16 +4,16 @@ import java.awt.Font;
 import java.awt.GraphicsEnvironment;
 import java.io.InputStream;
 
-import javax.swing.JLayeredPane;
+import javax.swing.JComponent;
 
 import roguelike.TitleScreen;
+import roguelike.ui.asciipanel.AsciiPanel;
+import roguelike.ui.windows.AsciiPanelTerminalView;
 import roguelike.ui.windows.Terminal;
-import roguelike.ui.windows.SwingPaneTerminalView;
 import roguelike.ui.windows.TerminalBase;
 import roguelike.ui.windows.TerminalChangeNotification;
 import roguelike.util.CharEx;
-import squidpony.squidgrid.gui.SwingPane;
-import squidpony.squidgrid.gui.TextCellFactory;
+import roguelike.util.Log;
 
 public class DisplayManager {
 	// private final String FONT_NAME = "joystix monospace.ttf";
@@ -22,27 +22,23 @@ public class DisplayManager {
 	private final String FONT_NAME = "Nouveau_IBM.ttf";
 
 	private final String BACKUP_FONT_NAME = "Lucidia";
-	private static final String CHARS_USED = "☃☺.,Xy#@.~M";
 
 	private Font font;
-	private JLayeredPane displayPane;
-	private SwingPane foreground;
-	private SwingPane background;
+	private JComponent displayPane;
 	private TerminalBase mainDisplay;
 	private int fontSize;
-	private int cellWidth;
-	private int cellHeight;
+	private int gridWidth;
+	private int gridHeight;
 	private boolean dirty;
 
-	private SwingPaneTerminalView terminalView;
+	private AsciiPanel asciiPanel;
+	private AsciiPanelTerminalView terminalView;
 
 	// TODO: this is a hack, for now
 	private static DisplayManager self;
 
-	public DisplayManager(int fontSize, int cellWidth, int cellHeight) {
+	public DisplayManager(int fontSize) {
 		this.fontSize = fontSize;
-		this.cellWidth = cellWidth;
-		this.cellHeight = cellHeight;
 
 		self = this;
 	}
@@ -55,25 +51,24 @@ public class DisplayManager {
 		return this.font;
 	}
 
-	public JLayeredPane displayPane() {
+	public JComponent displayPane() {
 		return this.displayPane;
 	}
 
 	public void refresh() {
 		if (dirty) {
-			background.refresh();
-			foreground.refresh();
+			asciiPanel.repaint();
 			dirty = false;
 		}
 	}
 
-	public synchronized void setDirty() {
+	public void setDirty() {
 		dirty = true;
 	}
 
 	public TerminalBase getTerminal() {
 		if (mainDisplay == null) {
-			mainDisplay = new Terminal(foreground.gridWidth(), foreground.gridHeight(),
+			mainDisplay = new Terminal(gridWidth, gridHeight,
 					new TerminalChangeNotification() {
 
 						@Override
@@ -85,38 +80,26 @@ public class DisplayManager {
 		return mainDisplay;
 	}
 
-	public SwingPaneTerminalView getTerminalView() {
+	public AsciiPanelTerminalView getTerminalView() {
 		if (terminalView == null) {
-			terminalView = new SwingPaneTerminalView(getTerminal(), foreground, background);
+			terminalView = new AsciiPanelTerminalView(getTerminal(), asciiPanel);
 		}
 		return terminalView;
 	}
 
 	public void init(int width, int height) {
+		Log.info("DisplayManager.init(" + width + ", " + height + ")");
 		font = getFont(FONT_NAME);
 		font = font.deriveFont((float) fontSize);
 
 		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
 		ge.registerFont(font);
 
-		TextCellFactory textFactory = new TextCellFactory(font, cellWidth, cellHeight, true, 0, CHARS_USED);
-		foreground = new SwingPane(width, height, textFactory, null);
-		foreground.refresh();
+		this.gridWidth = width;
+		this.gridHeight = height;
 
-		background = new SwingPane(width, height, textFactory, null);
-
-		displayPane = new JLayeredPane();
-		displayPane.setLayer(foreground, JLayeredPane.PALETTE_LAYER);
-		displayPane.setLayer(background, JLayeredPane.DEFAULT_LAYER);
-
-		displayPane.add(foreground);
-		displayPane.add(background);
-
-		displayPane.setSize(foreground.getPreferredSize());
-		displayPane.setPreferredSize(foreground.getPreferredSize());
-		displayPane.setMinimumSize(foreground.getPreferredSize());
-
-		System.out.println("Added SwingPanes:" + width + "," + height);
+		asciiPanel = new AsciiPanel(width, height);
+		displayPane = asciiPanel;
 	}
 
 	private Font getFont(String name) {

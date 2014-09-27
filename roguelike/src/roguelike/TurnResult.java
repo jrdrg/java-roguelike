@@ -1,5 +1,6 @@
 package roguelike;
 
+import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,6 +10,7 @@ public class TurnResult {
 	ArrayList<MessageDisplayProperties> messages;
 	ArrayList<TurnEvent> events;
 	boolean needsInput;
+	Point currentLook;
 
 	public TurnResult(boolean running) {
 		this.running = running;
@@ -50,5 +52,13 @@ public class TurnResult {
 
 	public List<TurnEvent> getEvents() {
 		return events;
+	}
+
+	public Point getCurrentLook() {
+		return currentLook;
+	}
+
+	public void setCurrentLook(Point point) {
+		this.currentLook = point;
 	}
 }
