@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
 
-import roguelike.util.CharacterGlyph;
+import roguelike.util.Symbol;
 import squidpony.squidmath.RNG;
 
 public class MapHelpers {
@@ -78,7 +78,7 @@ public class MapHelpers {
 		return points;
 	}
 
-	public static int getAdjacentTiles(Tile[][] map, int x, int y, CharacterGlyph tile) {
+	public static int getAdjacentTiles(Tile[][] map, int x, int y, Symbol tile) {
 		int count = 0;
 
 		ArrayList<Point> neighbors = getNeighbors(map.length, map[0].length, x, y, 1);
@@ -90,5 +90,23 @@ public class MapHelpers {
 		}
 
 		return count;
+	}
+
+	public static void constrainToRectangle(Point point, int width, int height) {
+		if (point.x < 0)
+			point.x = 0;
+		if (point.y < 0)
+			point.y = 0;
+		if (point.x >= width)
+			point.x = width - 1;
+		if (point.y >= height)
+			point.y = height - 1;
+	}
+
+	public static boolean isWithinBounds(Tile[][] map, int x, int y) {
+		if (x < 0 || y < 0 || x >= map.length || y >= map[0].length)
+			return false;
+
+		return true;
 	}
 }

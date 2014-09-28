@@ -1,6 +1,5 @@
 package roguelike.actors;
 
-import roguelike.Game;
 import roguelike.actions.Action;
 import roguelike.actors.behaviors.Behavior;
 import roguelike.actors.behaviors.PlayerInputBehavior;
@@ -26,11 +25,6 @@ public class Player extends Actor {
 	@Override
 	public Action getNextAction() {
 		Action action = behavior.getAction();
-		if (action == null) {
-			Game.current().waitingForAction(true);
-		} else {
-			Game.current().waitingForAction(false);
-		}
 		return action;
 	}
 

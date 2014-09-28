@@ -61,4 +61,20 @@ public class Inventory implements Serializable {
 
 		return items.remove(item);
 	}
+
+	public String[] getItemListAsText(int maxSize) {
+		boolean displayEllipsis = false;
+		if (maxSize < this.items.size()) {
+			displayEllipsis = true;
+		}
+		String[] items = new String[Math.min(maxSize, this.items.size())];
+
+		for (int i = 0; i < items.length; i++) {
+			items[i] = this.items.get(i).getDescription();
+		}
+		if (displayEllipsis)
+			items[items.length - 1] = "...";
+
+		return items;
+	}
 }

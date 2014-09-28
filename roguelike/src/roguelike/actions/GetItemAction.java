@@ -47,7 +47,7 @@ public class GetItemAction extends Action {
 	private ActionResult pickUpItem(Inventory inventory, Item pickUp) {
 		if (pickUp != null) {
 
-			actor.getInventory().add(pickUp);
+			actor.inventory().add(pickUp);
 			inventory.remove(pickUp);
 
 			Game.current().displayMessage(actor.getName() + " picks up " + pickUp.getName(), SColor.LIGHT_BLUE);

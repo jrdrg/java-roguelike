@@ -28,7 +28,7 @@ public class Npc extends Actor {
 		Statistics stats = statistics();
 		stats.setValues(data);
 
-		this.getHealth().setMaximum(data.health);
+		this.health().setMaximum(data.health);
 	}
 
 	public void setBehavior(Behavior behavior) {
@@ -67,7 +67,7 @@ public class Npc extends Actor {
 		behavior = null;
 
 		// chance to drop whatever is in inventory
-		Inventory inventory = this.getInventory();
+		Inventory inventory = this.inventory();
 		MapArea map = Game.current().getCurrentMapArea();
 
 		List<Item> droppableItems = inventory.getDroppableItems();

@@ -1,12 +1,10 @@
 package roguelike.actions;
 
 import roguelike.CursorResult;
-import roguelike.Game;
 import roguelike.actors.Actor;
 import roguelike.maps.MapArea;
 import roguelike.ui.InputCommand;
 import roguelike.ui.LookCursor;
-import roguelike.ui.windows.LookDialog;
 import roguelike.util.Coordinate;
 
 public class LookAction extends InputRequiredAction<InputCommand> {

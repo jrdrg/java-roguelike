@@ -3,213 +3,270 @@ package roguelike.maps;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.Stack;
 
 import roguelike.Game;
-import roguelike.util.CollectionUtils;
 import roguelike.util.Log;
+import roguelike.util.Symbol;
 import squidpony.squidgrid.util.DirectionCardinal;
 import squidpony.squidutility.ProbabilityTable;
 
 public class DungeonMapBuilder extends MapBuilderBase {
 
-	private int width;
-	private int height;
+	/**
+	 * Divide the map up into equal sections to try and get a reasonably even distribution of rooms
+	 * 
+	 * @author john
+	 *
+	 */
+	private class MapSection {
+		public Rectangle area;
+		public int floorSpaces;
+		public int totalSpaces;
 
-	private Rectangle mapRect;
+		public MapSection(Rectangle area) {
+			this.area = area;
+			floorSpaces = 0;
+			totalSpaces = area.width * area.height;
+		}
+
+		public boolean contains(Point point) {
+			return area.contains(point);
+		}
+
+		public void add(Rectangle rectangle) {
+			floorSpaces += (rectangle.width * rectangle.height);
+		}
+	}
 
 	private ArrayList<Room> rooms;
-	private Tile[][] map;
-
-	private ArrayList<Point> connectionPoints;
+	private ArrayList<MapSection> mapSections;
 
 	public DungeonMapBuilder() {
 		rooms = new ArrayList<Room>();
-		connectionPoints = new ArrayList<Point>();
+
 	}
 
 	@Override
-	public void buildMap(Tile[][] map) {
-		this.map = map;
-		this.width = map.length;
-		this.height = map[0].length;
-		this.mapRect = new Rectangle(0, 0, width, height);
+	protected void onBuildMap(Tile[][] map) {
 
-		// fill in entire map with walls
-		for (int x = 0; x < width; x++) {
-			for (int y = 0; y < height; y++) {
-				map[x][y] = tb.buildTile('#');
-			}
-		}
+		int roomCount = 10;
+		int maxTries = 50;
 
-		int roomX = random.between(width / 3, 2 * (width / 3));
-		int roomY = random.between(height / 3, 2 * (height / 3));
+		for (int i = 0; i < maxTries; i++) {
 
-		Room startRoom = generateRoom(roomX, roomY);
-		while (startRoom == null)
-		{
-			roomX = random.between(width / 3, 2 * (width / 3));
-			roomY = random.between(height / 3, 2 * (height / 3));
-			startRoom = generateRoom(roomX, roomY);
-		}
-		rooms.add(startRoom);
+			/* Initialize map sections */
+			mapSections = new ArrayList<DungeonMapBuilder.MapSection>();
+			mapSections.add(new MapSection(getSubRectangle(mapRect, 0, 0, .5, .5)));
+			mapSections.add(new MapSection(getSubRectangle(mapRect, mapRect.width / 2, 0, .5, .5)));
+			mapSections.add(new MapSection(getSubRectangle(mapRect, mapRect.width / 2, mapRect.height / 2, .5, .5)));
+			mapSections.add(new MapSection(getSubRectangle(mapRect, 0, mapRect.height / 2, .5, .5)));
 
-		// TODO: create the main path through the dungeon first by passing in the most recently created room, then
-		// create random rooms
+			fillMap(Symbol.WALL);
 
-		// TODO: create loops in the map so that there are multiple paths to get to a room
+			Room startRoom = null;
 
-		for (int x = 0; x < 50; x++) {
-			createRandomRoom();
-		}
+			while (startRoom == null)
+				startRoom = chooseRandomStartRoom();
 
-		int startX = (int) startRoom.area.getCenterX();
-		int startY = (int) startRoom.area.getCenterY();
-		Game.current().getPlayer().setPosition(startX, startY);
+			buildDoors(startRoom);
 
-		/*
-		 * create room
-		 * 
-		 * determine all possible connection points for the room, but do not put doors there yet
-		 * 
-		 * store all connection points in a list, choose one at random
-		 * 
-		 * instead of picking a room use this connection point along with a random direction that is a free square
-		 * 
-		 * when a point is connected to, remove it from the list
-		 * 
-		 * after all rooms are created, put walls back in any remaining connection points
-		 * 
-		 * clear the connection points list
-		 */
+			rooms.add(startRoom);
 
-		// fill all rooms
-		for (Room room : rooms) {
-			room.fillRoom(map, tb, '-');
+			int startX = (int) startRoom.area.getCenterX();
+			int startY = (int) startRoom.area.getCenterY();
+			Game.current().getPlayer().setPosition(startX, startY);
+
+			generateMainPath(startRoom);
+
+			if (rooms.size() >= roomCount)
+				break;
 		}
 	}
 
-	private void createRandomRoom() {
-		Room room;
-		room = CollectionUtils.getRandomElement(rooms);
+	private void generateMainPath(Room startRoom) {
+		int maxRooms = 20;
+		Room currentRoom = null;
 
-		DirectionCardinal direction = getRandomDirection();
+		Stack<Room> roomsOnPath = new Stack<Room>();
+		roomsOnPath.push(startRoom);
 
-		Point door = room.getDoorCoordinate(map, direction);
-		if (door != null) {
-			Room newRoom = generateJoinedTo(room, direction, door);
-			if (newRoom != null) {
+		currentRoom = startRoom;
+		for (int x = 0; x < maxRooms; x++) {
+			if (roomsOnPath.size() == 0)
+				break;
 
-				// Log.info("Door at " + door.x + "," + door.y);
-				map[door.x][door.y] = tb.buildTile('-');
-				rooms.add(newRoom);
+			boolean fail = false;
 
-				Log.info("Room created, count=" + rooms.size());
+			ConnectionPoint door = generateRandomDoor(currentRoom);
+			if (door == null)
+				fail = true;
+
+			if (!fail) {
+				ConnectionPoint endPoint = buildCorridor(door, currentRoom);
+
+				if (endPoint != null) {
+
+					setTile(door, Symbol.BUILDING_FLOOR);
+					setTile(endPoint, Symbol.GROUND);
+
+					Rectangle rect = getRectangleForEndPoint(endPoint);
+
+					Room newRoom = createRoom(rect);
+
+					super.setTile(rect.getLocation(), Symbol.MOUNTAIN);
+					Log.debug("Creating room");
+
+					currentRoom.doors.add(door);
+					rooms.add(newRoom);
+					roomsOnPath.push(currentRoom);
+
+					currentRoom = newRoom;
+				} else {
+
+					fail = true;
+					System.out.println("endPoint==null, x=" + x);
+				}
+			}
+
+			if (fail) {
+
+				for (ConnectionPoint doorPoint : currentRoom.doors) {
+					setTile(doorPoint, Symbol.DOOR);
+				}
+
+				currentRoom = roomsOnPath.pop();
 			}
 		}
+
+		Point stairPoint = currentRoom.getRandomFloorTile();
+		setTile(stairPoint, Symbol.STAIRS);
+
 	}
 
-	private Room generateRoom(int x, int y) {
+	private ConnectionPoint generateRandomDoor(Room room) {
+		ProbabilityTable<DirectionCardinal> directions = new ProbabilityTable<DirectionCardinal>();
 
-		Rectangle rect = new Rectangle(random.between(1, width - 2), random.between(1, height - 2), random.between(5, 30), random.between(5, 20));
-		if (!mapRect.contains(rect))
+		DirectionCardinal[] allDirections = DirectionCardinal.CARDINALS;
+		for (DirectionCardinal dir : allDirections) {
+
+			Rectangle area = new Rectangle(room.area);
+			area.width *= random.between(0.75, 1.25);
+			area.height *= random.between(0.75, 1.25);
+			area.x += (dir.deltaX * (area.width));
+			area.y += (dir.deltaY * (area.height));
+
+			if (canCreateRoom(area))
+			{
+				directions.add(dir, area.width * area.height);
+				// fillRect(area, Symbol.MOUNTAIN);
+
+				Point doorp = room.getDoorCoordinate(map, dir);
+				super.setTile(doorp, Symbol.BOX_BOTTOM_LEFT_SINGLE);
+			}
+
+		}
+
+		DirectionCardinal direction = directions.random();
+		if (direction == null)
 			return null;
 
-		Room room = new Room(rect);
-		// fillRoom(room, '-');
-
-		int numDoors = random.between(2, 5);
-		for (int i = 0; i < numDoors; i++) {
-			Point door = room.getDoorCoordinate(map, getRandomDirection());
-			if (door != null) {
-				room.doors.add(door);
-				connectionPoints.add(door);
-			}
+		ConnectionPoint existing = room.doors.stream().filter(d -> d.direction().equals(direction)).findAny().orElse(null);
+		if (existing != null) {
+			// TODO: allow doors to be in the same direction?
 		}
+
+		Point doorPoint = room.getDoorCoordinate(map, direction);
+		ConnectionPoint point = new ConnectionPoint(doorPoint, direction, room);
+
+		return point;
+	}
+
+	private ConnectionPoint buildCorridor(ConnectionPoint door, Room room) {
+		DirectionCardinal direction = door.direction();
+
+		int roomSize = 5;
+		int corridorSize = random.between(3, 5);
+		int totalSize = roomSize + corridorSize;
+
+		Point endPoint = new Point(door.x + (direction.deltaX * totalSize), door.y + (direction.deltaY * totalSize));
+		Point constrained = new Point(endPoint);
+		MapHelpers.constrainToRectangle(constrained, mapRect.width - 1, mapRect.height - 1);
+		if (!endPoint.equals(constrained))
+			return null;
+
+		endPoint.x -= (direction.deltaX * roomSize);
+		endPoint.y -= (direction.deltaY * roomSize);
+
+		Rectangle rect = new Rectangle();
+		rect.setFrameFromDiagonal(door, endPoint);
+		if (rect.width == 0)
+			rect.width = 1;
+		if (rect.height == 0)
+			rect.height = 1;
+
+		if (!canCreateRoom(rect))
+			return null;
+
+		fillRect(rect, Symbol.HILLS);
+
+		return new ConnectionPoint(endPoint, direction.opposite(), room);
+	}
+
+	private Room createRoom(Rectangle area) {
+		Room room = null;
+
+		room = new Room(area);
+		room.fillRoom(map, tb, Symbol.DUNGEON_FLOOR);
 
 		return room;
 	}
 
-	private Rectangle getJoinedToSize(Room room, DirectionCardinal direction, Point roomDoor) {
-		Point originatingDoor = new Point(roomDoor);
+	private Rectangle getRectangleForEndPoint(ConnectionPoint endPoint) {
+		int maxSize = 10;
+		int centerPoint = random.between(1, maxSize - 1);
+		Point connection = new Point(endPoint);
+		DirectionCardinal direction = endPoint.direction().opposite();
+		connection.translate(-direction.deltaX, -direction.deltaY);
 
-		int width = random.between(this.width / 10, this.width / 5);
-		int height = random.between(this.height / 10, this.height / 5);
+		DirectionCardinal rightAngle = direction.counterClockwise();
+		Point start = new Point(connection);
+		start.translate(rightAngle.deltaX * centerPoint, rightAngle.deltaY * centerPoint);
 
-		int x1 = originatingDoor.x - Math.abs(direction.deltaY * random.between(1, width - 1));
-		int y1 = originatingDoor.y - Math.abs(direction.deltaX * random.between(1, height - 1));
+		Point end = new Point(connection);
+		end.translate(rightAngle.opposite().deltaX * (maxSize - centerPoint), rightAngle.opposite().deltaY * (maxSize - centerPoint));
+		end.translate(direction.deltaX * maxSize, direction.deltaY * maxSize);
 
-		if (direction.deltaY < 0)
-			y1 -= (height - 1);
-		if (direction.deltaX < 0)
-			x1 -= (width - 1);
+		MapHelpers.constrainToRectangle(start, mapRect.width, mapRect.height);
+		MapHelpers.constrainToRectangle(end, mapRect.width, mapRect.height);
 
-		Rectangle rect = new Rectangle(x1, y1, width, height);
-		if (!mapRect.contains(rect))
-			return null;
-		if (room.area.intersects(rect))
-			return null;
-		if (!canCreateRoom(rect))
-			return null;
-
+		Rectangle rect = new Rectangle();
+		rect.setFrameFromDiagonal(start, end);
 		return rect;
 	}
 
-	private Room generateJoinedTo(Room room, DirectionCardinal direction, Point originalRoomDoor) {
-		Point originatingDoor = new Point(originalRoomDoor);
-		originatingDoor.translate(direction.deltaX, direction.deltaY);
+	private void buildDoors(Room startRoom) {
+		// TODO Auto-generated method stub
 
-		Rectangle rect = getJoinedToSize(room, direction, originatingDoor);
-		if (rect == null)
+	}
+
+	private MapSection randomMapSection() {
+		ProbabilityTable<MapSection> sections = new ProbabilityTable<MapSection>();
+
+		for (MapSection section : mapSections) {
+			sections.add(section, (int) (((section.floorSpaces / (float) section.totalSpaces) + 1) * 100));
+		}
+
+		return sections.random();
+	}
+
+	private Room chooseRandomStartRoom() {
+		MapSection startInSection = randomMapSection();
+		Rectangle startingArea = getRandomRectangleInside(startInSection.area);
+
+		if (!canCreateRoom(startingArea))
 			return null;
 
-		// Room newRoom = new Room(rect);
-		Room newRoom = getRandomRoomType(rect, originatingDoor);
-
-		if (newRoom.connectTo(room, originatingDoor, map, tb)) {
-
-			return newRoom;
-		}
-
-		return null;
-	}
-
-	private boolean canCreateRoom(Rectangle rect) {
-		for (int x = (int) rect.getMinX(); x < rect.getMaxX(); x++) {
-			for (int y = (int) rect.getMinY(); y < rect.getMaxY(); y++) {
-				if (!map[x][y].isWall())
-					return false;
-			}
-		}
-		return true;
-	}
-
-	private void fillRoom(Room room, char tile) {
-		room.fillRoom(map, tb, tile);
-	}
-
-	private DirectionCardinal getRandomDirection() {
-		int rnd = random.between(0, 4);
-		return DirectionCardinal.CARDINALS[rnd];
-	}
-
-	private Room getRandomRoomType(Rectangle rect, Point door) {
-		int rnd = random.between(1, 7);
-		if (rnd < 3) {
-			return new Corridor(rect, door);
-		} else {
-			return new Room(rect);
-		}
-	}
-
-	private Rectangle createRandomRectangle(Rectangle containing) {
-		int width = random.betweenWeighted(1, containing.width - 1, 10);
-		int height = random.betweenWeighted(1, containing.height - 1, 10);
-
-		int x = random.betweenWeighted((int) containing.getMinX(), (int) containing.getMaxX() - width, 10);
-		int y = random.betweenWeighted((int) containing.getMinY(), (int) containing.getMaxY() - height, 10);
-
-		return new Rectangle(x, y, width, height);
+		return createRoom(startingArea);
 	}
 }

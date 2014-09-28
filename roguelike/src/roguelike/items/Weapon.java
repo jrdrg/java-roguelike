@@ -53,6 +53,7 @@ public abstract class Weapon extends Item {
 	protected String name;
 	protected String description;
 	protected String attackDescription;
+	protected int defenseTargetNumber;
 
 	protected Weapon(WeaponData data) {
 		super();
@@ -64,6 +65,8 @@ public abstract class Weapon extends Item {
 		this.droppable = data.droppable;
 		this.symbol = data.symbol();
 		this.color = data.color();
+
+		this.defenseTargetNumber = data.defenseTargetNumber;
 
 		this.damageValues = new HashMap<DamageType, DamageValue>();
 		damageValues.put(DamageType.SLASHING, new DamageValue(DamageType.SLASHING, data.slash()));
@@ -103,6 +106,10 @@ public abstract class Weapon extends Item {
 
 	public int getTargetNumber(DamageType type) {
 		return damageValues.get(type).targetNumber;
+	}
+
+	public int getDefenseTargetNumber() {
+		return defenseTargetNumber;
 	}
 
 	public int getDamageRating(DamageType type) {

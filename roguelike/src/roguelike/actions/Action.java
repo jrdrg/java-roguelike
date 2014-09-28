@@ -23,7 +23,7 @@ public abstract class Action {
 		ActionResult result = onPerform();
 
 		if (result.success && this.usesEnergy)
-			actor.getEnergy().act();
+			actor.energy().act();
 
 		return result;
 	}

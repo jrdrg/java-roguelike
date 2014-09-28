@@ -35,7 +35,8 @@ public class PlayerDiedScreen extends Screen {
 		int x = 5;
 
 		terminal.write(x, 10, title);
-		terminal.write(x, 15, "Killed by: " + killedBy.getName());
+		if (killedBy != null)
+			terminal.write(x, 15, "Killed by: " + killedBy.getName());
 
 		long end = System.currentTimeMillis() - start;
 		return end;

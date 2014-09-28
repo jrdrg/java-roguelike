@@ -5,6 +5,7 @@ import java.awt.Rectangle;
 import java.util.ArrayList;
 
 import roguelike.Game;
+import roguelike.util.Symbol;
 import roguelike.util.WeightedCollection;
 import squidpony.squidmath.PerlinNoise;
 import squidpony.squidmath.RNG;
@@ -13,7 +14,8 @@ import squidpony.squidutility.SCollections;
 public class MapBuilder extends MapBuilderBase {
 	private ArrayList<Rectangle> buildings = new ArrayList<Rectangle>();
 
-	public void buildMap(Tile[][] map) {
+	@Override
+	public void onBuildMap(Tile[][] map) {
 		int width = map.length;
 		int height = map[0].length;
 
@@ -21,9 +23,9 @@ public class MapBuilder extends MapBuilderBase {
 		for (int x = 0; x < width; x++) {
 			for (int y = 0; y < height; y++) {
 				if (x == 0 || y == 0 || x == width - 1 || y == height - 1) {
-					map[x][y] = tb.buildTile('#');
+					map[x][y] = tb.buildTile(Symbol.WALL);
 				} else {
-					map[x][y] = tb.buildTile('.');
+					map[x][y] = tb.buildTile(Symbol.GROUND);
 				}
 			}
 		}
@@ -52,8 +54,8 @@ public class MapBuilder extends MapBuilderBase {
 		}
 
 		Point playerPos = SCollections.getRandomElement(startingPoints);
-		
-		//place stairs
+
+		// place stairs
 
 		Game.current().getPlayer().setPosition(playerPos.x, playerPos.y);
 	}
@@ -88,11 +90,11 @@ public class MapBuilder extends MapBuilderBase {
 		for (int bx = x; bx < buildingBounds.getMaxX(); bx++) {
 			for (int by = y; by < buildingBounds.getMaxY(); by++) {
 				if (bx == doorX && by == doorY) {
-					map[bx][by] = tb.buildTile('+');
+					map[bx][by] = tb.buildTile(Symbol.DOOR);
 				} else if (bx == x || bx == buildingBounds.getMaxX() - 1 || by == y || by == buildingBounds.getMaxY() - 1) {
-					map[bx][by] = tb.buildTile('#');
+					map[bx][by] = tb.buildTile(Symbol.WALL);
 				} else {
-					map[bx][by] = tb.buildTile('=');
+					map[bx][by] = tb.buildTile(Symbol.BUILDING_FLOOR);
 				}
 			}
 		}
@@ -142,12 +144,12 @@ public class MapBuilder extends MapBuilderBase {
 		System.out.println("Factor=" + factor);
 
 		// collection whose max weight should not be greater than 100
-		WeightedCollection<Character> tiles = new WeightedCollection<Character>();
-		tiles.add('~', -50);
-		tiles.add('T', 30);
-		tiles.add('.', 40);
-		tiles.add('*', 50);
-		tiles.add('M', 90);
+		WeightedCollection<Symbol> tiles = new WeightedCollection<Symbol>();
+		tiles.add(Symbol.WATER, -50);
+		tiles.add(Symbol.TREE, 30);
+		tiles.add(Symbol.GROUND, 40);
+		tiles.add(Symbol.HILLS, 50);
+		tiles.add(Symbol.MOUNTAIN, 90);
 
 		ArrayList<Point> validStartingPoints = new ArrayList<Point>();
 
@@ -168,9 +170,9 @@ public class MapBuilder extends MapBuilderBase {
 
 				float t = ((float) (total) * 100);
 
-				char tileChar = tiles.getItem((int) t);
+				Symbol tileChar = tiles.getItem((int) t);
 
-				if (tileChar != '~') {
+				if (tileChar != Symbol.WATER) {
 					validStartingPoints.add(new Point(x, y));
 				}
 

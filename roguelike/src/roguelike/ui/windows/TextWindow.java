@@ -2,7 +2,7 @@ package roguelike.ui.windows;
 
 import java.awt.Rectangle;
 
-import roguelike.util.CharacterGlyph;
+import roguelike.util.Symbol;
 
 public class TextWindow {
 
@@ -21,22 +21,22 @@ public class TextWindow {
 				if (y == 0 || y == height - 1) {
 					if (x == 0) {
 						if (y == 0)
-							term.put(x, y, CharacterGlyph.BOX_TOP_LEFT_SINGLE.symbol());
+							term.put(x, y, Symbol.BOX_TOP_LEFT_SINGLE.symbol());
 						else
-							term.put(x, y, CharacterGlyph.BOX_BOTTOM_LEFT_SINGLE.symbol());
+							term.put(x, y, Symbol.BOX_BOTTOM_LEFT_SINGLE.symbol());
 
 					} else if (x == width - 1) {
 						if (y == 0)
-							term.put(x, y, CharacterGlyph.BOX_TOP_RIGHT_SINGLE.symbol());
+							term.put(x, y, Symbol.BOX_TOP_RIGHT_SINGLE.symbol());
 						else
-							term.put(x, y, CharacterGlyph.BOX_BOTTOM_RIGHT_SINGLE.symbol());
+							term.put(x, y, Symbol.BOX_BOTTOM_RIGHT_SINGLE.symbol());
 					}
 					else {
-						term.put(x, y, CharacterGlyph.BOX_TOP_SINGLE.symbol());
+						term.put(x, y, Symbol.BOX_TOP_SINGLE.symbol());
 					}
 				}
 				else if (x == 0 || x == width - 1) {
-					term.put(x, y, CharacterGlyph.BOX_LEFT_SINGLE.symbol());
+					term.put(x, y, Symbol.BOX_LEFT_SINGLE.symbol());
 				}
 			}
 		}

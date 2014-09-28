@@ -58,7 +58,7 @@ public class TargetedAttackBehavior extends Behavior {
 			}
 
 			if (target.isAlive() && isTargetVisible()) {
-				if (actor.getEquipment().getEquippedWeapons()[0] != null)
+				if (actor.equipment().getEquippedWeapons()[0] != null)
 					return this;
 				else {
 					Log.warning(String.format("%s has no weapon!", actor.getName()));

@@ -6,7 +6,6 @@ import roguelike.Game;
 import roguelike.actors.Actor;
 import roguelike.actors.Statistics;
 import roguelike.items.Inventory;
-import roguelike.items.Item;
 import roguelike.items.Weapon;
 import roguelike.items.Equipment.ItemSlot;
 import roguelike.maps.MapArea;
@@ -26,19 +25,21 @@ public class LookDisplay extends TextWindow {
 	}
 
 	public void draw(MapArea map, int x, int y) {
+		draw(map, x, y, true, "Looking at");
+	}
+
+	public void draw(MapArea map, int x, int y, boolean drawActor, String caption) {
 
 		this.drawBoxShape(terminal);
-
-		terminal.write(2, 0, "Looking at");
-
-		drawInfo(map, x, y);
+		terminal.write(2, 0, caption);
+		drawInfo(map, x, y, drawActor);
 	}
 
 	public void erase() {
 		terminal.fill(0, 0, size.width, size.height, ' ');
 	}
 
-	private void drawInfo(MapArea map, int x, int y) {
+	private void drawInfo(MapArea map, int x, int y, boolean drawActor) {
 		SColor menuBgColor = SColorFactory.asSColor(30, 30, 30);
 
 		// Terminal border = terminal.withColor(SColor.WHITE, SColor.GRAPE_MOUSE);
@@ -50,9 +51,9 @@ public class LookDisplay extends TextWindow {
 		background.fill(1, 1, size.width - 2, size.height - 2, ' ');
 		// border.fill(0, 0, size.width, 1, ' ');
 
-		Actor actor = map.getActorAt(x, y);
+		Actor actor = drawActor ? map.getActorAt(x, y) : null;
 		if (actor != null) {
-			add(textList, "`" + actor.getColor().getName() + "`" + actor.getDescription());
+			add(textList, "`" + actor.color().getName() + "`" + actor.getDescription());
 			add(textList, "");
 			Weapon equipped = ItemSlot.RIGHT_ARM.getEquippedWeapon(actor);
 			add(textList, " `Gray`Weapon: `White`" + equipped.getDescription() + " (" + equipped.defaultDamageType().name() + ")");
@@ -66,7 +67,7 @@ public class LookDisplay extends TextWindow {
 					stats.toughness.getTotalValue(), stats.conditioning.getTotalValue(), stats.perception.getTotalValue(),
 					stats.agility.getTotalValue(), stats.willpower.getTotalValue(), stats.presence.getTotalValue()));
 
-			add(textList, String.format(" `Red`H:`White`%3d", actor.getHealth().getCurrent()));
+			add(textList, String.format(" `Red`H:`White`%3d", actor.health().getCurrent()));
 			add(textList, "");
 			add(textList, String.format(" Can see player? `Red`%s", actor.canSee(Game.current().getPlayer(), map)));
 		}
@@ -74,11 +75,12 @@ public class LookDisplay extends TextWindow {
 		Inventory inventory = map.getItemsAt(x, y);
 		add(textList, "");
 		add(textList, "On ground:");
-		if (inventory != null && inventory.any()) {
-			for (Item i : inventory.allItems()) {
-				add(textList, " " + i.getName());
-			}
-		}
+
+		int itemSize = (this.size.height - 4) - textList.size();
+		String[] itemDescriptions = inventory.getItemListAsText(itemSize);
+
+		for (String string : itemDescriptions)
+			add(textList, " " + string);
 
 		for (int i = 0; i < textList.size(); i++) {
 			text.write(2, i + textY, textList.get(i));

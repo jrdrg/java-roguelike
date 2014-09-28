@@ -3,9 +3,14 @@ package roguelike.maps;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Queue;
+import java.util.stream.Collectors;
 
 import roguelike.Game;
+import roguelike.util.CollectionUtils;
+import roguelike.util.Log;
+import roguelike.util.Symbol;
 import squidpony.squidgrid.util.DirectionCardinal;
 import squidpony.squidmath.RNG;
 
@@ -13,12 +18,12 @@ public class Room {
 	protected final RNG random = Game.current().random();
 	protected final ArrayList<Point> floorTiles;
 
-	public ArrayList<Point> doors;
+	public ArrayList<ConnectionPoint> doors;
 	public Rectangle area;
 
 	public Room(Rectangle area) {
 		this.area = area;
-		doors = new ArrayList<Point>();
+		doors = new ArrayList<ConnectionPoint>();
 		floorTiles = new ArrayList<Point>();
 	}
 
@@ -72,6 +77,11 @@ public class Room {
 		default:
 			return null;
 		}
+		return p;
+	}
+
+	public Point createDoorCoordinate(Tile[][] map, DirectionCardinal direction) {
+		ConnectionPoint p = new ConnectionPoint(getDoorCoordinate(map, direction), direction, this);
 
 		if (map[p.x][p.y].isWall()) {
 			this.doors.add(p);
@@ -80,11 +90,50 @@ public class Room {
 		return null;
 	}
 
-	public void fillRoom(Tile[][] map, TileBuilder tb, char tile) {
+	public Point getExistingDoor(DirectionCardinal direction) {
+		final Point startPoint;
+		final Point endPoint;
+		switch (direction) {
+		case DOWN:
+			startPoint = new Point(this.left(), this.bottom());
+			endPoint = new Point(this.right(), this.bottom());
+			break;
+		case UP:
+			startPoint = new Point(this.left(), this.top());
+			endPoint = new Point(this.right(), this.top());
+			break;
+		case LEFT:
+			startPoint = new Point(this.left(), this.top());
+			endPoint = new Point(this.left(), this.bottom());
+			break;
+		case RIGHT:
+			startPoint = new Point(this.right(), this.top());
+			endPoint = new Point(this.right(), this.bottom());
+			break;
+		default:
+			startPoint = null;
+			endPoint = null;
+		}
+		if (startPoint == null || endPoint == null)
+			return null;
+
+		List<Point> candidates = doors
+				.stream()
+				.filter(d -> d.x == startPoint.x || d.x == endPoint.x || d.y == startPoint.y || d.y == endPoint.y)
+				.collect(Collectors.toList());
+
+		if (candidates.size() > 0) {
+			return CollectionUtils.getRandomElement(candidates);
+		}
+		return null;
+	}
+
+	public void fillRoom(Tile[][] map, TileBuilder tb, Symbol tile) {
 		Rectangle rect = this.area;
 		for (int x = (int) rect.getMinX() + 1; x < rect.getMaxX() - 1; x++) {
 			for (int y = (int) rect.getMinY() + 1; y < rect.getMaxY() - 1; y++) {
-				map[x][y] = tb.buildTile('-');
+
+				map[x][y] = tb.buildTile(tile);
 
 				if (!map[x][y].isWall() && isFloorAdjacentToWall(map, x, y)) {
 					floorTiles.add(new Point(x, y));
@@ -110,9 +159,10 @@ public class Room {
 	}
 
 	protected boolean onConnectingTo(Room other, Point doorPoint, Tile[][] map, TileBuilder tb) {
-		this.fillRoom(map, tb, '-');
+		this.fillRoom(map, tb, Symbol.DUNGEON_FLOOR);
+		Log.debug("ROOM onConnectingTo: " + this.doors.remove(doorPoint));
 
-		Point newRoomConnectingTile = this.getRandomFloorTile();
+		// Point newRoomConnectingTile = this.getRandomFloorTile();
 		// if (newRoomConnectingTile != null) {
 		// Queue<Point> path = MapHelpers.findPath(random, doorPoint, newRoomConnectingTile);
 		// fillPath(path, '.', this, map, tb);
@@ -124,6 +174,7 @@ public class Room {
 	}
 
 	protected boolean onBeingConnectedTo(Room other, Point doorPoint, Tile[][] map, TileBuilder tb) {
+		Log.debug("ROOM onBeingConnectedTo: " + this.doors.remove(doorPoint));
 		return true;
 	}
 

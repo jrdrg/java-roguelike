@@ -46,7 +46,7 @@ public class LookDialog extends Dialog<InputCommand> {
 
 		Actor actor = mapArea.getActorAt(x, y);
 		if (actor != null) {
-			textList.add("`" + actor.getColor().getName() + "`" + actor.getDescription());
+			textList.add("`" + actor.color().getName() + "`" + actor.getDescription());
 			textList.add("");
 			Weapon equipped = ItemSlot.RIGHT_ARM.getEquippedWeapon(actor);
 			textList.add(" `Gray`Weapon: `White`" + equipped.getDescription() + " (" + equipped.defaultDamageType().name() + ")");
@@ -60,7 +60,7 @@ public class LookDialog extends Dialog<InputCommand> {
 					stats.toughness.getTotalValue(), stats.conditioning.getTotalValue(), stats.perception.getTotalValue(),
 					stats.agility.getTotalValue(), stats.willpower.getTotalValue(), stats.presence.getTotalValue()));
 
-			textList.add(String.format(" `Red`H:`White`%3d", actor.getHealth().getCurrent()));
+			textList.add(String.format(" `Red`H:`White`%3d", actor.health().getCurrent()));
 			textList.add("");
 			textList.add(String.format(" Can see player? `Red`%s", actor.canSee(Game.current().getPlayer(), mapArea)));
 		}

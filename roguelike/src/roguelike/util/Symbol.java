@@ -1,6 +1,15 @@
 package roguelike.util;
 
-public enum CharacterGlyph {
+public enum Symbol {
+	TREE('&'),
+	DOOR('+'),
+	BUILDING_FLOOR(','),
+	MOUNTAIN('^'),
+	DUNGEON_FLOOR('.'),
+	HILLS('.'),
+	GROUND('.'),
+	STAIRS('>'),
+
 	TREE1(5), // ♣
 	TREE2('&'),
 	WATER(247), // ≈
@@ -29,11 +38,11 @@ public enum CharacterGlyph {
 		return this.symbol;
 	}
 
-	CharacterGlyph(char symbol) {
+	Symbol(char symbol) {
 		this.symbol = symbol;
 	}
 
-	CharacterGlyph(int charIndex) {
+	Symbol(int charIndex) {
 		this.symbol = (char) charIndex;
 	}
 }

@@ -4,18 +4,35 @@ import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
 
+import squidpony.squidutility.Pair;
+
 public class TurnResult {
 	boolean running;
 	boolean playerActed;
 	ArrayList<MessageDisplayProperties> messages;
 	ArrayList<TurnEvent> events;
 	boolean needsInput;
-	Point currentLook;
+	Pair<Point, Boolean> currentLook = new Pair<Point, Boolean>(null, false);
 
-	public TurnResult(boolean running) {
+	private TurnResult(boolean running) {
 		this.running = running;
 		this.messages = new ArrayList<MessageDisplayProperties>();
 		this.events = new ArrayList<TurnEvent>();
+	}
+
+	public static TurnResult reset(TurnResult result, boolean running) {
+		if (result == null)
+			result = new TurnResult(running);
+
+		result.running = running;
+		result.playerActed = false;
+		result.needsInput = true;
+		result.messages.clear();
+		result.events.clear();
+		result.currentLook.setFirst(null);
+		result.currentLook.setSecond(true);
+
+		return result;
 	}
 
 	public boolean playerActedThisTurn() {
@@ -54,11 +71,12 @@ public class TurnResult {
 		return events;
 	}
 
-	public Point getCurrentLook() {
+	public Pair<Point, Boolean> getCurrentLook() {
 		return currentLook;
 	}
 
-	public void setCurrentLook(Point point) {
-		this.currentLook = point;
+	public void setCurrentLook(Point point, boolean drawActor) {
+		this.currentLook.setFirst(point);
+		this.currentLook.setSecond(drawActor);
 	}
 }

@@ -10,15 +10,15 @@ public class Equipment {
 		HEAD, TORSO, LEFT_ARM, RIGHT_ARM, LEGS, RANGED;
 
 		public Item getItem(Actor actor) {
-			return actor.getEquipment().getEquipped(this);
+			return actor.equipment().getEquipped(this);
 		}
 
 		public Weapon getEquippedWeapon(Actor actor) {
-			return actor.getEquipment().getEquippedWeapon(this);
+			return actor.equipment().getEquippedWeapon(this);
 		}
 
 		public Item equipItem(Actor actor, Item item) {
-			return actor.getEquipment().equipItem(this, item, actor.getInventory());
+			return actor.equipment().equipItem(this, item, actor.inventory());
 		}
 	}
 

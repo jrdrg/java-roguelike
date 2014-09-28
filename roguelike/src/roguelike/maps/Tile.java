@@ -93,7 +93,7 @@ public class Tile implements Serializable {
 
 	public char getSymbol() {
 		if (actor != null && visible)
-			return actor.getSymbol();
+			return actor.symbol();
 
 		if (items.any())
 			return getTopItem().getSymbol();
@@ -102,15 +102,16 @@ public class Tile implements Serializable {
 	}
 
 	public SColor getColor() {
-//		if (!visible) {
-//			if (explored)
-//				return SColor.DARK_GRAY;
-//
-//			return SColor.BLACK;
-//		}
+		if (!visible) {
+			if (explored)
+				return SColor.DARK_GRAY;
+
+			 return SColor.BLACK;
+			//			return SColor.DARK_INDIGO;
+		}
 
 		if (actor != null)
-			return actor.getColor();
+			return actor.color();
 
 		if (items.any())
 			return getTopItem().getColor();

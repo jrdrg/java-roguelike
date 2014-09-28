@@ -61,16 +61,7 @@ public class RangedAttackAction extends InputRequiredAction<InputCommand> {
 			boolean isTargetDead = attack.perform(this, target);
 
 			if (isTargetDead) {
-				target.onKilled();
-
-				MapArea currentArea = Game.current().getCurrentMapArea();
-				if (Player.isPlayer(target)) {
-					target.finishTurn();
-					Game.current().reset();
-				}
-				currentArea.removeActor(target);
-
-				Game.current().displayMessage("Target is dead");
+				target.dead();
 			}
 
 			return ActionResult.success();

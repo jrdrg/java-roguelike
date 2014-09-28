@@ -23,6 +23,10 @@ public class CurrentItemTracker<T> {
 
 	public void remove(T item) {
 		list.remove(item);
+		if (list.size() == 0) {
+			currentItem = 0;
+			return;
+		}
 		currentItem = currentItem % list.size();
 	}
 

@@ -24,8 +24,8 @@ public class EnemyFactory {
 		Npc npc = getRandomEnemyByDifficulty(difficulty);
 
 		/* if we have any items, equip the first weapon */
-		if (npc.getInventory().getCount() > 0) {
-			Item first = npc.getInventory().getItem(0);
+		if (npc.inventory().getCount() > 0) {
+			Item first = npc.inventory().getItem(0);
 			if (first instanceof Weapon) {
 				ItemSlot.RIGHT_ARM.equipItem(npc, first);
 			}
@@ -65,7 +65,7 @@ public class EnemyFactory {
 				Weapon defWpn = WeaponFactory.create(data.weapon);
 
 				if (defWpn != null) {
-					enemy.getInventory().add(defWpn);
+					enemy.inventory().add(defWpn);
 				}
 				else {
 					System.out.println("No default weapon for " + enemy.getName());

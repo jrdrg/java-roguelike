@@ -102,7 +102,7 @@ public class PlayerInputBehavior extends Behavior {
 	}
 
 	private RangedAttackAction getRangedAttackAction() {
-		RangedWeapon rangedWeapon = actor.getEquipment().getRangedWeapon();
+		RangedWeapon rangedWeapon = actor.equipment().getRangedWeapon();
 		if (rangedWeapon != null)
 			return new RangedAttackAction(actor, Game.current().getCurrentMapArea(), rangedWeapon);
 		else {

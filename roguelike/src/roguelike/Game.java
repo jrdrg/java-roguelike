@@ -11,6 +11,7 @@ import roguelike.actors.Actor;
 import roguelike.actors.Energy;
 import roguelike.actors.Player;
 import roguelike.data.DataFactory;
+import roguelike.items.Inventory;
 import roguelike.maps.MapArea;
 import roguelike.ui.DisplayManager;
 import roguelike.util.Coordinate;
@@ -127,7 +128,7 @@ public class Game {
 			currentTurnResult = onProcessing();
 			return currentTurnResult;
 		}
-		return new TurnResult(false);
+		return TurnResult.reset(currentTurnResult, false);
 	}
 
 	public void stopGame() {
@@ -156,12 +157,11 @@ public class Game {
 	}
 
 	public void setCurrentlyLookingAt(Point point) {
-		currentTurnResult.currentLook = point;
+		setCurrentlyLookingAt(point, true);
 	}
 
-	@Deprecated
-	public void waitingForAction(boolean waiting) {
-		currentTurnResult.setNeedsInput(waiting);
+	public void setCurrentlyLookingAt(Point point, boolean drawActor) {
+		currentTurnResult.setCurrentLook(point, drawActor);
 	}
 
 	/**
@@ -216,8 +216,10 @@ public class Game {
 		if (turnResult != null)
 			return turnResult;
 
-		turnResult = new TurnResult(running);
+		turnResult = TurnResult.reset(currentTurnResult, running);
 		currentTurnResult = turnResult;
+
+		showItemsOnPlayerSquare();
 
 		while (true) {
 
@@ -282,7 +284,7 @@ public class Game {
 		}
 
 		int speed = actor.effectiveSpeed(currentMapArea);
-		Energy energy = actor.getEnergy();
+		Energy energy = actor.energy();
 
 		if (energy.canAct() || energy.increase(speed)) {
 			Action action = actor.getNextAction();
@@ -333,7 +335,7 @@ public class Game {
 			}
 
 			Actor currentActor = currentAction.getActor();
-			if (currentActor != null && !currentActor.getEnergy().canAct()) {
+			if (currentActor != null && !currentActor.energy().canAct()) {
 
 				if (result.isSuccess()) {
 					currentActor.finishTurn();
@@ -346,7 +348,7 @@ public class Game {
 			} else {
 
 				Log.warning(String.format("Game: Actor=%s Alive=%s Action=%s", currentActor.getName(), currentActor.isAlive(), currentAction));
-				Log.warning("Game: Remaining energy: " + currentActor.getEnergy().getCurrent() + " Result=" + result);
+				Log.warning("Game: Remaining energy: " + currentActor.energy().getCurrent() + " Result=" + result);
 				Log.warning("Game: M=" + result.getMessage() + ", S=" + result.isSuccess() + ", C=" + result.isCompleted());
 
 				/*
@@ -371,5 +373,16 @@ public class Game {
 		}
 
 		return null;
+	}
+
+	private void showItemsOnPlayerSquare() {
+		if (currentTurnResult.getCurrentLook().getFirst() != null)
+			return;
+
+		Coordinate playerPos = player.getPosition();
+		Inventory inventory = currentMapArea.getItemsAt(playerPos.x, playerPos.y);
+		if (inventory != null && inventory.any()) {
+			setCurrentlyLookingAt(playerPos, false);
+		}
 	}
 }

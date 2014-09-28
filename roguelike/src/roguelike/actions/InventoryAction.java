@@ -14,7 +14,7 @@ public class InventoryAction extends InputRequiredAction<Item> {
 		super(actor);
 
 		this.usesEnergy = false;
-		dialog = new InventoryDialog(new InventoryMenu(actor.getInventory()));
+		dialog = new InventoryDialog(new InventoryMenu(actor.inventory()));
 		dialog.show();
 	}
 

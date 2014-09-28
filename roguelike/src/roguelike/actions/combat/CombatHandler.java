@@ -53,7 +53,7 @@ public class CombatHandler {
 	public Attack getAttack(Actor target) {
 		// TODO: implement attack choosing behavior, etc
 		// TODO: dual wielding should return 1 attack dependent on skill
-		Weapon[] weapon = actor.getEquipment().getEquippedWeapons();
+		Weapon[] weapon = actor.equipment().getEquippedWeapons();
 		if (weapon[0] != null) {
 			return weapon[0].getAttack();
 		}
@@ -80,7 +80,7 @@ public class CombatHandler {
 		int defenseManeuver = 0; // modifier for defense like evade, dodge, etc
 
 		int attackWeaponTN = 7; // TODO: get these from weapon data or maneuver
-		int defendWeaponTN = 7;
+		int defendWeaponTN = getDefenderTargetNumber(attack);
 
 		int attackSuccessPool = getAttackerSuccessPool(attackerStats, aWeaponProficiency, attackManeuver);
 		int defendSuccessPool = getDefenderSuccessPool(defenderStats, dWeaponProficiency, defenseManeuver, attack);
@@ -127,6 +127,17 @@ public class CombatHandler {
 		return defenderStats.baseMeleePool(dWeaponProficiency) + defenseManeuver;
 	}
 
+	private int getDefenderTargetNumber(Attack attack) {
+		if (attack instanceof RangedAttack)
+			return 8; // TODO: change this?
+
+		Weapon[] weapons = actor.equipment().getEquippedWeapons();
+		if (weapons[0] != null)
+			return weapons[0].getDefenseTargetNumber();
+
+		return 8; // default TN with no weapon
+	}
+
 	/**
 	 * Called when an attack connects
 	 * 
@@ -135,11 +146,11 @@ public class CombatHandler {
 	 * @return True if the attack killed the target
 	 */
 	public boolean onDamaged(Attack attack, Actor attacker) {
-		boolean isDead = actor.getHealth().damage(attack.baseDamage);
+		boolean isDead = actor.health().damage(attack.baseDamage);
 
 		String attackDescription = String.format(attack.description, attacker.getName(), actor.getName());
 		String message = String.format("%s for %d %s damage!", attackDescription, attack.baseDamage, attack.damageType);
-		message += "(" + actor.getHealth().getCurrent() + " left)";
+		message += "(" + actor.health().getCurrent() + " left)";
 
 		SColor color = SColor.ORANGE;
 		if (Player.isPlayer(actor))

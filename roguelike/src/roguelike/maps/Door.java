@@ -31,7 +31,7 @@ public class Door extends Tile {
 	@Override
 	public char getSymbol() {
 		if (getActor() != null && visible) {
-			return getActor().getSymbol();
+			return getActor().symbol();
 		}
 
 		return isOpen ? '/' : symbol;

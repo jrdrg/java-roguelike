@@ -1,6 +1,7 @@
 package roguelike.maps;
 
-import roguelike.util.CharacterGlyph;
+import roguelike.util.Symbol;
+import roguelike.util.Log;
 import squidpony.squidcolor.SColor;
 import squidpony.squidcolor.SColorFactory;
 import squidpony.squidutility.ProbabilityTable;
@@ -26,16 +27,70 @@ public class TileBuilder {
 		waterColor.add(SColor.BLUE, 3);
 		waterColor.add(SColorFactory.desaturate(SColor.DARK_BLUE, 0.2), 6);
 
-		trees.add('&', 15);
-		// trees.add('♣', 7);
+		trees.add(Symbol.TREE2.symbol(), 15);
+		trees.add(Symbol.TREE1.symbol(), 7);
 
-		water.add(CharacterGlyph.WATER.symbol(), 20);
+		water.add(Symbol.WATER.symbol(), 20);
 		// water.add('≈', 5);
 
-		ground.add(CharacterGlyph.GROUND1.symbol(), 30);
-		ground.add(CharacterGlyph.GROUND2.symbol(), 1);
+		ground.add(Symbol.GROUND1.symbol(), 30);
+		ground.add(Symbol.GROUND2.symbol(), 1);
 		// ground.add(';', 2);
 		// ground.add(',', 6);
+	}
+
+	public Tile buildTile(Symbol character) {
+		Tile t = new Tile();
+
+		switch (character) {
+		case WALL:
+			t.setValues(Symbol.WALL.symbol(), false, SColor.DARK_GRAY, true).setLighting(1f).setBackground(SColor.DARK_BLUE_LAPIS_LAZULI);
+			break;
+
+		case DOOR:
+			return new Door().setValues(character.symbol(), false, SColor.BIRCH_BROWN, true);
+
+		case TREE:
+			t.setValues(trees.random(), true, SColor.KELLY_GREEN).setLighting(0.5f).setSpeedModifier(-15);// .setBackground(SColor.GREEN);
+			break;
+
+		case BUILDING_FLOOR:
+			t.setValues(character.symbol(), true, SColor.EARTHEN_YELLOW);// .setBackground(SColor.DARK_BROWN);
+			break;
+
+		case WATER:
+			t.setValues(water.random(), false, SColorFactory.blend(waterColor.random(), SColorFactory.asSColor(50, 150, 255), .5))
+					.setLighting(0f)
+					.setBackground(waterColor.random());
+			break;
+
+		case MOUNTAIN:
+			t.setValues(character.symbol(), false, SColor.WHITE_MOUSE, true);
+			break;
+
+		case HILLS:
+			t.setValues(character.symbol(), true, SColor.BENI_DYE).setLighting(0);
+			break;
+
+		case DUNGEON_FLOOR:
+			t.setValues(character.symbol(), true, SColor.BOILED_RED_BEAN_BROWN);
+			break;
+
+		case GROUND:
+			t.setValues(ground.random(), true, SColorFactory.asSColor(50, 200, 100));// .setBackground(SColor.DARK_GREEN);
+			break;
+
+		case STAIRS:
+			return new Stairs(new DungeonMapBuilder()).setValues(character.symbol(), true, SColor.WHITE);
+
+		case BOX_BOTTOM_LEFT_SINGLE:
+			t.setValues(character.symbol(), true, SColor.ORANGE);
+			break;
+
+		default:
+			t = buildTile(character.symbol());
+		}
+		return t;
 	}
 
 	public Tile buildTile(char tile) {
@@ -43,7 +98,7 @@ public class TileBuilder {
 
 		switch (tile) {
 		case '#': // wall
-			t.setValues(CharacterGlyph.WALL.symbol(), false, SColor.DARK_GRAY, true).setLighting(1f);// .setBackground(SColor.DARK_GRAY);
+			t.setValues(Symbol.WALL.symbol(), false, SColor.DARK_GRAY, true).setLighting(1f);// .setBackground(SColor.DARK_GRAY);
 			break;
 
 		case '+': // door
@@ -79,6 +134,7 @@ public class TileBuilder {
 
 		case '.': // ground
 		default:
+			Log.warning("Could not find a tile for character " + tile + ": " + (int) tile);
 			t.setValues(ground.random(), true, SColorFactory.asSColor(50, 200, 100));// .setBackground(SColor.DARK_GREEN);
 			break;
 		}

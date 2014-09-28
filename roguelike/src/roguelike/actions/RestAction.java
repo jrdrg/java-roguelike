@@ -10,7 +10,11 @@ public class RestAction extends Action {
 
 	@Override
 	protected ActionResult onPerform() {
-		actor.getHealth().heal(10);
+		// actor.health().heal(1);
+
+		if (actor.health().damage(1))
+			actor.dead();
+
 		return ActionResult.success();
 	}
 

@@ -29,6 +29,7 @@ import squidpony.squidgrid.fov.TranslucenceWrapperFOV;
 import squidpony.squidgrid.util.BasicRadiusStrategy;
 import squidpony.squidgrid.util.DirectionIntercardinal;
 import squidpony.squidgrid.util.RadiusStrategy;
+import squidpony.squidutility.Pair;
 
 public class MainScreen extends Screen {
 	private final FOVTranslator fov = new FOVTranslator(new TranslucenceWrapperFOV());
@@ -56,6 +57,8 @@ public class MainScreen extends Screen {
 		this.terminal = fullTerminal.getWindow(0, 0, windowWidth, windowHeight);
 		this.setNextScreen(this);
 
+		Log.debug("Window tile size: " + windowWidth + "x" + windowHeight);
+
 		/* used for FOV lighting */
 		SColorFactory.addPallet("light",
 				SColorFactory.asGradient(SColor.WHITE, SColor.DARK_SLATE_GRAY));
@@ -79,7 +82,7 @@ public class MainScreen extends Screen {
 		statsDisplay.setPlayer(game.getPlayer());
 
 		Rectangle statsSize = statsTerminal.size();
-		lookDisplay = new LookDisplay(statsTerminal.getWindow(statsSize.x + 2, statsSize.height - 22, statsSize.width - 4, 22), statsSize.width - 4, 22);
+		lookDisplay = new LookDisplay(statsTerminal.getWindow(statsSize.x + 2, statsSize.height - 23, statsSize.width - 4, 22), statsSize.width - 4, 22);
 
 		doFOV();
 		drawMap();
@@ -104,7 +107,11 @@ public class MainScreen extends Screen {
 			AttackAttempt killedBy = player.getLastAttackedBy();
 
 			System.out.println("Switching to game over screen");
-			setNextScreen(new PlayerDiedScreen(killedBy.getActor(), this.fullTerminal));
+			Actor killedByActor = null;
+			if (killedBy != null)
+				killedByActor = killedBy.getActor();
+
+			setNextScreen(new PlayerDiedScreen(killedByActor, this.fullTerminal));
 
 		} else {
 
@@ -346,11 +353,11 @@ public class MainScreen extends Screen {
 	}
 
 	private void drawLookDisplay(TurnResult run) {
-		Point p = run.getCurrentLook();
-		if (p == null) {
+		Pair<Point, Boolean> p = run.getCurrentLook();
+		if (p == null || p.getFirst() == null) {
 			lookDisplay.erase();
 			return;
 		}
-		lookDisplay.draw(game.getCurrentMapArea(), p.x, p.y);
+		lookDisplay.draw(game.getCurrentMapArea(), p.getFirst().x, p.getFirst().y, p.getSecond(), p.getSecond() ? "Looking at" : "On ground");
 	}
 }

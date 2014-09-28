@@ -8,6 +8,7 @@ import roguelike.items.RangedWeapon;
 import roguelike.items.WeaponFactory;
 import roguelike.maps.DungeonMapBuilder;
 import roguelike.maps.MapArea;
+import roguelike.maps.MapBuilder;
 import squidpony.squidmath.RNG;
 
 public class GameLoader {
@@ -34,7 +35,8 @@ public class GameLoader {
 		// player.setPosition(1, 1);
 
 		// TODO: make a real map
-		MapArea currentMapArea = new MapArea(200, 200, new DungeonMapBuilder());
+		// MapArea currentMapArea = new MapArea(200, 200, new MapBuilder());
+		MapArea currentMapArea = new MapArea(83, 38, new DungeonMapBuilder());
 		currentMapArea.addActor(player);
 
 		game.setCurrentMapArea(currentMapArea);
@@ -53,8 +55,8 @@ public class GameLoader {
 		MeleeWeapon spear = (MeleeWeapon) WeaponFactory.create("spear");
 		RangedWeapon bow = (RangedWeapon) WeaponFactory.create("short bow");
 
-		player.getInventory().add(spear);
-		player.getInventory().add(bow);
+		player.inventory().add(spear);
+		player.inventory().add(bow);
 
 		ItemSlot.RIGHT_ARM.equipItem(player, sword);
 

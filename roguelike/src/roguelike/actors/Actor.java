@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
+import roguelike.Game;
 import roguelike.actions.Action;
 import roguelike.actions.combat.CombatHandler;
 import roguelike.items.Equipment;
@@ -62,8 +63,40 @@ public abstract class Actor {
 		losSolver = new BresenhamLOS();
 	}
 
+	public char symbol() {
+		return this.symbol;
+	}
+
+	public SColor color() {
+		return this.color;
+	}
+
 	public List<Condition> conditions() {
 		return conditions;
+	}
+
+	public Energy energy() {
+		return this.energy;
+	}
+
+	public Statistics statistics() {
+		return this.statistics;
+	}
+
+	public Health health() {
+		return this.health;
+	}
+
+	public Inventory inventory() {
+		return this.inventory;
+	}
+
+	public Equipment equipment() {
+		return this.equipment;
+	}
+
+	public boolean isAlive() {
+		return health().getCurrent() > 0;
 	}
 
 	public int effectiveSpeed(MapArea map) {
@@ -78,28 +111,8 @@ public abstract class Actor {
 		return attackedThisRound;
 	}
 
-	public Energy getEnergy() {
-		return this.energy;
-	}
-
-	public Statistics statistics() {
-		return this.statistics;
-	}
-
 	public CombatHandler getCombatHandler() {
 		return this.combat;
-	}
-
-	public Health getHealth() {
-		return this.health;
-	}
-
-	public Inventory getInventory() {
-		return this.inventory;
-	}
-
-	public Equipment getEquipment() {
-		return this.equipment;
 	}
 
 	public Coordinate getPosition() {
@@ -112,36 +125,6 @@ public abstract class Actor {
 
 	public void offsetPosition(int xAmount, int yAmount) {
 		position.offsetPosition(xAmount, yAmount);
-	}
-
-	public char getSymbol() {
-		return this.symbol;
-	}
-
-	public SColor getColor() {
-		return this.color;
-	}
-
-	public Coordinate chooseTarget() {
-		// TODO: fix this
-		return new Coordinate(0, 0);
-	}
-
-	public boolean isAlive() {
-		return getHealth().getCurrent() > 0;
-	}
-
-	/**
-	 * This is called after all other checks to move have been made, to allow the actor a final chance to prevent the
-	 * move (for example, moving over certain tiles or opening doors could be disabled based on the actor type)
-	 * 
-	 * @param mapArea
-	 * @param tile
-	 * @return
-	 */
-	public boolean onMoveAttempting(MapArea mapArea, Tile tile) {
-		// TODO: check for things like moving over certain tiles, opening doors
-		return true;
 	}
 
 	public String getDescription() {
@@ -192,7 +175,36 @@ public abstract class Actor {
 		onTurnFinished();
 	}
 
-	protected void onTurnFinished() {
+	/**
+	 * This is called after all other checks to move have been made, to allow the actor a final chance to prevent the
+	 * move (for example, moving over certain tiles or opening doors could be disabled based on the actor type)
+	 * 
+	 * @param mapArea
+	 * @param tile
+	 * @return
+	 */
+	public boolean onMoveAttempting(MapArea mapArea, Tile tile) {
+		// TODO: check for things like moving over certain tiles, opening doors
+		return true;
+	}
+
+	public final void onAttacked(Actor attacker) {
+		attackedBy.add(new AttackAttempt(attacker));
+		attackedThisRound = true;
+		onAttackedInternal(attacker);
+	}
+
+	public final void dead() {
+		onKilled();
+
+		MapArea currentArea = Game.current().getCurrentMapArea();
+		if (Player.isPlayer(this)) {
+			this.finishTurn();
+			Game.current().reset();
+		}
+		currentArea.removeActor(this);
+
+		Game.current().displayMessage("Target is dead");
 	}
 
 	public void onKilled() {
@@ -202,11 +214,8 @@ public abstract class Actor {
 
 	public abstract Action getNextAction();
 
-	public final void onAttacked(Actor attacker) {
-		attackedBy.add(new AttackAttempt(attacker));
-		attackedThisRound = true;
-		onAttackedInternal(attacker);
-	}
-
 	protected abstract void onAttackedInternal(Actor attacker);
+
+	protected void onTurnFinished() {
+	}
 }
