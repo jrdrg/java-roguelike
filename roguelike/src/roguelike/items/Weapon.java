@@ -1,5 +1,6 @@
 package roguelike.items;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -11,7 +12,9 @@ import roguelike.data.WeaponData;
 public abstract class Weapon extends Item {
 	private static final long serialVersionUID = -7712813593206574664L;
 
-	private class DamageValue implements Comparable<DamageValue> {
+	private class DamageValue implements Comparable<DamageValue>, Serializable {
+		private static final long serialVersionUID = 6887755506914896126L;
+
 		public DamageType type;
 		public int targetNumber;
 		public int damageRating;
@@ -54,6 +57,11 @@ public abstract class Weapon extends Item {
 	protected String description;
 	protected String attackDescription;
 	protected int defenseTargetNumber;
+
+	/**
+	 * This decrements periodically depending on usage, when it hits 0 the weapon breaks
+	 */
+	protected int durability;
 
 	protected Weapon(WeaponData data) {
 		super();

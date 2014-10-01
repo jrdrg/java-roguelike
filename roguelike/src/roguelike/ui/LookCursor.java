@@ -20,7 +20,13 @@ public class LookCursor extends Cursor {
 	}
 
 	private void setCurrentLookPoint(Coordinate position) {
-		// TODO: make sure that only visible tiles can be looked at
+		// Make sure that only visible tiles can be looked at
+		if (!mapArea.getTileAt(position).isVisible())
+		{
+			Game.current().setCurrentlyLookingAt(null);
+			return;
+		}
+
 		if (mapArea.getActorAt(position.x, position.y) != null)
 			Game.current().setCurrentlyLookingAt(position);
 		else if (mapArea.getItemsAt(position.x, position.y).any())

@@ -1,11 +1,16 @@
 package roguelike.items;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import roguelike.actors.Actor;
 import roguelike.util.Log;
 
-public class Equipment {
+public class Equipment implements Serializable {
+	private static final long serialVersionUID = 1006420730103267096L;
+
 	public enum ItemSlot {
 		HEAD, TORSO, LEFT_ARM, RIGHT_ARM, LEGS, RANGED;
 
@@ -23,18 +28,20 @@ public class Equipment {
 	}
 
 	private HashMap<ItemSlot, Item> equipped;
-	private Weapon[] equippedWeapons = new Weapon[2];
+	private ArrayList<Weapon> equippedWeapons = new ArrayList<Weapon>();
 
 	public Equipment() {
 		this.equipped = new HashMap<Equipment.ItemSlot, Item>();
+		this.equippedWeapons.add(null);
+		this.equippedWeapons.add(null);
 	}
 
-	public Weapon[] getEquippedWeapons() {
+	public List<Weapon> getEquippedWeapons() {
 		Weapon right = getEquippedWeapon(ItemSlot.RIGHT_ARM);
 		Weapon left = getEquippedWeapon(ItemSlot.LEFT_ARM);
 
-		equippedWeapons[0] = right;
-		equippedWeapons[1] = left;
+		equippedWeapons.set(0, right);
+		equippedWeapons.set(1, left);
 
 		return equippedWeapons;
 	}

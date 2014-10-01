@@ -1,6 +1,10 @@
 package roguelike.actors;
 
-public class Health {
+import java.io.Serializable;
+
+public class Health implements Serializable {
+	private static final long serialVersionUID = -5806775611708522340L;
+
 	private int current;
 	private int maximum;
 

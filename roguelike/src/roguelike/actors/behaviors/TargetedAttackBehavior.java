@@ -3,8 +3,10 @@ package roguelike.actors.behaviors;
 import roguelike.Game;
 import roguelike.actions.Action;
 import roguelike.actions.AttackAction;
-import roguelike.actions.RestAction;
+import roguelike.actions.WaitAction;
 import roguelike.actors.Actor;
+import roguelike.actors.Player;
+import roguelike.items.Weapon;
 import roguelike.util.Coordinate;
 import roguelike.util.Log;
 import squidpony.squidcolor.SColor;
@@ -22,6 +24,11 @@ public class TargetedAttackBehavior extends Behavior {
 
 		Game.current().displayMessage(actor.getName() + " is now attacking " + target.getName(), SColor.PURPLE);
 		this.target = target;
+	}
+
+	@Override
+	public boolean isHostile() {
+		return Player.isPlayer(target);
 	}
 
 	@Override
@@ -46,7 +53,7 @@ public class TargetedAttackBehavior extends Behavior {
 		// if we can't attack, do a rest action and switch behavior to searching for the player
 		canSeeTarget = false;
 
-		return new RestAction(actor);
+		return new WaitAction(actor);
 	}
 
 	@Override
@@ -58,7 +65,7 @@ public class TargetedAttackBehavior extends Behavior {
 			}
 
 			if (target.isAlive() && isTargetVisible()) {
-				if (actor.equipment().getEquippedWeapons()[0] != null)
+				if (actor.equipment().getEquippedWeapons().stream().filter(w -> w != null).findAny() != null)
 					return this;
 				else {
 					Log.warning(String.format("%s has no weapon!", actor.getName()));
@@ -82,6 +89,16 @@ public class TargetedAttackBehavior extends Behavior {
 	}
 
 	private boolean canAttackTarget(float distance) {
-		return (distance <= 1);
+		int range = 1;
+		Weapon maxRange = actor.equipment().getEquippedWeapons().stream().max((w1, w2) -> {
+			if (w1 == null || w2 == null)
+				return 0;
+			return Integer.compare(w1.reach, w2.reach);
+		}).orElse(null);
+
+		if (maxRange != null)
+			range = maxRange.reach;
+
+		return (distance <= range);
 	}
 }

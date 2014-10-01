@@ -11,6 +11,8 @@ public abstract class Behavior {
 		this.actor = actor;
 	}
 
+	public abstract boolean isHostile();
+
 	public abstract Action getAction();
 
 	/**
@@ -19,4 +21,5 @@ public abstract class Behavior {
 	 * @return
 	 */
 	public abstract Behavior getNextBehavior();
+
 }

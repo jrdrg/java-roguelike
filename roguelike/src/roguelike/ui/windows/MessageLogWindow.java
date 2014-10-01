@@ -23,7 +23,7 @@ public class MessageLogWindow extends Dialog<InputCommand> {
 
 			@Override
 			protected StringEx getTextFor(MessageDisplayProperties item, int position) {
-				return new StringEx(item.getText(), item.getColor(), SColor.BLACK);
+				return item.getText();
 			}
 		};
 	}

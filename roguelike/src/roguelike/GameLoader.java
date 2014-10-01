@@ -1,7 +1,9 @@
 package roguelike;
 
+import roguelike.actors.ActorSerializationData;
 import roguelike.actors.Player;
 import roguelike.data.DataFactory;
+import roguelike.data.serialization.PlayerSerializer;
 import roguelike.items.Equipment.ItemSlot;
 import roguelike.items.MeleeWeapon;
 import roguelike.items.RangedWeapon;
@@ -29,6 +31,7 @@ public class GameLoader {
 	}
 
 	public Game newGame() {
+
 		Game game = new Game();
 		Player player = game.getPlayer();
 
@@ -45,6 +48,9 @@ public class GameLoader {
 
 	public Game load() {
 		// TODO: load game from file instead
+
+		Player player = PlayerSerializer.deserialize();
+
 		return newGame();
 	}
 

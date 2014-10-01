@@ -10,6 +10,7 @@ public class RangedWeapon extends Weapon {
 	private static final long serialVersionUID = -340930226160562519L;
 
 	protected int maxRange;
+	protected boolean requiresAmmunition;
 
 	protected RangedWeapon(WeaponData data) {
 		super(data);
@@ -22,6 +23,8 @@ public class RangedWeapon extends Weapon {
 		}
 		// TODO: add actual max range value here
 		this.maxRange = 15;
+
+		this.requiresAmmunition = data.requiresAmmunition;
 	}
 
 	@Override

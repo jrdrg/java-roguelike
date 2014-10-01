@@ -44,14 +44,18 @@ public class TileBuilder {
 
 		switch (character) {
 		case WALL:
-			t.setValues(Symbol.WALL.symbol(), false, SColor.DARK_GRAY, true).setLighting(1f).setBackground(SColor.DARK_BLUE_LAPIS_LAZULI);
+			t.setValues(character.symbol(), false, SColor.DARK_GRAY, true)
+					.setLighting(1f)
+					.setBackground(SColor.DARK_BLUE_LAPIS_LAZULI);
 			break;
 
 		case DOOR:
 			return new Door().setValues(character.symbol(), false, SColor.BIRCH_BROWN, true);
 
 		case TREE:
-			t.setValues(trees.random(), true, SColor.KELLY_GREEN).setLighting(0.5f).setSpeedModifier(-15);// .setBackground(SColor.GREEN);
+			t.setValues(trees.random(), true, SColor.KELLY_GREEN)
+					.setLighting(0.5f)
+					.setSpeedModifier(-15);// .setBackground(SColor.GREEN);
 			break;
 
 		case BUILDING_FLOOR:
@@ -84,6 +88,7 @@ public class TileBuilder {
 			return new Stairs(new DungeonMapBuilder()).setValues(character.symbol(), true, SColor.WHITE);
 
 		case BOX_BOTTOM_LEFT_SINGLE:
+			// TODO: change the character and make this a torch or something
 			t.setValues(character.symbol(), true, SColor.ORANGE);
 			break;
 
@@ -93,7 +98,7 @@ public class TileBuilder {
 		return t;
 	}
 
-	public Tile buildTile(char tile) {
+	Tile buildTile(char tile) {
 		Tile t = new Tile();
 
 		switch (tile) {

@@ -1,21 +1,18 @@
 package roguelike;
 
-import javax.swing.JPanel;
-
 import roguelike.ui.DisplayManager;
 import roguelike.ui.MainWindow;
+import roguelike.ui.windows.TerminalBase;
 
 public abstract class Screen {
 	int width = MainWindow.width;
 	int height = MainWindow.height;
 	int outputLines = MainWindow.outputLines;
 
+	protected TerminalBase terminal;
 	private Screen nextScreen;
 
-	protected JPanel panel;
-
-	public Screen() {
-		this.panel = new JPanel();
+	protected Screen() {
 	}
 
 	protected Screen nextScreen() {

@@ -26,36 +26,6 @@ public abstract class MapBuilderBase {
 		onBuildMap(map);
 	}
 
-	protected DirectionCardinal getRandomDirection() {
-		int rnd = random.between(0, 4);
-		return DirectionCardinal.CARDINALS[rnd];
-	}
-
-	protected Point getRandomPoint(Rectangle rectangle) {
-		int x = (int) random.between(rectangle.getMinX(), rectangle.getMaxX());
-		int y = (int) random.between(rectangle.getMinY(), rectangle.getMaxY());
-
-		return new Point(x, y);
-	}
-
-	protected Rectangle getRandomRectangleInside(Rectangle containing) {
-		int width = random.betweenWeighted(1, containing.width - 1, 10);
-		int height = random.betweenWeighted(1, containing.height - 1, 10);
-
-		int x = random.betweenWeighted((int) containing.getMinX(), (int) containing.getMaxX() - width, 10);
-		int y = random.betweenWeighted((int) containing.getMinY(), (int) containing.getMaxY() - height, 10);
-
-		return new Rectangle(x, y, width, height);
-	}
-
-	protected Rectangle getSubRectangle(Rectangle original, int newX, int newY, double xPercent, double yPercent) {
-		Rectangle newRect = new Rectangle(original);
-		newRect.setLocation(newX, newY);
-
-		newRect.setSize((int) Math.floor(original.width * xPercent), (int) Math.floor(original.height * yPercent));
-		return newRect;
-	}
-
 	/**
 	 * Returns true if the area represented by the rectangle is all walls so we can make a room here
 	 * 
@@ -76,6 +46,63 @@ public abstract class MapBuilderBase {
 	}
 
 	/**
+	 * Returns a randomly chosen DirectionCardinal.
+	 * 
+	 * @return
+	 */
+	protected DirectionCardinal getRandomDirection() {
+		int rnd = random.between(0, 4);
+		return DirectionCardinal.CARDINALS[rnd];
+	}
+
+	/**
+	 * Returns a Point that is randomly chosen from within the given Rectangle's area.
+	 * 
+	 * @param rectangle
+	 * @return
+	 */
+	protected Point getRandomPoint(Rectangle rectangle) {
+		int x = (int) random.between(rectangle.getMinX(), rectangle.getMaxX());
+		int y = (int) random.between(rectangle.getMinY(), rectangle.getMaxY());
+
+		return new Point(x, y);
+	}
+
+	/**
+	 * Returns a rectangle of random size and location within the specified containing rectangle.
+	 * 
+	 * @param containing
+	 * @return
+	 */
+	protected Rectangle getRandomRectangleInside(Rectangle containing) {
+		int width = random.betweenWeighted(1, containing.width - 1, 10);
+		int height = random.betweenWeighted(1, containing.height - 1, 10);
+
+		int x = random.betweenWeighted((int) containing.getMinX(), (int) containing.getMaxX() - width, 10);
+		int y = random.betweenWeighted((int) containing.getMinY(), (int) containing.getMaxY() - height, 10);
+
+		return new Rectangle(x, y, width, height);
+	}
+
+	/**
+	 * Returns a rectangle that is the specified percentage of the original rectangle in width and height.
+	 * 
+	 * @param original
+	 * @param newX
+	 * @param newY
+	 * @param xPercent
+	 * @param yPercent
+	 * @return
+	 */
+	protected Rectangle getSubRectangle(Rectangle original, int newX, int newY, double xPercent, double yPercent) {
+		Rectangle newRect = new Rectangle(original);
+		newRect.setLocation(newX, newY);
+
+		newRect.setSize((int) Math.floor(original.width * xPercent), (int) Math.floor(original.height * yPercent));
+		return newRect;
+	}
+
+	/**
 	 * Fills entire map with the given character
 	 * 
 	 * @param map
@@ -88,6 +115,12 @@ public abstract class MapBuilderBase {
 		}
 	}
 
+	/**
+	 * Fills the area given by rect with the specified character.
+	 * 
+	 * @param rect
+	 * @param character
+	 */
 	protected void fillRect(Rectangle rect, Symbol character) {
 		int startX = (int) rect.getMinX();
 		int endX = (int) rect.getMaxX();

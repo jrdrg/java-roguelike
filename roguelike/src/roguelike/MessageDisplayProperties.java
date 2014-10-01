@@ -1,10 +1,11 @@
 package roguelike;
 
+import roguelike.util.StringEx;
 import squidpony.squidcolor.SColor;
 
 public class MessageDisplayProperties {
 
-	private String text;
+	private StringEx text;
 	private SColor color;
 
 	public MessageDisplayProperties(String text) {
@@ -14,11 +15,11 @@ public class MessageDisplayProperties {
 	public MessageDisplayProperties(String text, SColor color) {
 		if (text == null)
 			throw new IllegalArgumentException("text cannot be null");
-		this.text = text;
+		this.text = new StringEx(text, color, SColor.BLACK);
 		this.color = color;
 	}
 
-	public String getText() {
+	public StringEx getText() {
 		return text;
 	}
 

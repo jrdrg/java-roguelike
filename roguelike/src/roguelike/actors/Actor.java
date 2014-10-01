@@ -1,6 +1,7 @@
 package roguelike.actors;
 
 import java.awt.Point;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
@@ -19,7 +20,8 @@ import squidpony.squidgrid.los.BresenhamLOS;
 import squidpony.squidgrid.los.LOSSolver;
 import squidpony.squidgrid.util.BasicRadiusStrategy;
 
-public abstract class Actor {
+public abstract class Actor implements Serializable {
+	private static final long serialVersionUID = 6622760709734146790L;
 
 	protected Coordinate position;
 	protected char symbol;
@@ -29,14 +31,14 @@ public abstract class Actor {
 	protected Stack<AttackAttempt> attackedBy;
 	protected boolean attackedThisRound;
 
-	private Energy energy;
-	private Statistics statistics;
-	private CombatHandler combat;
-	private Health health;
-	private Inventory inventory;
-	private Equipment equipment;
+	protected Energy energy;
+	protected Statistics statistics;
+	protected CombatHandler combat;
+	protected Health health;
+	protected Inventory inventory;
+	protected Equipment equipment;
 
-	private ArrayList<Condition> conditions;
+	protected ArrayList<Condition> conditions;
 
 	protected LOSSolver losSolver;
 
@@ -62,7 +64,7 @@ public abstract class Actor {
 
 		losSolver = new BresenhamLOS();
 	}
-
+	
 	public char symbol() {
 		return this.symbol;
 	}

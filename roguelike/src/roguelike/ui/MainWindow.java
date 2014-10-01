@@ -2,6 +2,8 @@ package roguelike.ui;
 
 import java.awt.Point;
 import java.awt.Toolkit;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -11,8 +13,10 @@ import javax.imageio.ImageIO;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 
+import roguelike.Game;
 import roguelike.Screen;
 import roguelike.TitleScreen;
+import roguelike.data.serialization.PlayerSerializer;
 import roguelike.util.Log;
 
 public class MainWindow {
@@ -135,6 +139,26 @@ public class MainWindow {
 		Log.info("Window size: " + frame.getSize().width + "x" + frame.getSize().height);
 
 		hideMouseCursor();
+
+		frame.addComponentListener(new ComponentAdapter() {
+			@Override
+			public void componentHidden(ComponentEvent e) {
+
+				PlayerSerializer.serialize(Game.current().getPlayer());
+
+				((JFrame) (e.getComponent())).dispose();
+			}
+		});
+
+		Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+			public void run() {
+
+				if (Game.current() != null && Game.current().getPlayer() != null)
+					PlayerSerializer.serialize(Game.current().getPlayer());
+
+			}
+		}, "Shutdown-thread"));
+
 	}
 
 	private void hideMouseCursor() {

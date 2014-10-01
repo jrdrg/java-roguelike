@@ -87,6 +87,9 @@ public class AStarPathfinder {
 			// search through all the neighbours of the current node evaluating
 			// them as next steps
 			for (Point n : neighbors) {
+				// if (!isValidLocation(sx, sy, n.x, n.y))
+				// continue;
+
 				int xp = n.x;
 				int yp = n.y;
 				float nextStepCost = current.cost + getMovementCost(current.x, current.y, xp, yp);
@@ -216,11 +219,12 @@ public class AStarPathfinder {
 	protected boolean isValidLocation(int sx, int sy, int x, int y) {
 		// boolean invalid = (x < 0) || (y < 0) || (x >= map.length) || (y >=
 		// map[0].length);
-		boolean invalid = (x < 0) || (y < 0) || (x >= map.width()) || (y >= map.height());
+		boolean invalid = !map.isWithinBounds(x, y);
 
 		if ((!invalid) && ((sx != x) || (sy != y))) {
+			invalid = MapHelpers.isBlocked(map, x, y, true);
 			// invalid = map.blocked(mover, x, y);
-			invalid = (map.getActorAt(x, y) != null) || !map.getTileAt(x, y).canPass();
+			// invalid = (map.getActorAt(x, y) != null) || !map.getTileAt(x, y).canPass();
 			// invalid = map.cellBlocked(x, y) || map.cellOccupied(x, y);
 		}
 
@@ -245,6 +249,7 @@ public class AStarPathfinder {
 	public float getMovementCost(int sx, int sy, int tx, int ty) {
 		// return (float) map[tx][ty];
 		// return (map.cellBlocked(tx, ty) || map.cellOccupied(tx, ty)) ? 999 : 0;
+
 		return ((map.getActorAt(tx, ty) != null) || !map.getTileAt(tx, ty).canPass()) ? 999 : 0;
 
 		// return map.getCost(mover, sx, sy, tx, ty);
@@ -267,7 +272,9 @@ public class AStarPathfinder {
 	 */
 	public float getHeuristicCost(int x, int y, int tx, int ty) {
 		// return MapHelper.distance(x, y, tx, ty);
+
 		return (float) Math.floor(MapHelpers.distanceSq(x, y, tx, ty));
+
 		// return heuristic.getCost(map, mover, x, y, tx, ty);
 	}
 

@@ -74,10 +74,12 @@ public class LookDisplay extends TextWindow {
 		int textY = 2;
 		Inventory inventory = map.getItemsAt(x, y);
 		add(textList, "");
-		add(textList, "On ground:");
+
+		if (drawActor)
+			add(textList, "On ground:");
 
 		int itemSize = (this.size.height - 4) - textList.size();
-		String[] itemDescriptions = inventory.getItemListAsText(itemSize);
+		String[] itemDescriptions = inventory.getItemListAsText(itemSize - 2);
 
 		for (String string : itemDescriptions)
 			add(textList, " " + string);

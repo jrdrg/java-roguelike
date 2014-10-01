@@ -40,7 +40,7 @@ public class RangedAttackAction extends InputRequiredAction<InputCommand> {
 
 		target = mapArea.getActorAt(x, y);
 		if (target != null && !(target instanceof Player)) {
-			// TODO: insert animation here
+			// TODO: insert Ranged Attack animation here
 			return attackTarget();
 		}
 
@@ -53,7 +53,7 @@ public class RangedAttackAction extends InputRequiredAction<InputCommand> {
 			return ActionResult.failure().setMessage("Actor " + actor.getName() + " is dead!");
 		}
 		if (!target.isAlive()) {
-			return ActionResult.alternate(new RestAction(actor)).setMessage(">>> onPerform() >>> Target " + target.getName() + " is dead!");
+			return ActionResult.alternate(new WaitAction(actor)).setMessage(">>> onPerform() >>> Target " + target.getName() + " is dead!");
 		}
 
 		Attack attack = weapon.getAttack();

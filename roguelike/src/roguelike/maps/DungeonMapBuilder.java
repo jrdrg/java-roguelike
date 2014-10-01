@@ -69,22 +69,22 @@ public class DungeonMapBuilder extends MapBuilderBase {
 			while (startRoom == null)
 				startRoom = chooseRandomStartRoom();
 
-			buildDoors(startRoom);
-
 			rooms.add(startRoom);
 
 			int startX = (int) startRoom.area.getCenterX();
 			int startY = (int) startRoom.area.getCenterY();
 			Game.current().getPlayer().setPosition(startX, startY);
 
-			generateMainPath(startRoom);
+			int roomsGenerated = generateMainPath(startRoom);
 
-			if (rooms.size() >= roomCount)
+			// if (rooms.size() >= roomCount)
+			if (roomsGenerated >= roomCount)
 				break;
 		}
 	}
 
-	private void generateMainPath(Room startRoom) {
+	private int generateMainPath(Room startRoom) {
+		int roomsGenerated = 0;
 		int maxRooms = 20;
 		Room currentRoom = null;
 
@@ -99,6 +99,7 @@ public class DungeonMapBuilder extends MapBuilderBase {
 			boolean fail = false;
 
 			ConnectionPoint door = generateRandomDoor(currentRoom);
+
 			if (door == null)
 				fail = true;
 
@@ -118,10 +119,13 @@ public class DungeonMapBuilder extends MapBuilderBase {
 					Log.debug("Creating room");
 
 					currentRoom.doors.add(door);
+
 					rooms.add(newRoom);
 					roomsOnPath.push(currentRoom);
 
 					currentRoom = newRoom;
+
+					roomsGenerated++;
 				} else {
 
 					fail = true;
@@ -133,17 +137,28 @@ public class DungeonMapBuilder extends MapBuilderBase {
 
 				for (ConnectionPoint doorPoint : currentRoom.doors) {
 					setTile(doorPoint, Symbol.DOOR);
+					roomsGenerated--;
 				}
 
 				currentRoom = roomsOnPath.pop();
 			}
 		}
 
+		/* put the stairs in the last room we generated */
 		Point stairPoint = currentRoom.getRandomFloorTile();
 		setTile(stairPoint, Symbol.STAIRS);
 
+		return roomsGenerated;
 	}
 
+	/**
+	 * Determines which directions a room could potentially be created in, then chooses a random one from that list
+	 * weighted by the amount of free space required for the room. Once the direction is chosen, a random coordinate on
+	 * the wall in that direction is used to return a ConnectionPoint representing the door.
+	 * 
+	 * @param room
+	 * @return
+	 */
 	private ConnectionPoint generateRandomDoor(Room room) {
 		ProbabilityTable<DirectionCardinal> directions = new ProbabilityTable<DirectionCardinal>();
 
@@ -174,6 +189,7 @@ public class DungeonMapBuilder extends MapBuilderBase {
 		ConnectionPoint existing = room.doors.stream().filter(d -> d.direction().equals(direction)).findAny().orElse(null);
 		if (existing != null) {
 			// TODO: allow doors to be in the same direction?
+			// return null;
 		}
 
 		Point doorPoint = room.getDoorCoordinate(map, direction);
@@ -182,6 +198,17 @@ public class DungeonMapBuilder extends MapBuilderBase {
 		return point;
 	}
 
+	/**
+	 * Builds a 1-tile wide corridor in a random number of tiles from the given ConnectionPoint in its direction.
+	 * 
+	 * @param door
+	 *            The ConnectionPoint from which the corridor will be created
+	 * @param room
+	 *            The room that will be the owner for the ConnectionPoint at the end of the corridor
+	 * 
+	 * @return A ConnectionPoint which is the end of the corridor that was generated. It belongs to the room that it
+	 *         came from, not the one it will be connected to.
+	 */
 	private ConnectionPoint buildCorridor(ConnectionPoint door, Room room) {
 		DirectionCardinal direction = door.direction();
 
@@ -200,6 +227,7 @@ public class DungeonMapBuilder extends MapBuilderBase {
 
 		Rectangle rect = new Rectangle();
 		rect.setFrameFromDiagonal(door, endPoint);
+
 		if (rect.width == 0)
 			rect.width = 1;
 		if (rect.height == 0)
@@ -213,6 +241,12 @@ public class DungeonMapBuilder extends MapBuilderBase {
 		return new ConnectionPoint(endPoint, direction.opposite(), room);
 	}
 
+	/**
+	 * Fills the map with DUNGEON_FLOOR inside the given Rectangle and returns a Room with that area.
+	 * 
+	 * @param area
+	 * @return
+	 */
 	private Room createRoom(Rectangle area) {
 		Room room = null;
 
@@ -222,6 +256,12 @@ public class DungeonMapBuilder extends MapBuilderBase {
 		return room;
 	}
 
+	/**
+	 * Returns a rectangle for a room's area that is at the end of the specified ConnectionPoint.
+	 * 
+	 * @param endPoint
+	 * @return
+	 */
 	private Rectangle getRectangleForEndPoint(ConnectionPoint endPoint) {
 		int maxSize = 10;
 		int centerPoint = random.between(1, maxSize - 1);
@@ -243,11 +283,6 @@ public class DungeonMapBuilder extends MapBuilderBase {
 		Rectangle rect = new Rectangle();
 		rect.setFrameFromDiagonal(start, end);
 		return rect;
-	}
-
-	private void buildDoors(Room startRoom) {
-		// TODO Auto-generated method stub
-
 	}
 
 	private MapSection randomMapSection() {

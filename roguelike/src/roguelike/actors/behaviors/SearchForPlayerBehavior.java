@@ -4,7 +4,7 @@ import java.awt.Point;
 
 import roguelike.Game;
 import roguelike.actions.Action;
-import roguelike.actions.RestAction;
+import roguelike.actions.WaitAction;
 import roguelike.actions.WalkAction;
 import roguelike.actors.Actor;
 import roguelike.actors.AttackAttempt;
@@ -21,12 +21,18 @@ public class SearchForPlayerBehavior extends Behavior {
 	Path pathToTarget;
 	private Point lastPlayerLocation;
 	private MapArea map;
+	private boolean noPathToPlayer = false;
 
 	public SearchForPlayerBehavior(Actor actor) {
 		super(actor);
 		this.map = Game.current().getCurrentMapArea();
 
 		pathfinder = new AStarPathfinder(map, actor.getVisionRadius() * 2);
+	}
+
+	@Override
+	public boolean isHostile() {
+		return true;
 	}
 
 	@Override
@@ -64,11 +70,13 @@ public class SearchForPlayerBehavior extends Behavior {
 			}
 		}
 		Log.verboseDebug("Resting, no path to player...");
-		return new RestAction(actor);
+		noPathToPlayer = true;
+		return new WaitAction(actor);
 	}
 
 	@Override
 	public Behavior getNextBehavior() {
+
 		AttackAttempt lastAttackedBy = actor.getLastAttackedBy();
 		if (lastAttackedBy != null && actor.isAdjacentTo(lastAttackedBy.getActor())) {
 
@@ -82,6 +90,9 @@ public class SearchForPlayerBehavior extends Behavior {
 			Log.debug("Attacking Player");
 			return new TargetedAttackBehavior(actor, player);
 		}
+
+		if (noPathToPlayer)
+			return new MoveToRandomPointBehavior(actor);
 
 		return this;
 	}

@@ -7,6 +7,7 @@ import roguelike.util.Log;
 import squidpony.squidcolor.SColor;
 
 public class Player extends Actor {
+	private static final long serialVersionUID = -1439044065168378557L;
 
 	private Behavior behavior;
 

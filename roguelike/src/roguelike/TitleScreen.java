@@ -1,5 +1,7 @@
 package roguelike;
 
+import java.awt.event.KeyEvent;
+
 import roguelike.ui.DisplayManager;
 import roguelike.ui.InputCommand;
 import roguelike.ui.InputManager;
@@ -8,8 +10,6 @@ import roguelike.util.Log;
 import squidpony.squidcolor.SColor;
 
 public class TitleScreen extends Screen {
-
-	private TerminalBase terminal;
 
 	public TitleScreen(TerminalBase terminal) {
 		DisplayManager.instance().getTerminalView();
@@ -33,7 +33,8 @@ public class TitleScreen extends Screen {
 		int x = (int) ((terminal.size().width / 2f) - (title.length() / 2f));
 
 		terminal.write(x, 10, "`Yellow`Title Screen");
-		terminal.write(x, 15, "<press Enter>");
+		terminal.write(x, 15, "`Yellow`n) `White`New");
+		terminal.write(x, 16, "`Yellow`l) `White`Load");
 
 		long end = System.currentTimeMillis() - start;
 		return end;
@@ -41,12 +42,23 @@ public class TitleScreen extends Screen {
 
 	@Override
 	public void process() {
-		InputCommand cmd = InputManager.nextCommand();
+		// TODO: change key mapping for title screen
+
+		InputCommand cmd = InputManager.nextCommandPreserveKeyData();
 		if (cmd != null) {
 			switch (cmd) {
 
-			case CONFIRM:
-				setNextScreen(new MainScreen(DisplayManager.instance().getTerminal()));
+			case FROM_KEYDATA:
+				switch (cmd.getKeyData()) {
+
+				case KeyEvent.VK_L:
+					setNextScreen(new MainScreen(this.terminal, loadGame()));
+					break;
+
+				case KeyEvent.VK_N:
+					setNextScreen(new MainScreen(this.terminal));
+					break;
+				}
 				break;
 
 			case CANCEL:
@@ -60,5 +72,9 @@ public class TitleScreen extends Screen {
 	@Override
 	public Screen getScreen() {
 		return nextScreen();
+	}
+
+	private Game loadGame() {
+		return GameLoader.instance().load();
 	}
 }

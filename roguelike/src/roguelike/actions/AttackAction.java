@@ -29,7 +29,7 @@ public class AttackAction extends Action {
 			return ActionResult.failure().setMessage("Actor " + actor.getName() + " is dead!");
 		}
 		if (!target.isAlive()) {
-			return ActionResult.alternate(new RestAction(actor)).setMessage(">>> onPerform() >>> Target " + target.getName() + " is dead!");
+			return ActionResult.alternate(new WaitAction(actor)).setMessage(">>> onPerform() >>> Target " + target.getName() + " is dead!");
 		}
 
 		Attack attack = actor.getCombatHandler().getAttack(target);

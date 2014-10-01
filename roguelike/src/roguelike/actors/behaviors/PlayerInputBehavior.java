@@ -8,7 +8,7 @@ import roguelike.actions.InventoryAction;
 import roguelike.actions.LookAction;
 import roguelike.actions.QuitAction;
 import roguelike.actions.RangedAttackAction;
-import roguelike.actions.RestAction;
+import roguelike.actions.WaitAction;
 import roguelike.actions.ShowMessagesAction;
 import roguelike.actions.WalkAction;
 import roguelike.actors.Player;
@@ -21,6 +21,11 @@ public class PlayerInputBehavior extends Behavior {
 
 	public PlayerInputBehavior(Player actor) {
 		super(actor);
+	}
+
+	@Override
+	public boolean isHostile() {
+		return false;
 	}
 
 	@Override
@@ -60,7 +65,7 @@ public class PlayerInputBehavior extends Behavior {
 			return walk(DirectionIntercardinal.DOWN);
 
 		case REST:
-			return new RestAction(actor);
+			return new WaitAction(actor);
 
 		case INVENTORY:
 			return new InventoryAction(actor);

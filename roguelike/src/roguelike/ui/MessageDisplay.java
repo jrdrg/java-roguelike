@@ -26,6 +26,7 @@ public class MessageDisplay {
 	}
 
 	public void display(MessageDisplayProperties message) {
+
 		messages.add(message);
 	}
 
@@ -34,7 +35,7 @@ public class MessageDisplay {
 		for (int x = 0; x < messages.size(numLines); x++) {
 			MessageDisplayProperties props = messages.get(x);
 			TerminalBase colorTerm = terminal.withColor(SColorFactory.blend(props.getColor(), SColor.BLACK_CHESTNUT_OAK, (x / (float) numLines)));
-			colorTerm.write(0, x, props.getText());
+			colorTerm.write(0, x, props.getText().toString());
 		}
 	}
 }

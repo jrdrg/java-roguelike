@@ -2,7 +2,7 @@ package roguelike.actors.behaviors;
 
 import roguelike.Game;
 import roguelike.actions.Action;
-import roguelike.actions.RestAction;
+import roguelike.actions.WaitAction;
 import roguelike.actions.WalkAction;
 import roguelike.actors.Actor;
 import roguelike.actors.AttackAttempt;
@@ -15,6 +15,11 @@ public class RandomWalkBehavior extends Behavior {
 
 	public RandomWalkBehavior(Actor actor) {
 		super(actor);
+	}
+
+	@Override
+	public boolean isHostile() {
+		return false;
 	}
 
 	@Override
@@ -36,7 +41,7 @@ public class RandomWalkBehavior extends Behavior {
 		if (map.canMoveTo(actor, pos) && map.getActorAt(pos.x, pos.y) == null)
 			return new WalkAction(actor, map, direction);
 
-		return new RestAction(actor);
+		return new WaitAction(actor);
 	}
 
 	@Override

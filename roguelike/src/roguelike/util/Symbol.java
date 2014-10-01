@@ -19,6 +19,11 @@ public enum Symbol {
 
 	WALL(176), // ░
 
+	TORCH1(';'),
+	TORCH2(':'),
+	TORCH3('|'),
+	TORCH4('`'),
+
 	BOX_LEFT_SINGLE(179), // │
 	BOX_RIGHT_SINGLE(179),
 	BOX_TOP_SINGLE(196), // ─

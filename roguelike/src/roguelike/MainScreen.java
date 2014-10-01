@@ -39,7 +39,6 @@ public class MainScreen extends Screen {
 	private final int windowHeight = height - outputLines;
 
 	TerminalBase fullTerminal;
-	TerminalBase terminal;
 
 	Game game;
 	GameLoader gameLoader;
@@ -53,6 +52,18 @@ public class MainScreen extends Screen {
 	TurnResult currentTurn;
 
 	public MainScreen(TerminalBase fullTerminal) {
+		this(fullTerminal, null);
+	}
+
+	public MainScreen(TerminalBase fullTerminal, Game initialGame) {
+		if (game == null) {
+			this.game = GameLoader.instance().newGame();
+		} else {
+			this.game = initialGame;
+		}
+
+		game.initialize();
+
 		this.fullTerminal = fullTerminal;
 		this.terminal = fullTerminal.getWindow(0, 0, windowWidth, windowHeight);
 		this.setNextScreen(this);
@@ -72,11 +83,6 @@ public class MainScreen extends Screen {
 		TerminalBase statsTerminal =
 				fullTerminal.getWindow(width - MainWindow.statWidth, 0, MainWindow.statWidth, height);
 
-		gameLoader = GameLoader.instance();
-
-		game = gameLoader.newGame();
-		game.initialize();
-
 		messageDisplay = new MessageDisplay(Game.current().messages, messageTerminal, outputLines);
 		statsDisplay = new StatsDisplay(statsTerminal);
 		statsDisplay.setPlayer(game.getPlayer());
@@ -89,6 +95,7 @@ public class MainScreen extends Screen {
 		drawStats();
 
 		InputManager.setInputEnabled(true);
+		// InputManager.previousKeyMap();
 		displayManager.setDirty();
 	}
 
@@ -336,7 +343,7 @@ public class MainScreen extends Screen {
 	private boolean drawActiveWindow(TurnResult run) {
 		Dialog<?> window = run.getActiveWindow();
 		if (window != null) {
-			window.showInPane(terminal);
+			window.showInPane(window.showFullscreen() ? fullTerminal : terminal);
 			window.draw();
 
 			return true;

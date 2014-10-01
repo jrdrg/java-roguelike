@@ -13,17 +13,28 @@ public abstract class Dialog<T> extends TextWindow {
 	// Box drawing tiles: "┻┗┛┫┳┣┃━┏┓╋"
 
 	private boolean isOpen;
-	protected TerminalBase terminal;
-
 	private DialogResult<T> result;
 
+	private boolean fullScreen;
+
+	protected TerminalBase terminal;
+
 	protected Dialog(int width, int height) {
+		this(width, height, false);
+	}
+
+	protected Dialog(int width, int height, boolean fullScreen) {
 		super(width, height);
 		this.isOpen = false;
+		this.fullScreen = fullScreen;
 	}
 
 	public Point getLocation() {
 		return size.getLocation();
+	}
+
+	public boolean showFullscreen() {
+		return fullScreen;
 	}
 
 	public boolean waitingForResult() {

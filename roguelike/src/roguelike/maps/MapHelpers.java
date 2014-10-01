@@ -36,6 +36,14 @@ public class MapHelpers {
 		return neighbors;
 	}
 
+	public static boolean isBlocked(MapArea map, int x, int y, boolean allowActors) {
+		Tile tile = map.getTileAt(x, y);
+		if (tile == null)
+			return true;
+
+		return (tile.getActor() != null && !allowActors) || !tile.canPass();
+	}
+
 	public static float distance(int x0, int y0, int x1, int y1) {
 		return Math.abs(x1 - x0) + Math.abs(y1 - y0);
 	}

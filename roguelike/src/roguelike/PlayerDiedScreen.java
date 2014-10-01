@@ -9,7 +9,6 @@ import squidpony.squidcolor.SColor;
 
 public class PlayerDiedScreen extends Screen {
 
-	private TerminalBase terminal;
 	private TerminalBase fullTerminal;
 	private Actor killedBy;
 

@@ -1,5 +1,7 @@
 package roguelike.actions.combat;
 
+import java.io.Serializable;
+
 import roguelike.Game;
 import roguelike.MessageDisplayProperties;
 import roguelike.TurnEvent;
@@ -37,7 +39,9 @@ import squidpony.squidcolor.SColor;
  * @author john
  * 
  */
-public class CombatHandler {
+public class CombatHandler implements Serializable {
+	private static final long serialVersionUID = 4714367235773250418L;
+
 	private Actor actor;
 
 	public CombatHandler(Actor actor) {
@@ -53,9 +57,9 @@ public class CombatHandler {
 	public Attack getAttack(Actor target) {
 		// TODO: implement attack choosing behavior, etc
 		// TODO: dual wielding should return 1 attack dependent on skill
-		Weapon[] weapon = actor.equipment().getEquippedWeapons();
-		if (weapon[0] != null) {
-			return weapon[0].getAttack();
+		Weapon weapon = actor.equipment().getEquippedWeapons().stream().filter(w -> w != null).findFirst().orElse(null);
+		if (weapon != null) {
+			return weapon.getAttack();
 		}
 		return null;
 	}
@@ -131,9 +135,9 @@ public class CombatHandler {
 		if (attack instanceof RangedAttack)
 			return 8; // TODO: change this?
 
-		Weapon[] weapons = actor.equipment().getEquippedWeapons();
-		if (weapons[0] != null)
-			return weapons[0].getDefenseTargetNumber();
+		Weapon firstWeapon = actor.equipment().getEquippedWeapons().stream().filter(w -> w != null).findFirst().orElse(null);
+		if (firstWeapon != null)
+			return firstWeapon.getDefenseTargetNumber();
 
 		return 8; // default TN with no weapon
 	}

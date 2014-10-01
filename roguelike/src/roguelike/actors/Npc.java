@@ -12,6 +12,7 @@ import roguelike.maps.MapArea;
 import squidpony.squidcolor.SColor;
 
 public class Npc extends Actor {
+	private static final long serialVersionUID = 3959590031674627194L;
 
 	private Behavior behavior;
 	private String name;
