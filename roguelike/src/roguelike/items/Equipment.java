@@ -12,7 +12,7 @@ public class Equipment implements Serializable {
 	private static final long serialVersionUID = 1006420730103267096L;
 
 	public enum ItemSlot {
-		HEAD, TORSO, LEFT_ARM, RIGHT_ARM, LEGS, RANGED;
+		HEAD, TORSO, LEFT_ARM, RIGHT_ARM, LEGS, RANGED, AMMUNITION;
 
 		public Item getItem(Actor actor) {
 			return actor.equipment().getEquipped(this);

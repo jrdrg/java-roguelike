@@ -45,6 +45,7 @@ public class StatsDisplay extends TextWindow {
 		drawHealth();
 		drawEquipped();
 		drawStats();
+		drawConditions();
 	}
 
 	private void drawHealth() {
@@ -130,5 +131,9 @@ public class StatsDisplay extends TextWindow {
 		displayTerm.write(9, startY, String.format("%3d", statistics.willpower.getTotalValue()));
 		headerTerm.write(13, startY, "Pr");
 		displayTerm.write(15, startY, String.format("%3d", statistics.presence.getTotalValue()));
+	}
+
+	private void drawConditions() {
+
 	}
 }

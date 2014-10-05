@@ -39,6 +39,10 @@ public enum InputCommand {
 	TALK,
 	PICK_UP,
 
+	EQUIP,
+	USE,
+	DROP,
+
 	FROM_KEYDATA;
 
 	private int keyData;

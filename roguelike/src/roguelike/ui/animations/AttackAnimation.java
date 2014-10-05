@@ -29,8 +29,6 @@ public class AttackAnimation extends Animation {
 		Point offsetPos = getOffsetPosition(terminal, target);
 		int x = offsetPos.x;
 		int y = offsetPos.y;
-		int width = 1 + ((currentFrame / 4) * 2);
-		int height = 1 + ((currentFrame / 4) * 2);
 
 		x = Math.max(0, x - (currentFrame / 4));
 		y = Math.max(0, y - (currentFrame / 4));
@@ -46,11 +44,17 @@ public class AttackAnimation extends Animation {
 		}
 		foregroundColor = SColorFactory.blend(foregroundColor, SColor.BENI_DYE, currentFrame / (float) totalFrames);
 
-		TerminalBase effect = terminal.withColor(SColor.TRANSPARENT, backgroundColor);
+		TerminalBase effect = terminal.withColor(foregroundColor, backgroundColor);
 		TerminalBase dmg = terminal.withColor(foregroundColor);
 
-		effect.fill(x, y, width, height);
+		effect.fill(offsetPos.x, offsetPos.y, 1, 1);
+		float pctFinished = (currentFrame / (float) totalFrames);
+		if (pctFinished < 0.5) {
+			effect.put(offsetPos.x, offsetPos.y, '\\');
+		}
+		if (pctFinished >= 0.5 && pctFinished < 0.8) {
+			effect.put(offsetPos.x, offsetPos.y, '/');
+		}
 		dmg.write(x, y + yOffset, damage.toString());
 	}
-
 }

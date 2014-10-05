@@ -36,7 +36,8 @@ public class MainScreen extends Screen {
 	private final RadiusStrategy radiusStrategy = BasicRadiusStrategy.CIRCLE;
 
 	private final int windowWidth = width - MainWindow.statWidth;
-	private final int windowHeight = height - outputLines;
+	// private final int windowHeight = height - outputLines;
+	private final int windowHeight = height;
 
 	TerminalBase fullTerminal;
 
@@ -56,7 +57,7 @@ public class MainScreen extends Screen {
 	}
 
 	public MainScreen(TerminalBase fullTerminal, Game initialGame) {
-		if (game == null) {
+		if (initialGame == null) {
 			this.game = GameLoader.instance().newGame();
 		} else {
 			this.game = initialGame;
@@ -76,14 +77,18 @@ public class MainScreen extends Screen {
 
 		animationManager = new AnimationManager();
 		displayManager = DisplayManager.instance();
+		//
+		// TerminalBase messageTerminal =
+		// fullTerminal.getWindow(0, height - outputLines, width - MainWindow.statWidth, outputLines);
 
+		int messageLines = 21;
 		TerminalBase messageTerminal =
-				fullTerminal.getWindow(0, height - outputLines, width - MainWindow.statWidth, outputLines);
+				fullTerminal.getWindow(width - MainWindow.statWidth + 1, messageLines, MainWindow.statWidth - 2, height - messageLines);
 
 		TerminalBase statsTerminal =
 				fullTerminal.getWindow(width - MainWindow.statWidth, 0, MainWindow.statWidth, height);
 
-		messageDisplay = new MessageDisplay(Game.current().messages, messageTerminal, outputLines);
+		messageDisplay = new MessageDisplay(Game.current().messages, messageTerminal, messageLines);
 		statsDisplay = new StatsDisplay(statsTerminal);
 		statsDisplay.setPlayer(game.getPlayer());
 
@@ -153,12 +158,11 @@ public class MainScreen extends Screen {
 			drawMap();
 		}
 		drawStats();
+		drawLookDisplay(currentTurn);
 		drawMessages(currentTurn);
 		drawEvents(currentTurn);
 
 		drawCursor(currentTurn);
-
-		drawLookDisplay(currentTurn);
 
 		/*
 		 * this will only refresh if player input has occurred or something has reset the dirty flag
@@ -292,7 +296,7 @@ public class MainScreen extends Screen {
 						+ target.getName() + " in direction "
 						+ direction.symbol);
 
-				if (screenArea.contains(initiatorPos) && screenArea.contains(targetPos)) {
+				if (shouldDisplayAnimation(initiatorPos, targetPos, screenArea, true)) {
 
 					animationManager.addAnimation(new AttackAnimation(target, event.getMessage()));
 					Log.debug("Added attack animation");
@@ -302,7 +306,7 @@ public class MainScreen extends Screen {
 
 			case TurnEvent.ATTACK_MISSED:
 				targetPos = target.getPosition();
-				if (screenArea.contains(initiatorPos) && screenArea.contains(targetPos)) {
+				if (shouldDisplayAnimation(initiatorPos, targetPos, screenArea, true)) {
 
 					animationManager.addAnimation(new AttackMissedAnimation(target));
 					Log.debug("Added attack missed animation");
@@ -312,7 +316,8 @@ public class MainScreen extends Screen {
 
 			case TurnEvent.RANGED_ATTACKED:
 				targetPos = target.getPosition();
-				if (screenArea.contains(initiatorPos) && screenArea.contains(targetPos)) {
+				if (shouldDisplayAnimation(initiatorPos, targetPos, screenArea, false)) { // only target needs to be
+																							// visible here
 
 					animationManager.addAnimation(new RangedAttackAnimation(initiator, target, event.getMessage()));
 					Log.debug("Added attack animation");
@@ -352,7 +357,9 @@ public class MainScreen extends Screen {
 	}
 
 	private void drawMessages(TurnResult run) {
-		messageDisplay.draw();
+		Pair<Point, Boolean> p = run.getCurrentLook();
+		if (p == null || p.getFirst() == null)
+			messageDisplay.draw();
 	}
 
 	private void drawStats() {
@@ -366,5 +373,13 @@ public class MainScreen extends Screen {
 			return;
 		}
 		lookDisplay.draw(game.getCurrentMapArea(), p.getFirst().x, p.getFirst().y, p.getSecond(), p.getSecond() ? "Looking at" : "On ground");
+	}
+
+	private boolean shouldDisplayAnimation(Point initiatorPos, Point targetPos, Rectangle screenArea, boolean initiatorMustBeVisible) {
+		MapArea map = game.getCurrentMapArea();
+		if (screenArea.contains(initiatorPos) && screenArea.contains(targetPos)) {
+			return (map.isVisible(initiatorPos) || !initiatorMustBeVisible) && map.isVisible(targetPos);
+		}
+		return false;
 	}
 }

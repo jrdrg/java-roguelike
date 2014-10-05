@@ -5,6 +5,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 import roguelike.Game;
 import roguelike.actions.Action;
@@ -13,15 +15,16 @@ import roguelike.items.Equipment;
 import roguelike.items.Inventory;
 import roguelike.maps.MapArea;
 import roguelike.maps.Tile;
+import roguelike.util.ActorUtils;
 import roguelike.util.Coordinate;
 import roguelike.util.Log;
 import squidpony.squidcolor.SColor;
-import squidpony.squidgrid.los.BresenhamLOS;
-import squidpony.squidgrid.los.LOSSolver;
-import squidpony.squidgrid.util.BasicRadiusStrategy;
+import squidpony.squidcolor.SColorFactory;
 
 public abstract class Actor implements Serializable {
 	private static final long serialVersionUID = 6622760709734146790L;
+
+	protected UUID actorId = UUID.randomUUID();
 
 	protected Coordinate position;
 	protected char symbol;
@@ -39,8 +42,6 @@ public abstract class Actor implements Serializable {
 	protected Equipment equipment;
 
 	protected ArrayList<Condition> conditions;
-
-	protected LOSSolver losSolver;
 
 	protected Actor(char symbol, SColor color) {
 		if (color == null)
@@ -61,10 +62,8 @@ public abstract class Actor implements Serializable {
 		attackedBy = new Stack<AttackAttempt>();
 
 		conditions = new ArrayList<Condition>();
-
-		losSolver = new BresenhamLOS();
 	}
-	
+
 	public char symbol() {
 		return this.symbol;
 	}
@@ -145,15 +144,10 @@ public abstract class Actor implements Serializable {
 	}
 
 	public boolean canSee(Actor other, MapArea mapArea) {
+		if (!other.isAlive())
+			return false;
 
-		int startx = position.x, starty = position.y, targetx = other.position.x, targety = other.position.y;
-		float force = 1;
-		float decay = 1 / this.getVisionRadius();
-		boolean visible = losSolver.isReachable(mapArea.getLightValues(), startx, starty, targetx, targety, force, decay, BasicRadiusStrategy.CIRCLE);
-
-		Log.verboseDebug(this.getName() + " canSee " + other.getName() + "=" + visible);
-
-		return visible;
+		return ActorUtils.canSee(this, other, mapArea);
 	}
 
 	public AttackAttempt getLastAttacked() {
@@ -214,7 +208,46 @@ public abstract class Actor implements Serializable {
 
 	public abstract String getName();
 
+	public String getMessageName() {
+		return "the " + getName();
+	}
+
+	public String getVerbSuffix() {
+		return "s";
+	}
+
 	public abstract Action getNextAction();
+
+	public void onSerialize(SerializationData data) {
+		int[] color = new int[3];
+		color[0] = this.color.getRed();
+		color[1] = this.color.getGreen();
+		color[2] = this.color.getBlue();
+
+		data.setData("color", color);
+
+		boolean isPlayer = Player.isPlayer(this);
+		data.setData("isPlayer", isPlayer);
+
+		data.setData("symbol", this.symbol);
+		data.setData("position", this.position);
+		data.setData("currentEnergy", this.energy);
+		data.setData("conditions", this.conditions.stream().map(c -> c.identifier.toString()).collect(Collectors.toList()));
+
+		data.setData("inventory", this.inventory);
+		data.setData("equipment", this.equipment);
+
+	}
+
+	public void onDeserialize(SerializationData data) {
+		int[] color = (int[]) data.getData("color");
+		this.color = SColorFactory.asSColor(color[0], color[1], color[2]);
+		this.symbol = 'X';// symbol;
+		// actor.position = position; // TODO: load position when we load maps
+		this.energy = (Energy) data.getData("currentEnergy");
+		this.inventory = (Inventory) data.getData("inventory");
+		this.equipment = (Equipment) data.getData("equipment");
+	}
 
 	protected abstract void onAttackedInternal(Actor attacker);
 

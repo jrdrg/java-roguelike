@@ -3,6 +3,7 @@ package roguelike.ui;
 import roguelike.MessageDisplayProperties;
 import roguelike.MessageLog;
 import roguelike.ui.windows.TerminalBase;
+import roguelike.util.StringEx;
 import squidpony.squidcolor.SColor;
 import squidpony.squidcolor.SColorFactory;
 
@@ -32,10 +33,23 @@ public class MessageDisplay {
 
 	public void draw() {
 		terminal.fill(0, 0, terminal.size().width, terminal.size().height, ' ');
-		for (int x = 0; x < messages.size(numLines); x++) {
+		int msgCount = 0;
+		int maxSize = messages.size(numLines);
+		for (int x = 0; x < maxSize; x++) {
+			if (msgCount >= maxSize)
+				break;
+
 			MessageDisplayProperties props = messages.get(x);
+			StringEx[] lines = props.getText().wordWrap(terminal.size().width - 6);
 			TerminalBase colorTerm = terminal.withColor(SColorFactory.blend(props.getColor(), SColor.BLACK_CHESTNUT_OAK, (x / (float) numLines)));
-			colorTerm.write(0, x, props.getText().toString());
+			String prefix = "> ";
+			for (int i = 0; (i < lines.length) && (msgCount < maxSize); i++) {
+				if (i > 0)
+					prefix = "";
+
+				colorTerm.write(0, msgCount, prefix + lines[i].toString());
+				msgCount++;
+			}
 		}
 	}
 }

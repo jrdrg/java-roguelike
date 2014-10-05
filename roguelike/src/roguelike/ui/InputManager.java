@@ -55,7 +55,9 @@ public class InputManager {
 		if (!keyMap.getName().equals(old.getName())) {
 			Log.debug("switching keyMap to " + keyMap.getName());
 			activeKeyMap = keyMap;
-			keyBindings.push(old);
+
+			if (!old.getName().equals("."))
+				keyBindings.push(old);
 		}
 		return old;
 	}

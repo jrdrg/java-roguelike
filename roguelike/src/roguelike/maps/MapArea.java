@@ -1,5 +1,6 @@
 package roguelike.maps;
 
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.io.Serializable;
 import java.util.List;
@@ -312,7 +313,7 @@ public class MapArea implements Serializable {
 	 * @param position
 	 * @return
 	 */
-	public Tile getTileAt(Coordinate position) {
+	public Tile getTileAt(Point position) {
 		return getTileAt(position.x, position.y);
 	}
 
@@ -360,6 +361,14 @@ public class MapArea implements Serializable {
 		}
 
 		return false;
+	}
+
+	public boolean isVisible(Point position) {
+		Tile tile = getTileAt(position);
+		if (tile == null)
+			return false;
+	
+		return tile.isVisible();
 	}
 
 	/**

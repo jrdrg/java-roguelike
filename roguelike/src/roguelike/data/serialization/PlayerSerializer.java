@@ -1,6 +1,5 @@
 package roguelike.data.serialization;
 
-import java.io.BufferedOutputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
@@ -12,19 +11,21 @@ import java.io.OutputStream;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
-import roguelike.actors.ActorSerializationData;
 import roguelike.actors.Player;
+import roguelike.actors.SerializationData;
 import roguelike.util.Log;
 
 public class PlayerSerializer {
 
 	public static void serialize(Player player) {
 		try {
-			ActorSerializationData data = new ActorSerializationData(player);
+			SerializationData data = new SerializationData();
 
 			OutputStream file = new FileOutputStream("player.ser");
 			GZIPOutputStream gzip = new GZIPOutputStream(file);
 			ObjectOutput output = new ObjectOutputStream(gzip);
+
+			player.onSerialize(data);
 
 			output.writeObject(data);
 
@@ -41,11 +42,11 @@ public class PlayerSerializer {
 			GZIPInputStream gzip = new GZIPInputStream(file);
 			ObjectInput input = new ObjectInputStream(gzip);
 
-			Object player = input.readObject();
+			SerializationData playerData = (SerializationData) input.readObject();
 
 			input.close();
 
-			return (Player) player;
+			return (Player) playerData.restoreActor();
 
 		} catch (Exception e) {
 			Log.warning(e.toString());

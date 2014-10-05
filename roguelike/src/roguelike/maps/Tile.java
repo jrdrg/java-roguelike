@@ -104,10 +104,10 @@ public class Tile implements Serializable {
 	public SColor getColor() {
 		if (!visible) {
 			if (explored)
-				return SColor.DARK_GRAY;
+				return SColorFactory.dimmer(SColor.DARK_GRAY);
 
-			 return SColor.BLACK;
-			//			return SColor.DARK_INDIGO;
+//			return SColor.BLACK;
+			 return SColor.DARK_INDIGO;
 		}
 
 		if (actor != null)

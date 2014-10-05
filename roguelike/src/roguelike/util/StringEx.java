@@ -29,6 +29,12 @@ public class StringEx extends ArrayList<CharEx> {
 
 	public StringEx(List<CharEx> characters) {
 		super(characters);
+
+		char[] strChars = new char[characters.size()];
+		for (int x = 0; x < characters.size(); x++)
+			strChars[x] = characters.get(x).symbol();
+
+		this.text = new String(strChars);
 	}
 
 	public StringEx(String text) {

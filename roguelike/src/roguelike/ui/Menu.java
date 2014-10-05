@@ -71,7 +71,7 @@ public abstract class Menu<T> {
 	}
 
 	public T getActiveItem() {
-		if (activeIndex >= 0)
+		if (activeIndex >= 0 && items.size() > 0)
 			return items.get(activeIndex);
 
 		return null;
@@ -128,21 +128,21 @@ public abstract class Menu<T> {
 		return (char) (index + 97);
 	}
 
-	protected void recalculatePageCount() {
-		pageCount = (int) Math.ceil(items.size() / (float) pageSize);
-	}
-
-	private int getPageOffset(int index) {
-		return Math.min(((currentPage - 1) * pageSize) + index, items.size());
-	}
-
-	private int getIndexOfChar(char keyChar) {
+	protected int getIndexOfChar(char keyChar) {
 		if (keyChar >= 97 && keyChar <= 122)
 			return keyChar - 97; // a-z, returns 0-26
 		if (keyChar >= 65 && keyChar <= 90)
 			return keyChar - 65; // A-Z, returns 0-26
 
 		return -1; // invalid character pressed
+	}
+
+	protected void recalculatePageCount() {
+		pageCount = (int) Math.ceil(items.size() / (float) pageSize);
+	}
+
+	private int getPageOffset(int index) {
+		return Math.min(((currentPage - 1) * pageSize) + index, items.size());
 	}
 
 	protected abstract StringEx getTextFor(T item, int position);

@@ -31,7 +31,17 @@ public class Player extends Actor {
 
 	@Override
 	public String getName() {
-		return "Player";
+		return "you";
+	}
+
+	@Override
+	public String getMessageName() {
+		return getName();
+	}
+
+	@Override
+	public String getVerbSuffix() {
+		return "";
 	}
 
 	@Override
@@ -41,7 +51,8 @@ public class Player extends Actor {
 
 	@Override
 	public int getVisionRadius() {
-		return 35;
+//		return 35;
+		return 15;
 	}
 
 	@Override

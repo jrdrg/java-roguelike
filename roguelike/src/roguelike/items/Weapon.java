@@ -124,6 +124,10 @@ public abstract class Weapon extends Item {
 		return damageValues.get(type).damageRating;
 	}
 
+	public int getReachInTiles() {
+		return (int) Math.max(1, Math.floor(reach / 2f));
+	}
+
 	public abstract Attack getAttack();
 
 	public final int reach;

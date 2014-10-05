@@ -68,7 +68,7 @@ public class MoveToRandomPointBehavior extends Behavior {
 				if (pathToTarget != null)
 					pathToTarget.nextStep(); // since the first step is just the current position
 
-				Log.debug("CurrentTargetLocation: " + rndX + ", " + rndY + ", " + actor.getName());
+				Log.debug("CurrentTargetLocation: " + rndX + ", " + rndY + ", " + actor.getName() + " pos=" + position.x + ", " + position.y);
 			}
 		}
 

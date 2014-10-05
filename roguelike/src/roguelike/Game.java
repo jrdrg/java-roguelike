@@ -66,6 +66,12 @@ public class Game {
 		this.messages = new MessageLog();
 	}
 
+	public static Game load() {
+		Game g = new Game();
+		g.player = GameLoader.instance().loadPlayer();
+		return g;
+	}
+
 	/**
 	 * Always returns the current game
 	 * 
@@ -330,8 +336,12 @@ public class Game {
 		if (result.isCompleted()) {
 
 			while (result.getAlternateAction() != null) {
-				result = result.getAlternateAction().perform();
+				Action alternate = result.getAlternateAction();
+				result = alternate.perform();
 				messages.add(result.getMessage());
+
+				if (!result.isCompleted())
+					queuedActions.add(alternate);
 			}
 
 			Actor currentActor = currentAction.getActor();

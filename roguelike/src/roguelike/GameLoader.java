@@ -1,6 +1,6 @@
 package roguelike;
 
-import roguelike.actors.ActorSerializationData;
+import roguelike.actors.SerializationData;
 import roguelike.actors.Player;
 import roguelike.data.DataFactory;
 import roguelike.data.serialization.PlayerSerializer;
@@ -39,7 +39,7 @@ public class GameLoader {
 
 		// TODO: make a real map
 		// MapArea currentMapArea = new MapArea(200, 200, new MapBuilder());
-		MapArea currentMapArea = new MapArea(83, 38, new DungeonMapBuilder());
+		MapArea currentMapArea = new MapArea(83, 43, new DungeonMapBuilder());
 		currentMapArea.addActor(player);
 
 		game.setCurrentMapArea(currentMapArea);
@@ -47,11 +47,21 @@ public class GameLoader {
 	}
 
 	public Game load() {
-		// TODO: load game from file instead
 
-		Player player = PlayerSerializer.deserialize();
+		Game game = Game.load();
+		Player player = game.getPlayer();
 
-		return newGame();
+		// TODO: load game and map from file
+
+		// player.setPosition(1, 1);
+
+		// TODO: make a real map
+		// MapArea currentMapArea = new MapArea(200, 200, new MapBuilder());
+		MapArea currentMapArea = new MapArea(83, 38, new DungeonMapBuilder());
+		currentMapArea.addActor(player);
+
+		game.setCurrentMapArea(currentMapArea);
+		return game;
 	}
 
 	public Player createPlayer() {
@@ -70,8 +80,7 @@ public class GameLoader {
 	}
 
 	public Player loadPlayer() {
-		// TODO: load player from file instead
-		return createPlayer();
+		return PlayerSerializer.deserialize();
 	}
 
 	public RNG getRandom() {

@@ -85,7 +85,7 @@ public class DungeonMapBuilder extends MapBuilderBase {
 
 	private int generateMainPath(Room startRoom) {
 		int roomsGenerated = 0;
-		int maxRooms = 20;
+		int maxRooms = 30;
 		Room currentRoom = null;
 
 		Stack<Room> roomsOnPath = new Stack<Room>();
@@ -263,7 +263,7 @@ public class DungeonMapBuilder extends MapBuilderBase {
 	 * @return
 	 */
 	private Rectangle getRectangleForEndPoint(ConnectionPoint endPoint) {
-		int maxSize = 10;
+		int maxSize = random.between(5, 14);
 		int centerPoint = random.between(1, maxSize - 1);
 		Point connection = new Point(endPoint);
 		DirectionCardinal direction = endPoint.direction().opposite();
@@ -282,6 +282,10 @@ public class DungeonMapBuilder extends MapBuilderBase {
 
 		Rectangle rect = new Rectangle();
 		rect.setFrameFromDiagonal(start, end);
+
+		Rectangle roomBoundsWithWalls = new Rectangle(rect);
+		roomBoundsWithWalls.grow(1, 1);
+
 		return rect;
 	}
 

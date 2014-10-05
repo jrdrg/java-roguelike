@@ -1,12 +1,14 @@
 package roguelike.actors;
 
+import roguelike.util.StringEx;
+
 public abstract class Condition {
 
-	protected String identifier;
+	protected StringEx identifier;
 	protected Actor actor;
 	protected int duration;
 
-	protected Condition(String identifier, Actor actor, int duration) {
+	protected Condition(StringEx identifier, Actor actor, int duration) {
 		this.identifier = identifier;
 		this.actor = actor;
 		this.duration = duration;
@@ -22,6 +24,10 @@ public abstract class Condition {
 			onProcess();
 		}
 		return duration <= 0;
+	}
+
+	public StringEx getIdentifier() {
+		return identifier;
 	}
 
 	protected abstract void onProcess();

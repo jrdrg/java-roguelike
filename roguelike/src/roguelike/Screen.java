@@ -5,9 +5,8 @@ import roguelike.ui.MainWindow;
 import roguelike.ui.windows.TerminalBase;
 
 public abstract class Screen {
-	int width = MainWindow.width;
-	int height = MainWindow.height;
-	int outputLines = MainWindow.outputLines;
+	final int width = MainWindow.width;
+	final int height = MainWindow.height;
 
 	protected TerminalBase terminal;
 	private Screen nextScreen;

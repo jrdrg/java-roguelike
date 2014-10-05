@@ -18,12 +18,14 @@ public class TargetedAttackBehavior extends Behavior {
 	private Actor target;
 	private RadiusStrategy radiusStrategy = BasicRadiusStrategy.CIRCLE;
 	private boolean canSeeTarget;
+	private Behavior nextBehavior;
 
 	protected TargetedAttackBehavior(Actor actor, Actor target) {
 		super(actor);
 
 		Game.current().displayMessage(actor.getName() + " is now attacking " + target.getName(), SColor.PURPLE);
 		this.target = target;
+		this.nextBehavior = this;
 	}
 
 	@Override
@@ -43,36 +45,30 @@ public class TargetedAttackBehavior extends Behavior {
 
 			if (actor.canSee(target, Game.current().getCurrentMapArea())) {
 				canSeeTarget = true;
+				nextBehavior = this;
 				return new AttackAction(actor, target);
 			}
 			else {
 				Game.current().displayMessage(target.getName() + "is no longer in sight range.");
 			}
+		} else if (target.isAlive() && isTargetVisible()) {
+
+			if (actor.equipment().getEquippedWeapons().stream().filter(w -> w != null).findAny() != null)
+				nextBehavior = this;
+
 		}
 
 		// if we can't attack, do a rest action and switch behavior to searching for the player
 		canSeeTarget = false;
 
-		return new WaitAction(actor);
+		nextBehavior = new SearchForPlayerBehavior(actor);
+		return nextBehavior.getAction();
 	}
 
 	@Override
 	public Behavior getNextBehavior() {
 		if (actor.isAlive()) {
-
-			if (!canSeeTarget) {
-				return new SearchForPlayerBehavior(actor);
-			}
-
-			if (target.isAlive() && isTargetVisible()) {
-				if (actor.equipment().getEquippedWeapons().stream().filter(w -> w != null).findAny() != null)
-					return this;
-				else {
-					Log.warning(String.format("%s has no weapon!", actor.getName()));
-				}
-			}
-
-			return new SearchForPlayerBehavior(actor);
+			return nextBehavior;
 		}
 		return null;
 	}
@@ -97,7 +93,7 @@ public class TargetedAttackBehavior extends Behavior {
 		}).orElse(null);
 
 		if (maxRange != null)
-			range = maxRange.reach;
+			range = maxRange.getReachInTiles();
 
 		return (distance <= range);
 	}

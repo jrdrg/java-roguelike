@@ -17,7 +17,8 @@ public enum Symbol {
 	GROUND1('.'),
 	GROUND2('`'),
 
-	WALL(176), // ░
+	// WALL(176), // ░
+	WALL('#'),
 
 	TORCH1(';'),
 	TORCH2(':'),

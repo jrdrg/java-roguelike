@@ -13,6 +13,7 @@ import roguelike.items.Equipment.ItemSlot;
 import roguelike.items.Weapon;
 import roguelike.util.DiceRolls;
 import roguelike.util.Log;
+import roguelike.util.Utility;
 import squidpony.squidcolor.SColor;
 
 /**
@@ -106,7 +107,7 @@ public class CombatHandler implements Serializable {
 		Log.debug("S (D): " + defenderSuccesses + ", TN=" + defendWeaponTN + ", pool=" + defendSuccessPool);
 
 		logCombatMessage(String.format("%s rolls %d successes, %s rolls %d: total %d (%s)",
-				attacker.getName(), attackerSuccesses, actor.getName(), defenderSuccesses, total, (total > 0 ? "Hit" : "Miss")));
+				attacker.getMessageName(), attackerSuccesses, actor.getMessageName(), defenderSuccesses, total, (total > 0 ? "Hit" : "Miss")));
 
 		if (total > 0) {
 
@@ -152,7 +153,7 @@ public class CombatHandler implements Serializable {
 	public boolean onDamaged(Attack attack, Actor attacker) {
 		boolean isDead = actor.health().damage(attack.baseDamage);
 
-		String attackDescription = String.format(attack.description, attacker.getName(), actor.getName());
+		String attackDescription = String.format(attack.description, attacker.getMessageName(), actor.getMessageName());
 		String message = String.format("%s for %d %s damage!", attackDescription, attack.baseDamage, attack.damageType);
 		message += "(" + actor.health().getCurrent() + " left)";
 
@@ -207,7 +208,7 @@ public class CombatHandler implements Serializable {
 
 		if (attacker.wasAttackedThisRound()) {
 			reachDiff *= -1;
-			logCombatMessage(String.format("Reach advantage applied to %s", actor.getName()));
+			logCombatMessage(String.format("Reach advantage applied to %s", actor.getMessageName()));
 		}
 		else if (actor.wasAttackedThisRound()) {
 
@@ -217,7 +218,7 @@ public class CombatHandler implements Serializable {
 		Log.debug("Defender reach: " + defendingReach);
 
 		logCombatMessage(String.format("%s has reach of %d, %s has reach of %d",
-				attacker.getName(), attackingReach, actor.getName(), defendingReach));
+				attacker.getMessageName(), attackingReach, actor.getMessageName(), defendingReach));
 		return reachDiff;
 	}
 

@@ -6,7 +6,7 @@ public class Energy implements Serializable {
 	private static final long serialVersionUID = 6031761333954684789L;
 
 	private final int ACTION_THRESHOLD = 100;
-	private int current;
+	int current;
 
 	public int getCurrent() {
 		return current;

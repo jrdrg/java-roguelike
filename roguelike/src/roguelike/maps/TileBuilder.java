@@ -44,9 +44,9 @@ public class TileBuilder {
 
 		switch (character) {
 		case WALL:
-			t.setValues(character.symbol(), false, SColor.DARK_GRAY, true)
-					.setLighting(1f)
-					.setBackground(SColor.DARK_BLUE_LAPIS_LAZULI);
+			t.setValues(character.symbol(), false, SColor.LAPIS_LAZULI, true)
+					.setLighting(1f);
+			// .setBackground(SColor.DARK_BLUE_LAPIS_LAZULI);
 			break;
 
 		case DOOR:
@@ -77,7 +77,7 @@ public class TileBuilder {
 			break;
 
 		case DUNGEON_FLOOR:
-			t.setValues(character.symbol(), true, SColor.BOILED_RED_BEAN_BROWN);
+			t.setValues(character.symbol(), true, SColor.GRAY);
 			break;
 
 		case GROUND:
@@ -89,7 +89,7 @@ public class TileBuilder {
 
 		case BOX_BOTTOM_LEFT_SINGLE:
 			// TODO: change the character and make this a torch or something
-			t.setValues(character.symbol(), true, SColor.ORANGE);
+			t.setValues('#', false, SColor.ORANGE, true);
 			break;
 
 		default:

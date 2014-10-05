@@ -11,32 +11,32 @@ public class Statistics implements Serializable {
 	public class Statistic implements Serializable {
 		private static final long serialVersionUID = -159928992533926261L;
 
-		private Pair<Integer, Integer> stat;
+		private int[] stat = new int[2];
 
 		public int getBase() {
-			return stat.getFirst();
+			return stat[0];
 		}
 
 		public int getBonus() {
-			return stat.getSecond();
+			return stat[1];
 		}
 
 		public Statistic(int base, int bonus) {
-			this.stat = new Pair<Integer, Integer>(base, bonus);
+			this.stat = new int[] { base, bonus };
 		}
 
 		public Statistic setBase(int base) {
-			stat.setFirst(base);
+			stat[0] = base;
 			return this;
 		}
 
 		public Statistic setBonus(int bonus) {
-			stat.setSecond(bonus);
+			stat[1] = bonus;
 			return this;
 		}
 
 		public int getTotalValue() {
-			return stat.getFirst() + stat.getSecond();
+			return stat[0] + stat[1];
 		}
 	}
 
