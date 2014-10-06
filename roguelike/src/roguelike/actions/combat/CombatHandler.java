@@ -13,7 +13,6 @@ import roguelike.items.Equipment.ItemSlot;
 import roguelike.items.Weapon;
 import roguelike.util.DiceRolls;
 import roguelike.util.Log;
-import roguelike.util.Utility;
 import squidpony.squidcolor.SColor;
 
 /**
@@ -153,7 +152,7 @@ public class CombatHandler implements Serializable {
 	public boolean onDamaged(Attack attack, Actor attacker) {
 		boolean isDead = actor.health().damage(attack.baseDamage);
 
-		String attackDescription = String.format(attack.description, attacker.getMessageName(), actor.getMessageName());
+		String attackDescription = String.format(attack.description, attacker.getMessageName(), attacker.getVerbSuffix(), actor.getMessageName());
 		String message = String.format("%s for %d %s damage!", attackDescription, attack.baseDamage, attack.damageType);
 		message += "(" + actor.health().getCurrent() + " left)";
 
@@ -185,7 +184,7 @@ public class CombatHandler implements Serializable {
 
 		} else {
 			isDead = false;
-			Game.current().displayMessage(actor.getName() + " missed " + target.getName() + "!", SColor.DARK_TAN);
+			Game.current().displayMessage(actor.getMessageName() + " missed " + target.getMessageName() + "!", SColor.DARK_TAN);
 
 			Game.current().addEvent(TurnEvent.attackMissed(actor, target, "Missed"));
 		}

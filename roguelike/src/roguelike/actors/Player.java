@@ -3,6 +3,7 @@ package roguelike.actors;
 import roguelike.actions.Action;
 import roguelike.actors.behaviors.Behavior;
 import roguelike.actors.behaviors.PlayerInputBehavior;
+import roguelike.data.DataFactory;
 import roguelike.util.Log;
 import squidpony.squidcolor.SColor;
 
@@ -10,6 +11,7 @@ public class Player extends Actor {
 	private static final long serialVersionUID = -1439044065168378557L;
 
 	private Behavior behavior;
+	private String characterName;
 
 	public Player() {
 		super('@', SColor.WHITE);
@@ -21,6 +23,10 @@ public class Player extends Actor {
 
 	public static boolean isPlayer(Actor actor) {
 		return actor instanceof Player;
+	}
+
+	public String getCharacterName() {
+		return characterName;
 	}
 
 	@Override
@@ -51,7 +57,7 @@ public class Player extends Actor {
 
 	@Override
 	public int getVisionRadius() {
-//		return 35;
+		// return 35;
 		return 15;
 	}
 
@@ -64,5 +70,24 @@ public class Player extends Actor {
 	@Override
 	public void onKilled() {
 		// back to title screen
+	}
+
+	@Override
+	public void onSerialize(SerializationData data) {
+		super.onSerialize(data);
+
+		String behaviorName = behavior.getClass().getName().replace("roguelike.actors.behaviors.", "").replace("Behavior", "");
+
+		data.setData("behavior", behaviorName);
+	}
+
+	@Override
+	public void onDeserialize(SerializationData data) {
+		super.onDeserialize(data);
+
+		String behaviorName = (String) data.getData("behavior");
+		Log.debug("loaded behavior=" + behaviorName);
+
+		behavior = DataFactory.createBehavior(behaviorName, this);
 	}
 }

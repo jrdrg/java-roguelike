@@ -13,7 +13,7 @@ public class MeleeWeapon extends Weapon {
 		super(data);
 
 		if (data.attackDescription == null || data.attackDescription.length() == 0) {
-			this.attackDescription = "%s swings " + getName() + " at %s";
+			this.attackDescription = "%s attack%s %s";
 		} else {
 			this.attackDescription = data.attackDescription;
 		}

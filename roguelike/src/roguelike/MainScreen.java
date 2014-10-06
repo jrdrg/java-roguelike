@@ -36,7 +36,6 @@ public class MainScreen extends Screen {
 	private final RadiusStrategy radiusStrategy = BasicRadiusStrategy.CIRCLE;
 
 	private final int windowWidth = width - MainWindow.statWidth;
-	// private final int windowHeight = height - outputLines;
 	private final int windowHeight = height;
 
 	TerminalBase fullTerminal;
@@ -52,6 +51,8 @@ public class MainScreen extends Screen {
 
 	TurnResult currentTurn;
 
+	private Rectangle[] screenQuadrants = new Rectangle[4];
+
 	public MainScreen(TerminalBase fullTerminal) {
 		this(fullTerminal, null);
 	}
@@ -62,6 +63,14 @@ public class MainScreen extends Screen {
 		} else {
 			this.game = initialGame;
 		}
+
+		int midX = windowWidth / 2;
+		int midY = windowHeight / 2;
+
+		screenQuadrants[0] = new Rectangle(0, 0, midX, midY);
+		screenQuadrants[1] = new Rectangle(0, midY, midX, midY);
+		screenQuadrants[2] = new Rectangle(midX, 0, midX, midY);
+		screenQuadrants[3] = new Rectangle(midX, midY, midX, midY);
 
 		game.initialize();
 
@@ -77,9 +86,6 @@ public class MainScreen extends Screen {
 
 		animationManager = new AnimationManager();
 		displayManager = DisplayManager.instance();
-		//
-		// TerminalBase messageTerminal =
-		// fullTerminal.getWindow(0, height - outputLines, width - MainWindow.statWidth, outputLines);
 
 		int messageLines = 21;
 		TerminalBase messageTerminal =
@@ -93,7 +99,9 @@ public class MainScreen extends Screen {
 		statsDisplay.setPlayer(game.getPlayer());
 
 		Rectangle statsSize = statsTerminal.size();
-		lookDisplay = new LookDisplay(statsTerminal.getWindow(statsSize.x + 2, statsSize.height - 23, statsSize.width - 4, 22), statsSize.width - 4, 22);
+		int lookWidth = Math.min(20, windowWidth - 4);
+		int lookHeight = Math.min(20, windowHeight - 4);
+		lookDisplay = new LookDisplay(statsTerminal.getWindow(statsSize.x + 2, statsSize.height - 23, statsSize.width - 4, 22), lookWidth, lookHeight);
 
 		doFOV();
 		drawMap();
@@ -369,10 +377,23 @@ public class MainScreen extends Screen {
 	private void drawLookDisplay(TurnResult run) {
 		Pair<Point, Boolean> p = run.getCurrentLook();
 		if (p == null || p.getFirst() == null) {
-			lookDisplay.erase();
+			// lookDisplay.erase();
 			return;
 		}
-		lookDisplay.draw(game.getCurrentMapArea(), p.getFirst().x, p.getFirst().y, p.getSecond(), p.getSecond() ? "Looking at" : "On ground");
+
+		int quadrantIdx = 0;
+		Rectangle quadrant = screenQuadrants[0];
+		Point player = game.getPlayer().getPosition();
+		Point lookingAt = p.getFirst();
+		while (quadrant.contains(player) || quadrant.contains(lookingAt)) {
+			quadrantIdx++;
+			quadrant = screenQuadrants[quadrantIdx];
+		}
+		TerminalBase term = this.terminal.getWindow(quadrant.x, quadrant.y, quadrant.width, quadrant.height);
+
+		lookDisplay
+				.setTerminal(term)
+				.draw(game.getCurrentMapArea(), p.getFirst().x, p.getFirst().y, p.getSecond(), p.getSecond() ? "Looking at" : "On ground");
 	}
 
 	private boolean shouldDisplayAnimation(Point initiatorPos, Point targetPos, Rectangle screenArea, boolean initiatorMustBeVisible) {

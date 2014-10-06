@@ -1,9 +1,9 @@
 name,description,symbol,color,type,baseDamage,reach,attackDescription,droppable,cutTN,cutDR,pierceTN,pierceDR,bluntTN,bluntDR,rangedType,pointBlankTN,nearTN,mediumTN,farTN,rangedDR,requiresAmmo,ammoType,quality,defenseTN,condition,attackSuccess,attribute,attrSuccesses
-bite,A strong bite,b,Red,natural,10,1,%s bites %s,false,,,6,1,8,-1,,,,,,,,,1,8,,,,
-mandibles,Vicious insectoid mandibles,m,Red,natural,15,1,%s slices %s with its mandibles,false,,,6,1,7,,,,,,,,,,1,8,Poison,2,Toughness,1
+bite,A strong bite,b,Red,natural,10,1,%s bite%s %s,false,,,6,1,8,-1,,,,,,,,,1,8,,,,
+mandibles,Vicious insectoid mandibles,m,Red,natural,15,1,%s slice%s %s with its mandibles,false,,,6,1,7,,,,,,,,,,1,8,Poison,2,Toughness,1
 axe,A sturdy axe,!,Gray,axe,15,3,,true,6,1,,,9,1,,,,,,,,,1,9,,,,
 dagger,An ordinary dagger,!,Gray,dagger,10,2,,true,7,1,6,1,,,,6,7,8,9,0,false,self,1,8,,,,
 sword,An ordinary short sword,!,Gray,sword,25,3,,true,6,1,7,1,8,1,,,,,,,,,1,7,,,,
-spear,A long spear,!,Gray,spear,20,4,%s stabs %s,true,,,7,1,9,1,,,,,,,,,1,7,,,,
+spear,A long spear,!,Gray,spear,20,4,%s stab%s %s,true,,,7,1,9,1,,,,,,,,,1,7,,,,
 short bow,A short bow,},Brown,bow,5,2,,true,,,,,8,0,,6,7,8,9,1,true,arrow,1,9,,,,
 short arrow,Arrows for a short bow,-,Brown,arrow,10,15,,true,,,,1,,,,,,,,,,,1,10,,,,

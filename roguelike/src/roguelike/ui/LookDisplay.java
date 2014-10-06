@@ -1,5 +1,6 @@
 package roguelike.ui;
 
+import java.awt.Rectangle;
 import java.util.ArrayList;
 
 import roguelike.Game;
@@ -22,6 +23,13 @@ public class LookDisplay extends TextWindow {
 	public LookDisplay(TerminalBase terminal, int width, int height) {
 		super(width, height);
 		this.terminal = terminal;
+	}
+
+	public LookDisplay setTerminal(TerminalBase terminal)
+	{
+		this.size = new Rectangle(0, 0, terminal.size().width, terminal.size().height);
+		this.terminal = terminal;
+		return this;
 	}
 
 	public void draw(MapArea map, int x, int y) {
@@ -56,15 +64,16 @@ public class LookDisplay extends TextWindow {
 			add(textList, "`" + actor.color().getName() + "`" + actor.getDescription());
 			add(textList, "");
 			Weapon equipped = ItemSlot.RIGHT_ARM.getEquippedWeapon(actor);
-			add(textList, " `Gray`Weapon: `White`" + equipped.getDescription() + " (" + equipped.defaultDamageType().name() + ")");
-
+			add(textList, " `Gray`Weapon");
+			add(textList, "`White`" + equipped.getDescription() + " (" + equipped.defaultDamageType().name() + ")");
+			add(textList, "");
 			Statistics stats = actor.statistics();
 			add(textList, String.format(" `Bronze`MP:`White`%3d `Bronze`RP:`White`%3d `Bronze`Ref:`White`%3d `Bronze`Aim:`White`%3d `Bronze`Spd:`White`%3d",
 					stats.baseMeleePool(0), stats.baseRangedPool(0), stats.reflexes(), stats.aiming(), actor.effectiveSpeed(map)));
 
-			add(textList, String.format(" `Bronze`To:`White`%3d `Bronze`Co:`White`%3d `Bronze`Pe:`White`%3d " +
-					"`Bronze`Qu:`White`%3d `Bronze`Wi:`White`%3d `Bronze`Pr:`White`%3d",
-					stats.toughness.getTotalValue(), stats.conditioning.getTotalValue(), stats.perception.getTotalValue(),
+			add(textList, String.format(" `Bronze`To:`White`%3d `Bronze`Co:`White`%3d `Bronze`Pe:`White`%3d ",
+					stats.toughness.getTotalValue(), stats.conditioning.getTotalValue(), stats.perception.getTotalValue()));
+			add(textList, String.format(" `Bronze`Qu:`White`%3d `Bronze`Wi:`White`%3d `Bronze`Pr:`White`%3d",
 					stats.agility.getTotalValue(), stats.willpower.getTotalValue(), stats.presence.getTotalValue()));
 
 			add(textList, String.format(" `Red`H:`White`%3d", actor.health().getCurrent()));

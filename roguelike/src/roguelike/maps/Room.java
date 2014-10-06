@@ -89,6 +89,21 @@ public class Room {
 		return null;
 	}
 
+	public Point getDoorFrom(Point p, DirectionCardinal thisDoorDirection) {
+		switch (thisDoorDirection) {
+		case DOWN:
+			return new Point(p.x, this.bottom());
+		case UP:
+			return new Point(p.x, this.top());
+		case LEFT:
+			return new Point(this.left(), p.y);
+		case RIGHT:
+			return new Point(this.right(), p.y);
+		default:
+			return null;
+		}
+	}
+
 	public Point getExistingDoor(DirectionCardinal direction) {
 		final Point startPoint;
 		final Point endPoint;

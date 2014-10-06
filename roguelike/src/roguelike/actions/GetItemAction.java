@@ -50,11 +50,10 @@ public class GetItemAction extends Action {
 			actor.inventory().add(pickUp);
 			inventory.remove(pickUp);
 
-			Game.current().displayMessage(actor.getName() + " picks up " + pickUp.getName(), SColor.LIGHT_BLUE);
+			Game.current().displayMessage(String.format("%s pick%s up %s", actor.getName(), actor.getVerbSuffix(), pickUp.getName(), SColor.LIGHT_BLUE));
 
 			return ActionResult.success();
 		}
 		return ActionResult.failure().setMessage("Selected item doesn't exist...");
 	}
-
 }

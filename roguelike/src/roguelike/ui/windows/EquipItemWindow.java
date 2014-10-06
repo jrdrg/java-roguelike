@@ -2,7 +2,6 @@ package roguelike.ui.windows;
 
 import roguelike.Dialog;
 import roguelike.DialogResult;
-import roguelike.items.Equipment;
 import roguelike.items.Equipment.ItemSlot;
 import roguelike.ui.InputCommand;
 

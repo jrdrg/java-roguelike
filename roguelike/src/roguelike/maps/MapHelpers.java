@@ -86,13 +86,20 @@ public class MapHelpers {
 		return points;
 	}
 
-	public static int getAdjacentTiles(Tile[][] map, int x, int y, Symbol tile) {
+	public static int getAdjacentTiles(Tile[][] map, int x, int y, Symbol tile, boolean noDiagonals) {
 		int count = 0;
 
 		ArrayList<Point> neighbors = getNeighbors(map.length, map[0].length, x, y, 1);
 
 		for (Point p : neighbors) {
 			if (map[p.x][p.y].symbol == tile.symbol()) {
+
+				if (noDiagonals) {
+					/* diagonals */
+					if (x != p.x && y != p.y)
+						continue;
+				}
+
 				count++;
 			}
 		}

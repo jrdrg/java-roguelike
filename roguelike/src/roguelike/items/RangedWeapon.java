@@ -11,6 +11,7 @@ public class RangedWeapon extends Weapon {
 
 	protected int maxRange;
 	protected boolean requiresAmmunition;
+	protected String ammunitionType;
 
 	protected RangedWeapon(WeaponData data) {
 		super(data);
@@ -25,6 +26,7 @@ public class RangedWeapon extends Weapon {
 		this.maxRange = 15;
 
 		this.requiresAmmunition = data.requiresAmmunition;
+		this.ammunitionType = data.ammunitionType;
 	}
 
 	@Override

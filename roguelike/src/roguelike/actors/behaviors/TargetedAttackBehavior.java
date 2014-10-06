@@ -3,12 +3,10 @@ package roguelike.actors.behaviors;
 import roguelike.Game;
 import roguelike.actions.Action;
 import roguelike.actions.AttackAction;
-import roguelike.actions.WaitAction;
 import roguelike.actors.Actor;
 import roguelike.actors.Player;
 import roguelike.items.Weapon;
 import roguelike.util.Coordinate;
-import roguelike.util.Log;
 import squidpony.squidcolor.SColor;
 import squidpony.squidgrid.fov.BasicRadiusStrategy;
 import squidpony.squidgrid.fov.RadiusStrategy;
@@ -17,7 +15,6 @@ public class TargetedAttackBehavior extends Behavior {
 
 	private Actor target;
 	private RadiusStrategy radiusStrategy = BasicRadiusStrategy.CIRCLE;
-	private boolean canSeeTarget;
 	private Behavior nextBehavior;
 
 	protected TargetedAttackBehavior(Actor actor, Actor target) {
@@ -44,7 +41,6 @@ public class TargetedAttackBehavior extends Behavior {
 		if (canAttackTarget(radius)) {
 
 			if (actor.canSee(target, Game.current().getCurrentMapArea())) {
-				canSeeTarget = true;
 				nextBehavior = this;
 				return new AttackAction(actor, target);
 			}
@@ -58,9 +54,7 @@ public class TargetedAttackBehavior extends Behavior {
 
 		}
 
-		// if we can't attack, do a rest action and switch behavior to searching for the player
-		canSeeTarget = false;
-
+		// if we can't attack, switch behavior to searching for the player
 		nextBehavior = new SearchForPlayerBehavior(actor);
 		return nextBehavior.getAction();
 	}

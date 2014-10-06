@@ -8,10 +8,10 @@ import roguelike.actions.InventoryAction;
 import roguelike.actions.LookAction;
 import roguelike.actions.QuitAction;
 import roguelike.actions.RangedAttackAction;
-import roguelike.actions.WaitAction;
 import roguelike.actions.ShowMessagesAction;
+import roguelike.actions.WaitAction;
 import roguelike.actions.WalkAction;
-import roguelike.actors.Player;
+import roguelike.actors.Actor;
 import roguelike.items.RangedWeapon;
 import roguelike.ui.InputCommand;
 import roguelike.ui.InputManager;
@@ -19,7 +19,7 @@ import squidpony.squidgrid.util.DirectionIntercardinal;
 
 public class PlayerInputBehavior extends Behavior {
 
-	public PlayerInputBehavior(Player actor) {
+	public PlayerInputBehavior(Actor actor) {
 		super(actor);
 	}
 

@@ -89,7 +89,7 @@ public class TileBuilder {
 
 		case BOX_BOTTOM_LEFT_SINGLE:
 			// TODO: change the character and make this a torch or something
-			t.setValues('#', false, SColor.ORANGE, true);
+			t.setValues(character.symbol(), false, SColor.ORANGE, true);
 			break;
 
 		default:

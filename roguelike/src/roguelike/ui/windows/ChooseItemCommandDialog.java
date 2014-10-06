@@ -5,12 +5,10 @@ import java.util.ArrayList;
 
 import roguelike.Dialog;
 import roguelike.DialogResult;
-import roguelike.items.Item;
 import roguelike.ui.InputCommand;
 import roguelike.ui.Menu;
 import roguelike.ui.MenuItem;
 import roguelike.util.StringEx;
-import roguelike.util.Utility;
 import squidpony.squidcolor.SColor;
 import squidpony.squidcolor.SColorFactory;
 

@@ -1,6 +1,5 @@
 package roguelike;
 
-import roguelike.actors.SerializationData;
 import roguelike.actors.Player;
 import roguelike.data.DataFactory;
 import roguelike.data.serialization.PlayerSerializer;
@@ -53,11 +52,8 @@ public class GameLoader {
 
 		// TODO: load game and map from file
 
-		// player.setPosition(1, 1);
-
-		// TODO: make a real map
 		// MapArea currentMapArea = new MapArea(200, 200, new MapBuilder());
-		MapArea currentMapArea = new MapArea(83, 38, new DungeonMapBuilder());
+		MapArea currentMapArea = new MapArea(83, 43, new DungeonMapBuilder());
 		currentMapArea.addActor(player);
 
 		game.setCurrentMapArea(currentMapArea);

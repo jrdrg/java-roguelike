@@ -21,7 +21,7 @@ public class PlayerSerializer {
 		try {
 			SerializationData data = new SerializationData();
 
-			OutputStream file = new FileOutputStream("player.ser");
+			OutputStream file = new FileOutputStream("saves/player.ser");
 			GZIPOutputStream gzip = new GZIPOutputStream(file);
 			ObjectOutput output = new ObjectOutputStream(gzip);
 
@@ -38,7 +38,7 @@ public class PlayerSerializer {
 
 	public static Player deserialize() {
 		try {
-			InputStream file = new FileInputStream("player.ser");
+			InputStream file = new FileInputStream("saves/player.ser");
 			GZIPInputStream gzip = new GZIPInputStream(file);
 			ObjectInput input = new ObjectInputStream(gzip);
 

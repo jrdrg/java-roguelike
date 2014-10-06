@@ -3,7 +3,6 @@ package roguelike.actors;
 import java.io.Serializable;
 
 import roguelike.data.EnemyData;
-import squidpony.squidutility.Pair;
 
 public class Statistics implements Serializable {
 	private static final long serialVersionUID = 7046880693122391945L;

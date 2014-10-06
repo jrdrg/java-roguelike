@@ -200,6 +200,8 @@ public abstract class Actor implements Serializable {
 		}
 		currentArea.removeActor(this);
 
+		currentArea.getTileAt(this.getPosition()).setBackground(SColorFactory.dimmer(SColor.DARK_RED));
+
 		Game.current().displayMessage("Target is dead");
 	}
 
@@ -229,6 +231,8 @@ public abstract class Actor implements Serializable {
 		boolean isPlayer = Player.isPlayer(this);
 		data.setData("isPlayer", isPlayer);
 
+		data.setData("actorId", this.actorId);
+
 		data.setData("symbol", this.symbol);
 		data.setData("position", this.position);
 		data.setData("currentEnergy", this.energy);
@@ -236,10 +240,23 @@ public abstract class Actor implements Serializable {
 
 		data.setData("inventory", this.inventory);
 		data.setData("equipment", this.equipment);
+		data.setData("health", this.health);
+		data.setData("statistics", this.statistics);
 
+		data.setData("attacked", this.attacked);
+		data.setData("attackedBy", this.attackedBy);
+		data.setData("attackedThisRound", this.attackedThisRound);
+
+		// protected CombatHandler combat;
+
+		// TODO: need to serialize condition durations too
+		// protected ArrayList<Condition> conditions;
 	}
 
+	@SuppressWarnings("unchecked")
 	public void onDeserialize(SerializationData data) {
+		this.actorId = (UUID) data.getData("actorId");
+
 		int[] color = (int[]) data.getData("color");
 		this.color = SColorFactory.asSColor(color[0], color[1], color[2]);
 		this.symbol = 'X';// symbol;
@@ -247,6 +264,11 @@ public abstract class Actor implements Serializable {
 		this.energy = (Energy) data.getData("currentEnergy");
 		this.inventory = (Inventory) data.getData("inventory");
 		this.equipment = (Equipment) data.getData("equipment");
+		this.health = (Health) data.getData("health");
+		this.statistics = (Statistics) data.getData("statistics");
+		this.attacked = (Stack<AttackAttempt>) data.getData("attacked");
+		this.attackedBy = (Stack<AttackAttempt>) data.getData("attackedBy");
+		this.attackedThisRound = (boolean) data.getData("attackedThisRound");
 	}
 
 	protected abstract void onAttackedInternal(Actor attacker);

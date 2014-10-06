@@ -106,8 +106,8 @@ public class Tile implements Serializable {
 			if (explored)
 				return SColorFactory.dimmer(SColor.DARK_GRAY);
 
-//			return SColor.BLACK;
-			 return SColor.DARK_INDIGO;
+			return SColor.BLACK;
+			// return SColor.DARK_INDIGO;
 		}
 
 		if (actor != null)

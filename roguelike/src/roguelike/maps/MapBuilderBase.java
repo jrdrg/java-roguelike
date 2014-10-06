@@ -134,6 +134,18 @@ public abstract class MapBuilderBase {
 		}
 	}
 
+	protected int getRandomX(Rectangle area) {
+		return (int) random.between(area.getMinX(), area.getMaxX());
+	}
+
+	protected int getRandomY(Rectangle area) {
+		return (int) random.between(area.getMinY(), area.getMaxY());
+	}
+
+	protected void setTile(int x, int y, Symbol character) {
+		map[x][y] = tb.buildTile(character);
+	}
+
 	protected void setTile(Point point, Symbol character) {
 		map[point.x][point.y] = tb.buildTile(character);
 	}
