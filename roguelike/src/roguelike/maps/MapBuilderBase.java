@@ -75,11 +75,11 @@ public abstract class MapBuilderBase {
 	 * @return
 	 */
 	protected Rectangle getRandomRectangleInside(Rectangle containing) {
-		int width = random.betweenWeighted(1, containing.width - 1, 10);
-		int height = random.betweenWeighted(1, containing.height - 1, 10);
+		int width = random.betweenWeighted(1, containing.width - 1, 5);
+		int height = random.betweenWeighted(1, containing.height - 1, 5);
 
-		int x = random.betweenWeighted((int) containing.getMinX(), (int) containing.getMaxX() - width, 10);
-		int y = random.betweenWeighted((int) containing.getMinY(), (int) containing.getMaxY() - height, 10);
+		int x = random.betweenWeighted((int) containing.getMinX(), (int) containing.getMaxX() - width, 5);
+		int y = random.betweenWeighted((int) containing.getMinY(), (int) containing.getMaxY() - height, 5);
 
 		return new Rectangle(x, y, width, height);
 	}
@@ -147,7 +147,8 @@ public abstract class MapBuilderBase {
 	}
 
 	protected void setTile(Point point, Symbol character) {
-		map[point.x][point.y] = tb.buildTile(character);
+		if (map[point.x][point.y].symbol == Symbol.WALL.symbol())
+			map[point.x][point.y] = tb.buildTile(character);
 	}
 
 	protected abstract void onBuildMap(Tile[][] map);

@@ -12,6 +12,8 @@ public class ConnectionPoint extends Point {
 	private Room room;
 	private Room connectedRoom;
 
+	public boolean isDoor;
+
 	public ConnectionPoint(int x, int y, DirectionCardinal direction, Room room) {
 		super(x, y);
 		this.direction = direction;

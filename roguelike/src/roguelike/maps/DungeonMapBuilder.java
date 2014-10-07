@@ -6,8 +6,10 @@ import java.util.ArrayList;
 import java.util.Stack;
 
 import roguelike.Game;
+import roguelike.util.CollectionUtils;
 import roguelike.util.Log;
 import roguelike.util.Symbol;
+import squidpony.squidcolor.SColor;
 import squidpony.squidgrid.util.DirectionCardinal;
 import squidpony.squidutility.ProbabilityTable;
 
@@ -41,19 +43,25 @@ public class DungeonMapBuilder extends MapBuilderBase {
 
 	private ArrayList<Room> rooms;
 	private ArrayList<MapSection> mapSections;
+	private int level;
 
 	public DungeonMapBuilder() {
-		rooms = new ArrayList<Room>();
+		this(1);
+	}
 
+	public DungeonMapBuilder(int level) {
+		rooms = new ArrayList<Room>();
+		this.level = level;
 	}
 
 	@Override
 	protected void onBuildMap(Tile[][] map) {
 
-		int roomCount = 10;
+		int roomCount = 20;
 		int maxTries = 50;
 
 		for (int i = 0; i < maxTries; i++) {
+			rooms.clear();
 
 			/* Initialize map sections */
 			mapSections = new ArrayList<DungeonMapBuilder.MapSection>();
@@ -77,7 +85,8 @@ public class DungeonMapBuilder extends MapBuilderBase {
 
 			int roomsGenerated = generateMainPath(startRoom);
 
-			// if (rooms.size() >= roomCount)
+			roomsGenerated += generateRandomRooms();
+
 			if (roomsGenerated >= roomCount)
 				break;
 		}
@@ -95,7 +104,7 @@ public class DungeonMapBuilder extends MapBuilderBase {
 
 	private int generateMainPath(Room startRoom) {
 		int roomsGenerated = 0;
-		int maxRooms = 25;
+		int maxRooms = 15;
 		Room currentRoom = null;
 
 		Stack<Room> roomsOnPath = new Stack<Room>();
@@ -109,21 +118,13 @@ public class DungeonMapBuilder extends MapBuilderBase {
 			boolean fail = false;
 			DirectionCardinal direction = null;
 			Rectangle area = null;
-			int xOffset = 0;
-			int yOffset = 0;
+
 			for (int i = 0; i < 10; i++) {
 				fail = false;
 				direction = getRandomDirection();
+				Point initialLocation = currentRoom.area.getLocation();
 
-				area = new Rectangle(currentRoom.area);
-
-				area.width = random.between(5, 15);
-				area.height = random.between(5, 15);
-
-				xOffset = (direction.deltaX * (area.width));
-				yOffset = (direction.deltaY * (area.height));
-				area.x += xOffset;
-				area.y += yOffset;
+				area = getRectangleForRoom(direction, initialLocation);
 
 				if (!canCreateRoom(area)) {
 					fail = true;
@@ -151,11 +152,9 @@ public class DungeonMapBuilder extends MapBuilderBase {
 					setTile(door, Symbol.DUNGEON_FLOOR);
 					setTile(endPoint, Symbol.DUNGEON_FLOOR);
 
-					Log.debug("Creating room");
-
 					currentRoom.doors.add(door);
 
-					rooms.add(newRoom);
+					addRoom(newRoom);
 					roomsOnPath.push(currentRoom);
 
 					currentRoom = newRoom;
@@ -171,7 +170,7 @@ public class DungeonMapBuilder extends MapBuilderBase {
 			if (fail) {
 
 				for (ConnectionPoint doorPoint : currentRoom.doors) {
-					setTile(doorPoint, Symbol.DOOR);
+					setDoor(doorPoint);
 					roomsGenerated--;
 				}
 
@@ -181,9 +180,92 @@ public class DungeonMapBuilder extends MapBuilderBase {
 
 		/* put the stairs in the last room we generated */
 		Point stairPoint = currentRoom.getRandomFloorTile();
-		setTile(stairPoint, Symbol.STAIRS);
+		addStairsDown(stairPoint);
+		return roomsGenerated;
+	}
+
+	private int generateRandomRooms() {
+		int roomsGenerated = 0;
+		int maxRooms = 20;
+
+		Log.debug("Room count: " + rooms.size());
+
+		for (int x = 0; x < maxRooms; x++) {
+
+			Room randomRoom = CollectionUtils.getRandomElement(rooms);
+
+			boolean fail = false;
+			DirectionCardinal direction = null;
+			Rectangle area = null;
+
+			for (int i = 0; i < 10; i++) {
+				fail = false;
+				direction = getRandomDirection();
+				Point initialLocation = randomRoom.area.getLocation();
+
+				area = getRectangleForRoom(direction, initialLocation);
+
+				if (!canCreateRoom(area)) {
+					fail = true;
+				}
+				if (!fail)
+					break;
+			}
+			if (direction == null || area == null || fail)
+				continue;
+
+			ConnectionPoint door = generateRandomDoor(randomRoom, direction);
+			if (door == null)
+				fail = true;
+
+			if (!fail) {
+				Rectangle rect = area;
+
+				Room newRoom = createRoom(rect);
+
+				ConnectionPoint endPoint = buildCorridor(door, newRoom, area);
+
+				if (endPoint != null) {
+
+					setTile(door, Symbol.BUILDING_FLOOR);
+					setTile(endPoint, Symbol.BUILDING_FLOOR);
+
+					randomRoom.doors.add(door);
+
+					addRoom(newRoom);
+
+					roomsGenerated++;
+
+					connectToRandomRoom(randomRoom);
+				} else {
+
+					fail = true;
+					System.out.println("endPoint==null, x=" + x);
+				}
+			}
+		}
 
 		return roomsGenerated;
+	}
+
+	private Rectangle getRectangleForRoom(DirectionCardinal direction, Point initialLocation) {
+		Rectangle area;
+		int xOffset;
+		int yOffset;
+		area = new Rectangle(initialLocation);
+
+		area.width = random.between(6, 15);
+		area.height = random.between(4, 10);
+
+		xOffset = (direction.deltaX * (area.width));
+		yOffset = (direction.deltaY * (area.height));
+
+		xOffset += random.between(-3, 3);
+		yOffset += random.between(-3, 3);
+
+		area.x += xOffset;
+		area.y += yOffset;
+		return area;
 	}
 
 	/**
@@ -222,12 +304,15 @@ public class DungeonMapBuilder extends MapBuilderBase {
 		Point endPoint = new Point(originatingPoint.x + (direction.deltaX), originatingPoint.y + (direction.deltaY));
 		Point constrained = new Point(endPoint);
 		MapHelpers.constrainToRectangle(constrained, mapRect.width - 1, mapRect.height - 1);
-		if (!endPoint.equals(constrained))
+		if (!endPoint.equals(constrained)) {
+			Log.debug("cannot construct corridor");
 			return null;
-
+		}
 		setTile(endPoint, Symbol.DUNGEON_FLOOR);
 
-		if (!targetArea.contains(endPoint)) {
+		Rectangle floorTargetArea = new Rectangle(targetArea);
+		floorTargetArea.grow(-1, -1);
+		if (!floorTargetArea.contains(endPoint)) {
 			boolean yFirst = random.nextBoolean();
 			int targetX = (int) random.between(targetArea.getMinX() + 2, targetArea.getMaxX() - 2);
 			int targetY = (int) random.between(targetArea.getMinY() + 2, targetArea.getMaxY() - 2);
@@ -239,35 +324,20 @@ public class DungeonMapBuilder extends MapBuilderBase {
 				while (endPoint.y != targetY) {
 					endPoint.translate(0, yOffset);
 					setTile(endPoint, Symbol.DUNGEON_FLOOR);
-
-					if (getWallNeighbors(endPoint) < 2) {
-						// break;
-					}
 				}
 				while (endPoint.x != targetX) {
 					endPoint.translate(xOffset, 0);
 					setTile(endPoint, Symbol.DUNGEON_FLOOR);
-
-					if (getWallNeighbors(endPoint) < 3) {
-						// break;
-					}
 				}
 
 			} else {
 				while (endPoint.x != targetX) {
 					endPoint.translate(xOffset, 0);
 					setTile(endPoint, Symbol.DUNGEON_FLOOR);
-
-					if (getWallNeighbors(endPoint) < 3) {
-						// break;
-					}
 				}
 				while (endPoint.y != targetY) {
 					endPoint.translate(0, yOffset);
-					setTile(endPoint, Symbol.BUILDING_FLOOR);
-					if (getWallNeighbors(endPoint) < 3) {
-						// break;
-					}
+					setTile(endPoint, Symbol.DUNGEON_FLOOR);
 				}
 
 			}
@@ -275,8 +345,31 @@ public class DungeonMapBuilder extends MapBuilderBase {
 		return new ConnectionPoint(endPoint, direction, room);
 	}
 
-	private int getWallNeighbors(Point point) {
-		return MapHelpers.getAdjacentTiles(map, point.x, point.y, Symbol.WALL, true);
+	private boolean connectToRandomRoom(Room room) {
+		Room randomRoom = CollectionUtils.getRandomElement(rooms);
+		if (randomRoom == null)
+			return false;
+
+		int maxDistance = 5;
+		if (room.area.getLocation().distance(room.area.getLocation()) <= maxDistance) {
+			// try to connect them
+
+			if (room.doors.stream().anyMatch(d -> d.isDoor)) {
+				if (randomRoom.doors.stream().anyMatch(d -> d.isDoor))
+					return false;
+			}
+
+			ConnectionPoint randomDoor = CollectionUtils.getRandomElement(room.doors);
+			if (randomDoor != null) {
+				ConnectionPoint endPoint = buildCorridor(randomDoor, room, randomRoom.area);
+				if (endPoint == null)
+					Log.debug("connect to random room, null endpoint");
+				else
+					Log.debug("endPoint=" + endPoint);
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private MapSection randomMapSection() {
@@ -287,5 +380,19 @@ public class DungeonMapBuilder extends MapBuilderBase {
 		}
 
 		return sections.random();
+	}
+
+	private void addStairsDown(Point point) {
+		map[point.x][point.y] =
+				new Stairs(new DungeonMapBuilder(level + 1)).setValues(Symbol.STAIRS.symbol(), true, SColor.WHITE);
+	}
+
+	private void addRoom(Room room) {
+		rooms.add(room);
+	}
+
+	private void setDoor(ConnectionPoint doorPoint) {
+		setTile(doorPoint, Symbol.DOOR);
+		doorPoint.isDoor = true;
 	}
 }

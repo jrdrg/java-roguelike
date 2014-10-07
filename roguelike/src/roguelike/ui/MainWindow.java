@@ -93,7 +93,7 @@ public class MainWindow {
 				.bindKey(KeyEvent.VK_DOWN, true, InputCommand.DOWN_RIGHT)
 				.bindKey(KeyEvent.VK_LEFT, true, InputCommand.DOWN_LEFT)
 
-				.bindKey(KeyEvent.VK_GREATER, InputCommand.USE_STAIRS)
+				.bindKey(KeyEvent.VK_PERIOD, true, InputCommand.STAIRS_DOWN)
 
 				.bindKey(KeyEvent.VK_ENTER, InputCommand.CONFIRM)
 				.bindKey(KeyEvent.VK_ESCAPE, InputCommand.CANCEL)
@@ -106,7 +106,10 @@ public class MainWindow {
 
 				.bindKey(KeyEvent.VK_PERIOD, InputCommand.REST)
 				.bindKey(KeyEvent.VK_C, InputCommand.CLOSE_DOOR)
+
 				.bindKey(KeyEvent.VK_I, InputCommand.INVENTORY)
+				.bindKey(KeyEvent.VK_E, InputCommand.EQUIP)
+
 				.bindKey(KeyEvent.VK_G, InputCommand.PICK_UP)
 				.bindKey(KeyEvent.VK_L, InputCommand.LOOK);
 

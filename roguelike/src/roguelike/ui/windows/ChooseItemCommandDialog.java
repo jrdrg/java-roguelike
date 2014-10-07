@@ -1,11 +1,13 @@
 package roguelike.ui.windows;
 
 import java.awt.Point;
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 
 import roguelike.Dialog;
 import roguelike.DialogResult;
 import roguelike.ui.InputCommand;
+import roguelike.ui.KeyMap;
 import roguelike.ui.Menu;
 import roguelike.ui.MenuItem;
 import roguelike.util.StringEx;
@@ -13,6 +15,19 @@ import squidpony.squidcolor.SColor;
 import squidpony.squidcolor.SColorFactory;
 
 public class ChooseItemCommandDialog extends Dialog<InputCommand> {
+
+	private static KeyMap KeyBindings = new KeyMap("ChooseItemCommand")
+			.bindKey(KeyEvent.VK_ENTER, InputCommand.CONFIRM)
+			.bindKey(KeyEvent.VK_ESCAPE, InputCommand.CANCEL)
+			.bindKey(KeyEvent.VK_UP, InputCommand.UP)
+			.bindKey(KeyEvent.VK_DOWN, InputCommand.DOWN)
+
+			.bindKey(KeyEvent.VK_E, InputCommand.EQUIP)
+			.bindKey(KeyEvent.VK_U, InputCommand.USE)
+			.bindKey(KeyEvent.VK_D, InputCommand.DROP)
+
+			.bindKey(KeyEvent.VK_LEFT, InputCommand.PREVIOUS_PAGE)
+			.bindKey(KeyEvent.VK_RIGHT, InputCommand.NEXT_PAGE);
 
 	Menu<InputCommand> commands;
 
@@ -50,6 +65,11 @@ public class ChooseItemCommandDialog extends Dialog<InputCommand> {
 	}
 
 	@Override
+	protected KeyMap getKeyBindings() {
+		return ChooseItemCommandDialog.KeyBindings;
+	}
+
+	@Override
 	public Point getLocation() {
 		Point p = super.getLocation();
 		p.translate(2, 2);
@@ -61,6 +81,8 @@ public class ChooseItemCommandDialog extends Dialog<InputCommand> {
 		DialogResult<InputCommand> result = null;
 		if (command != null) {
 			switch (command) {
+
+			case EQUIP:
 			case CONFIRM:
 
 				InputCommand activeItem = commands.getActiveItem();

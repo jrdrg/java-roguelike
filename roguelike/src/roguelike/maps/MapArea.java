@@ -25,9 +25,9 @@ public class MapArea implements Serializable {
 	private float[][] lightResistances;
 	private boolean[][] walls;
 
-	private CurrentItemTracker<Actor> actors;
-	private int width, height;
-	private int difficulty; // controls how difficult random enemies are here
+	protected CurrentItemTracker<Actor> actors;
+	protected int width, height;
+	protected int difficulty; // controls how difficult random enemies are here
 
 	// private PointGraph pointGraph;
 
@@ -367,7 +367,7 @@ public class MapArea implements Serializable {
 		Tile tile = getTileAt(position);
 		if (tile == null)
 			return false;
-	
+
 		return tile.isVisible();
 	}
 

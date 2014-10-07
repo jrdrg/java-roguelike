@@ -18,7 +18,7 @@ public class RangedWeapon extends Weapon {
 
 		// TODO: fix attack descriptions
 		if (data.attackDescription == null || data.attackDescription.length() == 0) {
-			this.attackDescription = "%s shoots with " + getName() + " at %s";
+			this.attackDescription = "%s shoot%s at %s";
 		} else {
 			this.attackDescription = data.attackDescription;
 		}

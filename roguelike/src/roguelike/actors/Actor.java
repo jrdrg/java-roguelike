@@ -243,9 +243,9 @@ public abstract class Actor implements Serializable {
 		data.setData("health", this.health);
 		data.setData("statistics", this.statistics);
 
-		data.setData("attacked", this.attacked);
-		data.setData("attackedBy", this.attackedBy);
-		data.setData("attackedThisRound", this.attackedThisRound);
+//		data.setData("attacked", this.attacked);
+//		data.setData("attackedBy", this.attackedBy);
+//		data.setData("attackedThisRound", this.attackedThisRound);
 
 		// protected CombatHandler combat;
 
@@ -266,9 +266,9 @@ public abstract class Actor implements Serializable {
 		this.equipment = (Equipment) data.getData("equipment");
 		this.health = (Health) data.getData("health");
 		this.statistics = (Statistics) data.getData("statistics");
-		this.attacked = (Stack<AttackAttempt>) data.getData("attacked");
-		this.attackedBy = (Stack<AttackAttempt>) data.getData("attackedBy");
-		this.attackedThisRound = (boolean) data.getData("attackedThisRound");
+		// this.attacked = (Stack<AttackAttempt>) data.getData("attacked");
+		// this.attackedBy = (Stack<AttackAttempt>) data.getData("attackedBy");
+		// this.attackedThisRound = (boolean) data.getData("attackedThisRound");
 	}
 
 	protected abstract void onAttackedInternal(Actor attacker);

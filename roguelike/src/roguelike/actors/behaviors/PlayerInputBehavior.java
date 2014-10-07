@@ -9,6 +9,7 @@ import roguelike.actions.LookAction;
 import roguelike.actions.QuitAction;
 import roguelike.actions.RangedAttackAction;
 import roguelike.actions.ShowMessagesAction;
+import roguelike.actions.StairsDownAction;
 import roguelike.actions.WaitAction;
 import roguelike.actions.WalkAction;
 import roguelike.actors.Actor;
@@ -73,7 +74,7 @@ public class PlayerInputBehavior extends Behavior {
 		case CLOSE_DOOR:
 			return new CloseDoorAction(actor, Game.current().getCurrentMapArea());
 
-		case USE_STAIRS:
+		case STAIRS_DOWN:
 			return useStairs();
 
 		case PICK_UP:
@@ -103,7 +104,7 @@ public class PlayerInputBehavior extends Behavior {
 	}
 
 	private Action useStairs() {
-		return null;
+		return new StairsDownAction(actor, Game.current().getCurrentMapArea());
 	}
 
 	private RangedAttackAction getRangedAttackAction() {

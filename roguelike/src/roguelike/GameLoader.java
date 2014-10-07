@@ -9,7 +9,6 @@ import roguelike.items.RangedWeapon;
 import roguelike.items.WeaponFactory;
 import roguelike.maps.DungeonMapBuilder;
 import roguelike.maps.MapArea;
-import roguelike.maps.MapBuilder;
 import squidpony.squidmath.RNG;
 
 public class GameLoader {
@@ -38,7 +37,7 @@ public class GameLoader {
 
 		// TODO: make a real map
 		// MapArea currentMapArea = new MapArea(200, 200, new MapBuilder());
-		MapArea currentMapArea = new MapArea(83, 43, new DungeonMapBuilder());
+		MapArea currentMapArea = new MapArea(Game.MAP_WIDTH, Game.MAP_HEIGHT, new DungeonMapBuilder());
 		currentMapArea.addActor(player);
 
 		game.setCurrentMapArea(currentMapArea);

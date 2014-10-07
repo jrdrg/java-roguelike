@@ -1,7 +1,6 @@
 package roguelike.actions;
 
 import roguelike.CursorResult;
-import roguelike.Game;
 import roguelike.actions.combat.Attack;
 import roguelike.actors.Actor;
 import roguelike.actors.Player;

@@ -152,16 +152,6 @@ public class CombatHandler implements Serializable {
 	public boolean onDamaged(Attack attack, Actor attacker) {
 		boolean isDead = actor.health().damage(attack.baseDamage);
 
-		String attackDescription = String.format(attack.description, attacker.getMessageName(), attacker.getVerbSuffix(), actor.getMessageName());
-		String message = String.format("%s for %d %s damage!", attackDescription, attack.baseDamage, attack.damageType);
-		message += "(" + actor.health().getCurrent() + " left)";
-
-		SColor color = SColor.ORANGE;
-		if (Player.isPlayer(actor))
-			color = SColor.RED;
-
-		Game.current().displayMessage(message, color);
-
 		return isDead;
 	}
 
@@ -178,6 +168,14 @@ public class CombatHandler implements Serializable {
 		boolean isDead;
 		if (attack.baseDamage > 0) {
 			isDead = target.getCombatHandler().onDamaged(attack, actor);
+
+			String message = getAttackMessage(target, attack);
+
+			SColor color = SColor.ORANGE;
+			if (Player.isPlayer(target))
+				color = SColor.RED;
+
+			Game.current().displayMessage(message, color);
 
 			/* add an event so we can show an animation */
 			Game.current().addEvent(TurnEvent.attack(actor, target, "" + attack.getDamage(), attack));
@@ -236,5 +234,18 @@ public class CombatHandler implements Serializable {
 
 	private void logCombatMessage(String message) {
 		Game.current().messages().add(new MessageDisplayProperties(message));
+	}
+
+	private String getAttackMessage(Actor target, Attack attack) {
+		int targetHealth = target.health().getCurrent();
+
+		String attackDescription = String.format(attack.description, actor.getMessageName(), actor.getVerbSuffix(), target.getMessageName());
+		String message = String.format("%s for %d %s damage!", attackDescription, attack.baseDamage, attack.damageType);
+		if (targetHealth > 0)
+			message += "(" + targetHealth + " left)";
+		else
+			message += target.getMessageName() + " is dead!";
+
+		return message;
 	}
 }

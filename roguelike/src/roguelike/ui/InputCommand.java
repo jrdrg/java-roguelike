@@ -16,7 +16,7 @@ public enum InputCommand {
 	DOWN_LEFT,
 	DOWN_RIGHT,
 
-	USE_STAIRS,
+	STAIRS_DOWN,
 
 	NEXT_PAGE,
 	PREVIOUS_PAGE,

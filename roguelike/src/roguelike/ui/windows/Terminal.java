@@ -2,6 +2,7 @@ package roguelike.ui.windows;
 
 import java.awt.Rectangle;
 
+import roguelike.maps.MapHelpers;
 import roguelike.util.CharEx;
 import squidpony.squidcolor.SColor;
 
@@ -26,6 +27,8 @@ public class Terminal extends TerminalBase {
 			public boolean put(int x, int y, CharEx c) {
 				int sx = getX(x);
 				int sy = getY(y);
+				if (!MapHelpers.isWithinBounds(data.length, data[0].length, sx, sy))
+					return false;
 
 				CharEx existing = data[sx][sy];
 				if (existing != null && existing.equals(c)) {
@@ -39,6 +42,9 @@ public class Terminal extends TerminalBase {
 			public boolean bg(int x, int y) {
 				int sx = getX(x);
 				int sy = getY(y);
+				if (!MapHelpers.isWithinBounds(data.length, data[0].length, sx, sy))
+					return false;
+
 				CharEx c = data[getX(x)][getY(y)];
 				CharEx c2 = new CharEx(c.symbol(), c.foregroundColor(), colors.background());
 				data[sx][sy] = c2;

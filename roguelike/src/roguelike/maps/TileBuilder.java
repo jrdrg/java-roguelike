@@ -44,7 +44,7 @@ public class TileBuilder {
 
 		switch (character) {
 		case WALL:
-			t.setValues(character.symbol(), false, SColor.LAPIS_LAZULI, true)
+			t.setValues(character.symbol(), false, SColor.PINE_GREEN, true)
 					.setLighting(1f);
 			// .setBackground(SColor.DARK_BLUE_LAPIS_LAZULI);
 			break;

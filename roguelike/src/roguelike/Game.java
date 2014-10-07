@@ -29,6 +29,9 @@ import squidpony.squidmath.RNG;
  * 
  */
 public class Game {
+	public final static int MAP_WIDTH = 83;
+	public final static int MAP_HEIGHT = 43;
+
 	private static Game currentGame;
 
 	private RNG rng;
