@@ -1,16 +1,15 @@
-package roguelike.actors;
+package roguelike.actors.conditions;
 
+import roguelike.actors.Actor;
 import roguelike.util.StringEx;
 
 public abstract class Condition {
 
 	protected StringEx identifier;
-	protected Actor actor;
 	protected int duration;
 
-	protected Condition(StringEx identifier, Actor actor, int duration) {
+	protected Condition(StringEx identifier, int duration) {
 		this.identifier = identifier;
-		this.actor = actor;
 		this.duration = duration;
 	}
 
@@ -18,17 +17,20 @@ public abstract class Condition {
 		return duration;
 	}
 
-	public final boolean process() {
+	public final boolean process(Actor actor) {
 		if (duration > 0) {
 			duration--;
-			onProcess();
+			onProcess(actor);
 		}
 		return duration <= 0;
 	}
 
-	public StringEx getIdentifier() {
+	public StringEx identifier() {
 		return identifier;
 	}
 
-	protected abstract void onProcess();
+	protected abstract void onProcess(Actor actor);
+
+	protected void onConditionRemoved(Actor actor) {
+	}
 }

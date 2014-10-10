@@ -27,7 +27,7 @@ public class StairsDownAction extends Action {
 		Stairs stairs = (Stairs) t;
 		stairs.use();
 
-		return ActionResult.success().setMessage("used stairs going down");
+		return ActionResult.success().setMessage(actor.doAction("walks down the stairs."));
 	}
 
 }

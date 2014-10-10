@@ -2,6 +2,7 @@ package roguelike.ui;
 
 import java.util.Arrays;
 
+import roguelike.Game;
 import roguelike.actors.Player;
 import roguelike.actors.Statistics;
 import roguelike.items.Equipment.ItemSlot;
@@ -41,6 +42,7 @@ public class StatsDisplay extends TextWindow {
 
 		terminal.write(leftMargin, 1, String.format("P:%3d,%3d", player.getPosition().x, player.getPosition().y));
 		terminal.write(leftMargin, 2, String.format("E:%3d", player.energy().getCurrent()));
+		terminal.write(leftMargin, 3, String.format("%s", Game.current().getCurrentMapArea().name()));
 
 		drawHealth();
 		drawEquipped();
@@ -51,7 +53,7 @@ public class StatsDisplay extends TextWindow {
 	private void drawHealth() {
 		TerminalBase bracketTerm = terminal.withColor(SColor.WHITE);
 
-		int startY = 4;
+		int startY = 5;
 		int barWidth = 20;
 
 		bracketTerm.put(leftMargin, startY + 1, '[');
@@ -75,40 +77,41 @@ public class StatsDisplay extends TextWindow {
 	private void drawEquipped() {
 
 		int leftX = 4;
+		int startY = 8;
 
 		SColor headerColor = SColor.BLOOD;
 		TerminalBase headerTerm = terminal.withColor(headerColor);
 
-		headerTerm.write(1, 7, "LH ");
-		headerTerm.write(1, 8, "RH ");
-		headerTerm.write(1, 9, "Ar  ");
-		headerTerm.write(1, 10, "Rn ");
+		headerTerm.write(1, startY, "LH ");
+		headerTerm.write(1, startY + 1, "RH ");
+		headerTerm.write(1, startY + 2, "Ar  ");
+		headerTerm.write(1, startY + 3, "Rn ");
 
 		Weapon left = ItemSlot.LEFT_ARM.getEquippedWeapon(player);
 		Weapon right = ItemSlot.RIGHT_ARM.getEquippedWeapon(player);
 		Weapon ranged = ItemSlot.RANGED.getEquippedWeapon(player);
 
 		if (left != null)
-			terminal.write(leftX, 7, String.format("%1$-15s", left.getName()));
+			terminal.write(leftX, startY, String.format("%1$-15s", left.name()));
 
 		if (right != null)
-			terminal.write(leftX, 8, String.format("%1$-15s", right.getName()));
+			terminal.write(leftX, startY + 1, String.format("%1$-15s", right.name()));
 
 		if (ranged != null)
-			terminal.write(leftX, 10, String.format("%1$-15s", ranged.getName()));
+			terminal.write(leftX, startY + 3, String.format("%1$-15s", ranged.name()));
 
-		headerTerm.write(leftX + 16, 12, "MP");
+		headerTerm.write(leftX + 16, startY + 5, "MP");
 		int weaponProficiency = 0; // TODO: calculate this
-		terminal.write(leftX + 18, 12, String.format("%3d", player.statistics().baseMeleePool(weaponProficiency)));
+		terminal.write(leftX + 18, startY + 5, String.format("%3d", player.statistics().baseMeleePool(weaponProficiency)));
 
-		headerTerm.write(leftX + 16, 13, "RP");
+		headerTerm.write(leftX + 16, startY + 6, "RP");
 		int rangedProficiency = 0; // TODO: calculate this
-		terminal.write(leftX + 18, 13, String.format("%3d", player.statistics().baseMeleePool(rangedProficiency)));
+		terminal.write(leftX + 18, startY + 6, String.format("%3d", player.statistics().baseMeleePool(rangedProficiency)));
 	}
 
 	private void drawStats() {
 
-		int startY = 12;
+		int startY = 13;
 
 		SColor headerColor = SColor.BRONZE;
 		TerminalBase headerTerm = terminal.withColor(headerColor);

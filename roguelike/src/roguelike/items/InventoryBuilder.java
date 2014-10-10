@@ -9,7 +9,7 @@ public class InventoryBuilder {
 	public void populateRandomInventory(Actor actor) {
 		RNG random = Game.current().random();
 		Inventory inv = actor.inventory();
-		int itemCount = (int) (random.between(14, 54)); // TODO: this is obviously for inventory testing purposes
+		int itemCount = (int) (random.between(1, 4));
 
 		for (int x = 0; x < itemCount; x++) {
 			double f = random.nextDouble();

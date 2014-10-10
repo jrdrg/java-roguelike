@@ -17,7 +17,8 @@ import squidpony.squidcolor.SColor;
 import squidpony.squidcolor.SColorFactory;
 
 public class LookDisplay extends TextWindow {
-
+	private final int BOTTOM_MARGIN = 1;
+	private final int TOP_MARGIN = 1;
 	private TerminalBase terminal;
 
 	public LookDisplay(TerminalBase terminal, int width, int height) {
@@ -38,25 +39,26 @@ public class LookDisplay extends TextWindow {
 
 	public void draw(MapArea map, int x, int y, boolean drawActor, String caption) {
 
-		this.drawBoxShape(terminal);
-		terminal.write(2, 0, caption);
-		drawInfo(map, x, y, drawActor);
+		ArrayList<StringEx> textLines = getTextLines(map, x, y, drawActor);
+		int height = Math.min(textLines.size(), this.size.height - 4);
+		height += BOTTOM_MARGIN + TOP_MARGIN;
+
+		int top = terminal.size().height - height;
+		if (terminal.size().y == 1)
+			top = 0;
+
+		this.drawBoxShape(terminal, top, height + 1);
+		// terminal.write(2, 0, caption);
+		drawInfo(textLines, top, height);
 	}
 
 	public void erase() {
 		terminal.fill(0, 0, size.width, size.height, ' ');
 	}
 
-	private void drawInfo(MapArea map, int x, int y, boolean drawActor) {
-		SColor menuBgColor = SColorFactory.asSColor(30, 30, 30);
-
-		// Terminal border = terminal.withColor(SColor.WHITE, SColor.GRAPE_MOUSE);
-		TerminalBase background = terminal.withColor(menuBgColor, menuBgColor);
-		TerminalBase text = terminal.withColor(SColor.WHITE, menuBgColor);
-
+	private ArrayList<StringEx> getTextLines(MapArea map, int x, int y, boolean drawActor) {
 		ArrayList<StringEx> textList = new ArrayList<StringEx>();
 
-		background.fill(1, 1, size.width - 2, size.height - 2, ' ');
 		// border.fill(0, 0, size.width, 1, ' ');
 
 		Actor actor = drawActor ? map.getActorAt(x, y) : null;
@@ -65,7 +67,7 @@ public class LookDisplay extends TextWindow {
 			add(textList, "");
 			Weapon equipped = ItemSlot.RIGHT_ARM.getEquippedWeapon(actor);
 			add(textList, " `Gray`Weapon");
-			add(textList, "`White`" + equipped.getName() + " (" + equipped.defaultDamageType().name() + ")");
+			add(textList, "`White`" + equipped.name() + " (" + equipped.defaultDamageType().name() + ")");
 			add(textList, "");
 			Statistics stats = actor.statistics();
 			add(textList, String.format("`Bronze`Ref:`White`%3d `Bronze`Aim:`White`%3d `Bronze`Spd:`White`%3d",
@@ -81,22 +83,34 @@ public class LookDisplay extends TextWindow {
 			// add(textList, "");
 			add(textList, String.format(" Can see player? `Red`%s", actor.canSee(Game.current().getPlayer(), map)));
 		}
-		int textY = 2;
 		Inventory inventory = map.getItemsAt(x, y);
 		add(textList, "");
 
 		if (drawActor)
 			add(textList, "On ground:");
 
-		int itemSize = (this.size.height - 4) - textList.size();
-		String[] itemDescriptions = inventory.getItemListAsText(itemSize - 2);
+		int itemSize = (this.size.height - (BOTTOM_MARGIN + TOP_MARGIN)) - textList.size();
+		String[] itemDescriptions = inventory.getItemListAsText(itemSize - BOTTOM_MARGIN);
 
 		for (String string : itemDescriptions)
 			add(textList, " " + string);
 
-		for (int i = 0; i < textList.size(); i++) {
-			text.write(2, i + textY, textList.get(i));
-			if ((i + textY) >= this.size.height - 4) {
+		return textList;
+	}
+
+	private void drawInfo(ArrayList<StringEx> textLines, int top, int height) {
+		SColor menuBgColor = SColorFactory.asSColor(30, 30, 30);
+
+		// Terminal border = terminal.withColor(SColor.WHITE, SColor.GRAPE_MOUSE);
+		TerminalBase background = terminal.withColor(menuBgColor, menuBgColor);
+		TerminalBase text = terminal.withColor(SColor.WHITE, menuBgColor);
+		int textY = TOP_MARGIN + top;
+
+		background.fill(1, 1 + top, size.width - 2, height - 1, ' '); // size.height - 2, ' ');
+
+		for (int i = 0; i < textLines.size(); i++) {
+			text.write(2, i + textY, textLines.get(i));
+			if ((i + textY) >= (height + top)) { // this.size.height - 4) {
 				text.write(3, i + textY + 2, "...");
 				break;
 			}

@@ -4,6 +4,7 @@ import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
 
+import roguelike.screens.Screen;
 import squidpony.squidutility.Pair;
 
 public class TurnResult {
@@ -11,8 +12,9 @@ public class TurnResult {
 	boolean playerActed;
 	ArrayList<MessageDisplayProperties> messages;
 	ArrayList<TurnEvent> events;
-	boolean needsInput;
 	Pair<Point, Boolean> currentLook = new Pair<Point, Boolean>(null, false);
+
+	Screen subScreen;
 
 	private TurnResult(boolean running) {
 		this.running = running;
@@ -26,11 +28,11 @@ public class TurnResult {
 
 		result.running = running;
 		result.playerActed = false;
-		result.needsInput = true;
 		result.messages.clear();
 		result.events.clear();
 		result.currentLook.setFirst(null);
 		result.currentLook.setSecond(true);
+		result.subScreen = null;
 
 		return result;
 	}
@@ -43,8 +45,12 @@ public class TurnResult {
 		this.playerActed = true;
 	}
 
-	public TurnResult setNeedsInput(boolean needsInput) {
-		this.needsInput = needsInput;
+	public Screen getNextScreen() {
+		return subScreen;
+	}
+
+	public TurnResult setNextScreen(Screen screen) {
+		this.subScreen = screen;
 		return this;
 	}
 

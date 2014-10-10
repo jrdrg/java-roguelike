@@ -50,6 +50,7 @@ public class DungeonMapBuilder extends MapBuilderBase {
 	}
 
 	public DungeonMapBuilder(int level) {
+		super("Dungeon, floor " + level);
 		rooms = new ArrayList<Room>();
 		this.level = level;
 	}
@@ -78,6 +79,8 @@ public class DungeonMapBuilder extends MapBuilderBase {
 				startRoom = chooseRandomStartRoom();
 
 			rooms.add(startRoom);
+
+			// TODO: add the stairs going up at the player's starting position
 
 			int startX = (int) startRoom.area.getCenterX();
 			int startY = (int) startRoom.area.getCenterY();

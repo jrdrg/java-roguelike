@@ -29,6 +29,8 @@ public class MapArea implements Serializable {
 	protected int width, height;
 	protected int difficulty; // controls how difficult random enemies are here
 
+	protected String name;
+
 	// private PointGraph pointGraph;
 
 	public MapArea(int width, int height, MapBuilderBase mapBuilder) {
@@ -46,6 +48,10 @@ public class MapArea implements Serializable {
 
 	public int height() {
 		return this.height;
+	}
+
+	public String name() {
+		return this.name;
 	}
 
 	public void spawnMonsters() {
@@ -397,7 +403,7 @@ public class MapArea implements Serializable {
 	private void buildMapArea(MapBuilderBase mapBuilder) {
 		map = new Tile[width][height];
 
-		mapBuilder.buildMap(map);
+		this.name = mapBuilder.buildMap(map);
 		updateValues();
 
 		// TODO: pathfinding precalculations?

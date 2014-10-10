@@ -2,6 +2,7 @@ package roguelike.actions;
 
 import roguelike.Dialog;
 import roguelike.DialogResult;
+import roguelike.Game;
 import roguelike.actors.Actor;
 import roguelike.items.InventoryMenu;
 import roguelike.items.Item;

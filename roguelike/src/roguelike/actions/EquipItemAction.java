@@ -23,10 +23,10 @@ public class EquipItemAction extends Action {
 
 		if (item instanceof RangedWeapon) {
 			ItemSlot.RANGED.equipItem(actor, item);
-			result = ActionResult.success().setMessage("Equipped ranged weapon: " + item.getName());
+			result = ActionResult.success().setMessage("Equipped ranged weapon: " + item.name());
 		} else {
 			itemSlot.equipItem(actor, item);
-			result = ActionResult.success().setMessage("Selected item: " + item.getName());
+			result = ActionResult.success().setMessage("Selected item: " + item.name());
 		}
 
 		return result;

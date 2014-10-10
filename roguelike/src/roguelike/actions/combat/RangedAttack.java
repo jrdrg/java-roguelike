@@ -11,7 +11,7 @@ public class RangedAttack extends Attack {
 	}
 
 	@Override
-	public boolean perform(Action action, Actor target) {
+	public boolean onPerform(Action action, Actor target) {
 		return action.getActor().getCombatHandler().processAttack(action, this, target);
 	}
 

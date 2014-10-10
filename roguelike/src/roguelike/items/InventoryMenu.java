@@ -1,5 +1,6 @@
 package roguelike.items;
 
+import roguelike.Game;
 import roguelike.ui.Menu;
 import roguelike.util.StringEx;
 
@@ -11,6 +12,9 @@ public class InventoryMenu extends Menu<Item> {
 
 	@Override
 	protected StringEx getTextFor(Item item, int position) {
-		return new StringEx(getCharForIndex(position) + ") " + item.getDescription());
+
+		String textLine = String.format("%-40s %12d", item.getDescription(), 111);
+
+		return new StringEx(getCharForIndex(position) + ") " + textLine);
 	}
 }

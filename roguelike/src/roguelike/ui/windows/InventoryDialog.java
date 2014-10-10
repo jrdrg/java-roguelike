@@ -37,7 +37,6 @@ public class InventoryDialog extends Dialog<Item> {
 
 		border.write(1, 0, String.format("Inventory `Gray`(%d/%d)", currentPage, pageCount));
 
-		// TerminalBase activeText = terminal.withColor(SColor.ALIZARIN, menuBgColor);
 		int displayY = 2;
 		for (MenuItem<Item> item : menu.currentPageItems()) {
 			String color = "";

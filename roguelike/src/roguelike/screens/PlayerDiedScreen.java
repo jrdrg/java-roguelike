@@ -1,4 +1,4 @@
-package roguelike;
+package roguelike.screens;
 
 import roguelike.actors.Actor;
 import roguelike.ui.DisplayManager;
@@ -13,12 +13,11 @@ public class PlayerDiedScreen extends Screen {
 	private Actor killedBy;
 
 	public PlayerDiedScreen(Actor killedBy, TerminalBase terminal) {
-		setNextScreen(this);
+		super(terminal);
 
 		this.killedBy = killedBy;
 		this.fullTerminal = terminal;
 		this.terminal = fullTerminal.withColor(SColor.RED, SColor.BLACK);
-		setNextScreen(this);
 
 		terminal.fill(0, 0, terminal.size().width, terminal.size().height, ' ');
 

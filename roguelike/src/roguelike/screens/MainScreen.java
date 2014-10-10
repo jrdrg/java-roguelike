@@ -1,8 +1,14 @@
-package roguelike;
+package roguelike.screens;
 
 import java.awt.Point;
 import java.awt.Rectangle;
 
+import roguelike.Cursor;
+import roguelike.Dialog;
+import roguelike.Game;
+import roguelike.GameLoader;
+import roguelike.TurnEvent;
+import roguelike.TurnResult;
 import roguelike.actors.Actor;
 import roguelike.actors.AttackAttempt;
 import roguelike.actors.Player;
@@ -32,11 +38,11 @@ import squidpony.squidgrid.util.RadiusStrategy;
 import squidpony.squidutility.Pair;
 
 public class MainScreen extends Screen {
+	private final static int windowWidth = width - MainWindow.statWidth;
+	private final static int windowHeight = height;
+
 	private final FOVTranslator fov = new FOVTranslator(new TranslucenceWrapperFOV());
 	private final RadiusStrategy radiusStrategy = BasicRadiusStrategy.CIRCLE;
-
-	private final int windowWidth = width - MainWindow.statWidth;
-	private final int windowHeight = height;
 
 	TerminalBase fullTerminal;
 
@@ -58,6 +64,8 @@ public class MainScreen extends Screen {
 	}
 
 	public MainScreen(TerminalBase fullTerminal, Game initialGame) {
+		super(fullTerminal.getWindow(0, 0, windowWidth, windowHeight));
+
 		if (initialGame == null) {
 			this.game = GameLoader.instance().newGame();
 		} else {
@@ -75,8 +83,6 @@ public class MainScreen extends Screen {
 		game.initialize();
 
 		this.fullTerminal = fullTerminal;
-		this.terminal = fullTerminal.getWindow(0, 0, windowWidth, windowHeight);
-		this.setNextScreen(this);
 
 		Log.debug("Window tile size: " + windowWidth + "x" + windowHeight);
 
@@ -89,12 +95,12 @@ public class MainScreen extends Screen {
 
 		int messageLines = 21;
 		TerminalBase messageTerminal =
-				fullTerminal.getWindow(width - MainWindow.statWidth + 1, messageLines, MainWindow.statWidth - 2, height - messageLines);
+				fullTerminal.getWindow(width - MainWindow.statWidth + 1, messageLines - 1, MainWindow.statWidth - 2, height - messageLines);
 
 		TerminalBase statsTerminal =
 				fullTerminal.getWindow(width - MainWindow.statWidth, 0, MainWindow.statWidth, height);
 
-		messageDisplay = new MessageDisplay(Game.current().messages, messageTerminal, messageLines);
+		messageDisplay = new MessageDisplay(Game.current().messages(), messageTerminal, messageLines);
 		statsDisplay = new StatsDisplay(statsTerminal);
 		statsDisplay.setPlayer(game.getPlayer());
 
@@ -138,6 +144,11 @@ public class MainScreen extends Screen {
 			TurnResult run;
 			run = game.processTurn();
 			currentTurn = run;
+
+			Screen nextScreen = run.getNextScreen();
+			if (nextScreen != null) {
+				setNextScreen(nextScreen);
+			}
 
 			if (!run.isRunning()) {
 				setNextScreen(new TitleScreen(fullTerminal));
@@ -306,7 +317,7 @@ public class MainScreen extends Screen {
 
 				if (shouldDisplayAnimation(initiatorPos, targetPos, screenArea, true)) {
 
-					animationManager.addAnimation(new AttackAnimation(target, event.getMessage()));
+					animationManager.addAnimation(new AttackAnimation(initiator, target, event.getMessage()));
 					Log.debug("Added attack animation");
 
 				}

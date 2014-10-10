@@ -24,8 +24,7 @@ public abstract class Animation {
 	 * Draws the current frame of the animation and advances to the next one.
 	 * 
 	 * @param terminal
-	 * @return True if the last frame was just drawn and the animation should be
-	 *         removed.
+	 * @return True if the last frame was just drawn and the animation should be removed.
 	 */
 	public final boolean nextFrame(TerminalBase terminal) {
 		if (currentFrame < totalFrames) {
@@ -37,13 +36,16 @@ public abstract class Animation {
 	}
 
 	protected Point getOffsetPosition(TerminalBase terminal, Actor target) {
+		Coordinate targetPos = target.getPosition();
+		return getOffsetPosition(terminal, targetPos);
+	}
+
+	protected Point getOffsetPosition(TerminalBase terminal, Coordinate targetPos) {
 		Game g = Game.current();
 		Rectangle termSize = terminal.size();
 		Point upperLeft = g
 				.getCurrentMapArea()
 				.getUpperLeftScreenTile(termSize.width, termSize.height, g.getPlayer().getPosition());
-
-		Coordinate targetPos = target.getPosition();
 
 		Point ret = new Point(targetPos.x - upperLeft.x, targetPos.y - upperLeft.y);
 

@@ -50,7 +50,8 @@ public class GetItemAction extends Action {
 			actor.inventory().add(pickUp);
 			inventory.remove(pickUp);
 
-			Game.current().displayMessage(String.format("%s pick%s up %s", actor.getName(), actor.getVerbSuffix(), pickUp.getName(), SColor.LIGHT_BLUE));
+			String message = actor.doAction("picks up the %s", pickUp.name());
+			Game.current().displayMessage(message, SColor.LIGHT_BLUE);
 
 			return ActionResult.success();
 		}

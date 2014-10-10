@@ -32,7 +32,13 @@ public abstract class Attack {
 		return damageType;
 	}
 
-	public abstract boolean perform(Action action, Actor target);
+	public final boolean perform(Action action, Actor target) {
+		Actor attacker = action.getActor();
+		attacker.doAction(description, target.getMessageName());
+		return onPerform(action, target);
+	}
+
+	protected abstract boolean onPerform(Action action, Actor target);
 
 	// TODO: implement various types of attacks
 	/*
@@ -44,8 +50,9 @@ public abstract class Attack {
 	 * 
 	 * CIRCULAR SWING - can hit 360 degrees around attacker
 	 * 
-	 * FEINT - attack has a chance to not be defended depending on defense of target area (or if using separate dmg for head/torso/arms/etc, apply defense
-	 * against the part being feinted against and the attack has a chance to land somewhere else ignoring defense entirely)
+	 * FEINT - attack has a chance to not be defended depending on defense of target area (or if using separate dmg for
+	 * head/torso/arms/etc, apply defense against the part being feinted against and the attack has a chance to land
+	 * somewhere else ignoring defense entirely)
 	 * 
 	 * DISARM - causes opponent to drop weapon
 	 * 

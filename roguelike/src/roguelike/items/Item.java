@@ -13,6 +13,7 @@ public abstract class Item implements Serializable {
 	protected String name;
 	protected char symbol = '?';
 	protected SColor color = SColor.WHITE;
+	protected int weight;
 
 	boolean droppable;
 
@@ -20,16 +21,20 @@ public abstract class Item implements Serializable {
 		return this.itemId;
 	}
 
-	public String getName() {
+	public String name() {
 		return this.name;
 	}
 
-	public char getSymbol() {
+	public char symbol() {
 		return this.symbol;
 	}
 
-	public SColor getColor() {
+	public SColor color() {
 		return this.color;
+	}
+
+	public int weight() {
+		return this.weight;
 	}
 
 	public abstract String getDescription();

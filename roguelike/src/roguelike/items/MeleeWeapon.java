@@ -13,7 +13,7 @@ public class MeleeWeapon extends Weapon {
 		super(data);
 
 		if (data.attackDescription == null || data.attackDescription.length() == 0) {
-			this.attackDescription = "%s attack%s %s";
+			this.attackDescription = "attacks %s";
 		} else {
 			this.attackDescription = data.attackDescription;
 		}
@@ -30,7 +30,7 @@ public class MeleeWeapon extends Weapon {
 	}
 
 	@Override
-	public String getName() {
+	public String name() {
 		return name;
 	}
 

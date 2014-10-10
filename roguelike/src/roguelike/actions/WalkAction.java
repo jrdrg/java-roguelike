@@ -49,7 +49,7 @@ public class WalkAction extends Action {
 			if (tile != null && tile instanceof Door && canOpenDoors)
 				return ActionResult.alternate(new OpenDoorAction(actor, tile));
 
-			return ActionResult.failure().setMessage(actor.getMessageName() + " can't move there");
+			return ActionResult.failure().setMessage(actor.doAction("can't move there"));
 		}
 
 		// we can move here

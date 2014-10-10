@@ -1,17 +1,19 @@
-package roguelike;
+package roguelike.screens;
 
 import roguelike.ui.DisplayManager;
 import roguelike.ui.MainWindow;
 import roguelike.ui.windows.TerminalBase;
 
 public abstract class Screen {
-	final int width = MainWindow.width;
-	final int height = MainWindow.height;
+	final static int width = MainWindow.width;
+	final static int height = MainWindow.height;
 
 	protected TerminalBase terminal;
 	private Screen nextScreen;
 
-	protected Screen() {
+	protected Screen(TerminalBase terminal) {
+		this.terminal = terminal;
+		setNextScreen(this);
 	}
 
 	protected Screen nextScreen() {

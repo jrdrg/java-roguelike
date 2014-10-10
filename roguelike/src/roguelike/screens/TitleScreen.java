@@ -1,7 +1,9 @@
-package roguelike;
+package roguelike.screens;
 
 import java.awt.event.KeyEvent;
 
+import roguelike.Game;
+import roguelike.GameLoader;
 import roguelike.ui.DisplayManager;
 import roguelike.ui.InputCommand;
 import roguelike.ui.InputManager;
@@ -12,12 +14,13 @@ import squidpony.squidcolor.SColor;
 public class TitleScreen extends Screen {
 
 	public TitleScreen(TerminalBase terminal) {
+		super(terminal);
+
 		DisplayManager.instance().getTerminalView();
 
 		Log.debug("TitleScreen: terminal size " + terminal.size().width + "x" + terminal.size().height);
 
 		this.terminal = terminal.withColor(SColor.WHITE, SColor.BLACK);
-		this.setNextScreen(this);
 
 		terminal.fill(0, 0, terminal.size().width, terminal.size().height, ' ');
 

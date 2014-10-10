@@ -16,7 +16,7 @@ import org.jsefa.common.lowlevel.filter.HeaderAndFooterFilter;
 import org.jsefa.csv.CsvIOFactory;
 import org.jsefa.csv.config.CsvConfiguration;
 
-import roguelike.MainScreen;
+import roguelike.screens.MainScreen;
 
 public class FileUtils {
 	static String readFile(String path, Charset encoding)

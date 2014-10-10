@@ -14,9 +14,9 @@ import javax.swing.JComponent;
 import javax.swing.JFrame;
 
 import roguelike.Game;
-import roguelike.Screen;
-import roguelike.TitleScreen;
 import roguelike.data.serialization.PlayerSerializer;
+import roguelike.screens.Screen;
+import roguelike.screens.TitleScreen;
 import roguelike.util.Log;
 
 public class MainWindow {

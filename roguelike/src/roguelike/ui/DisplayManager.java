@@ -6,7 +6,7 @@ import java.io.InputStream;
 
 import javax.swing.JComponent;
 
-import roguelike.TitleScreen;
+import roguelike.screens.TitleScreen;
 import roguelike.ui.asciipanel.AsciiPanel;
 import roguelike.ui.windows.AsciiPanelTerminalView;
 import roguelike.ui.windows.Terminal;

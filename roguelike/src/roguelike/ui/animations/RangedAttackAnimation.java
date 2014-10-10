@@ -17,12 +17,12 @@ public class RangedAttackAnimation extends Animation {
 
 	private AttackAnimation damageAnim;
 
-	public RangedAttackAnimation(Actor initiator, Actor target, String damage) {
+	public RangedAttackAnimation(Actor attacker, Actor target, String damage) {
 		this.target = target;
 
-		path = Bresenham.line2D(initiator.getPosition(), target.getPosition());
+		path = Bresenham.line2D(attacker.getPosition(), target.getPosition());
 
-		damageAnim = new AttackAnimation(target, damage);
+		damageAnim = new AttackAnimation(attacker, target, damage);
 		this.totalFrames = damageAnim.totalFrames + rangedFrames;
 	}
 

@@ -13,6 +13,7 @@ import roguelike.items.Equipment.ItemSlot;
 import roguelike.items.Weapon;
 import roguelike.util.DiceRolls;
 import roguelike.util.Log;
+import roguelike.util.Utility;
 import squidpony.squidcolor.SColor;
 
 /**
@@ -106,7 +107,12 @@ public class CombatHandler implements Serializable {
 		Log.debug("S (D): " + defenderSuccesses + ", TN=" + defendWeaponTN + ", pool=" + defendSuccessPool);
 
 		logCombatMessage(String.format("%s rolls %d successes, %s rolls %d: total %d (%s)",
-				attacker.getMessageName(), attackerSuccesses, actor.getMessageName(), defenderSuccesses, total, (total > 0 ? "Hit" : "Miss")));
+				attacker.getMessageName(),
+				attackerSuccesses,
+				actor.getMessageName(),
+				defenderSuccesses,
+				total,
+				(total > 0 ? "Hit" : "Miss")));
 
 		if (total > 0) {
 
@@ -116,30 +122,8 @@ public class CombatHandler implements Serializable {
 			return attack;
 		}
 		else {
-			return new MeleeAttack("%s misses %s!", 0, attack.getWeapon());
+			return new MeleeAttack("misses %s!", 0, attack.getWeapon());
 		}
-	}
-
-	private int getAttackerSuccessPool(Statistics attackerStats, int aWeaponProficiency, int attackManeuver) {
-		return attackerStats.baseMeleePool(aWeaponProficiency) + attackManeuver;
-	}
-
-	private int getDefenderSuccessPool(Statistics defenderStats, int dWeaponProficiency, int defenseManeuver, Attack attack) {
-		if (attack instanceof RangedAttack) {
-			return defenderStats.baseEvadePool();
-		}
-		return defenderStats.baseMeleePool(dWeaponProficiency) + defenseManeuver;
-	}
-
-	private int getDefenderTargetNumber(Attack attack) {
-		if (attack instanceof RangedAttack)
-			return 8; // TODO: change this?
-
-		Weapon firstWeapon = actor.equipment().getEquippedWeapons().stream().filter(w -> w != null).findFirst().orElse(null);
-		if (firstWeapon != null)
-			return firstWeapon.getDefenseTargetNumber();
-
-		return 8; // default TN with no weapon
 	}
 
 	/**
@@ -175,7 +159,7 @@ public class CombatHandler implements Serializable {
 			if (Player.isPlayer(target))
 				color = SColor.RED;
 
-			Game.current().displayMessage(message, color);
+			Game.current().displayMessage(actor.doAction(message), color);
 
 			/* add an event so we can show an animation */
 			Game.current().addEvent(TurnEvent.attack(actor, target, "" + attack.getDamage(), attack));
@@ -190,6 +174,28 @@ public class CombatHandler implements Serializable {
 
 		// return true if this attack killed the target
 		return isDead;
+	}
+
+	private int getAttackerSuccessPool(Statistics attackerStats, int aWeaponProficiency, int attackManeuver) {
+		return attackerStats.baseMeleePool(aWeaponProficiency) + attackManeuver;
+	}
+
+	private int getDefenderSuccessPool(Statistics defenderStats, int dWeaponProficiency, int defenseManeuver, Attack attack) {
+		if (attack instanceof RangedAttack) {
+			return defenderStats.baseEvadePool();
+		}
+		return defenderStats.baseMeleePool(dWeaponProficiency) + defenseManeuver;
+	}
+
+	private int getDefenderTargetNumber(Attack attack) {
+		if (attack instanceof RangedAttack)
+			return 8; // TODO: change this?
+
+		Weapon firstWeapon = actor.equipment().getEquippedWeapons().stream().filter(w -> w != null).findFirst().orElse(null);
+		if (firstWeapon != null)
+			return firstWeapon.getDefenseTargetNumber();
+
+		return 8; // default TN with no weapon
 	}
 
 	private int determineReachDifference(Actor attacker, Attack attack) {
@@ -239,13 +245,17 @@ public class CombatHandler implements Serializable {
 	private String getAttackMessage(Actor target, Attack attack) {
 		int targetHealth = target.health().getCurrent();
 
-		String attackDescription = String.format(attack.description, actor.getMessageName(), actor.getVerbSuffix(), target.getMessageName());
-		String message = String.format("%s for %d %s damage!", attackDescription, attack.baseDamage, attack.damageType);
-		if (targetHealth > 0)
-			message += "(" + targetHealth + " left)";
-		else
-			message += target.getMessageName() + " is dead!";
-
+		String message = "";
+		try {
+			String attackDescription = String.format(attack.description, target.getMessageName());
+			message = String.format("%s for %d %s damage", attackDescription, attack.baseDamage, attack.damageType);
+			if (targetHealth > 0)
+				message += "! (" + targetHealth + " left)";
+			else
+				message += ("! " + Utility.capitalizeFirstLetter(target.getMessageName()) + " is dead!");
+		} catch (Exception e) {
+			message = "ERROR: " + attack.description;
+		}
 		return message;
 	}
 }

@@ -1,9 +1,11 @@
-package roguelike;
+package roguelike.screens;
+
+import roguelike.ui.windows.TerminalBase;
 
 public class CharacterCreationScreen extends Screen {
 
-	public CharacterCreationScreen() {
-		setNextScreen(this);
+	public CharacterCreationScreen(TerminalBase terminal) {
+		super(terminal);
 	}
 
 	@Override

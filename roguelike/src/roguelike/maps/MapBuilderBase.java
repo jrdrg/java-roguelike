@@ -17,13 +17,21 @@ public abstract class MapBuilderBase {
 	protected int height;
 	protected Rectangle mapRect;
 
-	public final void buildMap(Tile[][] map) {
+	protected String mapName;
+
+	protected MapBuilderBase(String mapName) {
+		this.mapName = mapName;
+	}
+
+	public final String buildMap(Tile[][] map) {
 		this.map = map;
 		this.width = map.length;
 		this.height = map[0].length;
 		this.mapRect = new Rectangle(0, 0, width, height);
 
 		onBuildMap(map);
+
+		return mapName;
 	}
 
 	/**

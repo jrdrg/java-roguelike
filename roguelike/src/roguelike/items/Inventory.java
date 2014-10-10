@@ -70,7 +70,7 @@ public class Inventory implements Serializable {
 		String[] items = new String[Math.min(maxSize, this.items.size())];
 
 		for (int i = 0; i < items.length; i++) {
-			items[i] = this.items.get(i).getName();
+			items[i] = this.items.get(i).name();
 		}
 		if (displayEllipsis)
 			items[items.length - 1] = String.format("(%d more)", this.items.size() - maxSize);

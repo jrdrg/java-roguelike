@@ -38,10 +38,10 @@ public class ChooseItemCommandAction extends InputRequiredAction<InputCommand> {
 					case EQUIP:
 						if (selectedItem instanceof RangedWeapon) {
 							ItemSlot.RANGED.equipItem(actor, selectedItem);
-							result = ActionResult.success().setMessage("Equipped ranged weapon: " + selectedItem.getName());
+							result = ActionResult.success().setMessage(actor.doAction("equips the %s", selectedItem.name()));
 						} else {
 							ItemSlot.RIGHT_ARM.equipItem(actor, selectedItem);
-							result = ActionResult.success().setMessage("Selected item: " + selectedItem.getName());
+							result = ActionResult.success().setMessage(actor.doAction("equips the %s", selectedItem.name()));
 						}
 						break;
 

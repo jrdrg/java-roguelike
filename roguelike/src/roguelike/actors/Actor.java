@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import roguelike.Game;
 import roguelike.actions.Action;
 import roguelike.actions.combat.CombatHandler;
+import roguelike.actors.conditions.Condition;
 import roguelike.items.Equipment;
 import roguelike.items.Inventory;
 import roguelike.maps.MapArea;
@@ -158,6 +159,28 @@ public abstract class Actor implements Serializable {
 		return attackedBy.size() > 0 ? attackedBy.pop() : null;
 	}
 
+	public String getMessageName() {
+		return "the " + getName();
+	}
+
+	public String getVerbSuffix() {
+		return "s";
+	}
+
+	public String doAction(String action, Object... params) {
+		try {
+			return getMessageName() + " " + makeCorrectVerb(String.format(action, params));
+		} catch (Exception e) {
+			return "ERROR: " + action;
+		}
+	}
+
+	public void applyConditions() {
+		for (Condition condition : conditions) {
+			condition.process(this);
+		}
+	}
+
 	public final void finishTurn() {
 		while (attacked.size() > 1)
 			((Stack<AttackAttempt>) attacked).remove(0);
@@ -169,25 +192,6 @@ public abstract class Actor implements Serializable {
 		Log.verboseDebug("Actor.finishTurn(): " + getName());
 
 		onTurnFinished();
-	}
-
-	/**
-	 * This is called after all other checks to move have been made, to allow the actor a final chance to prevent the
-	 * move (for example, moving over certain tiles or opening doors could be disabled based on the actor type)
-	 * 
-	 * @param mapArea
-	 * @param tile
-	 * @return
-	 */
-	public boolean onMoveAttempting(MapArea mapArea, Tile tile) {
-		// TODO: check for things like moving over certain tiles, opening doors
-		return true;
-	}
-
-	public final void onAttacked(Actor attacker) {
-		attackedBy.add(new AttackAttempt(attacker));
-		attackedThisRound = true;
-		onAttackedInternal(attacker);
 	}
 
 	public final void dead() {
@@ -205,20 +209,31 @@ public abstract class Actor implements Serializable {
 		Game.current().displayMessage("Target is dead");
 	}
 
-	public void onKilled() {
+	public final void onAttacked(Actor attacker) {
+		attackedBy.add(new AttackAttempt(attacker));
+		attackedThisRound = true;
+		onAttackedInternal(attacker);
 	}
 
 	public abstract String getName();
 
-	public String getMessageName() {
-		return "the " + getName();
-	}
-
-	public String getVerbSuffix() {
-		return "s";
-	}
-
 	public abstract Action getNextAction();
+
+	public void onKilled() {
+	}
+
+	/**
+	 * This is called after all other checks to move have been made, to allow the actor a final chance to prevent the
+	 * move (for example, moving over certain tiles or opening doors could be disabled based on the actor type)
+	 * 
+	 * @param mapArea
+	 * @param tile
+	 * @return
+	 */
+	public boolean onMoveAttempting(MapArea mapArea, Tile tile) {
+		// TODO: check for things like moving over certain tiles, opening doors
+		return true;
+	}
 
 	public void onSerialize(SerializationData data) {
 		int[] color = new int[3];
@@ -236,16 +251,16 @@ public abstract class Actor implements Serializable {
 		data.setData("symbol", this.symbol);
 		data.setData("position", this.position);
 		data.setData("currentEnergy", this.energy);
-		data.setData("conditions", this.conditions.stream().map(c -> c.identifier.toString()).collect(Collectors.toList()));
+		data.setData("conditions", this.conditions.stream().map(c -> c.identifier().toString()).collect(Collectors.toList()));
 
 		data.setData("inventory", this.inventory);
 		data.setData("equipment", this.equipment);
 		data.setData("health", this.health);
 		data.setData("statistics", this.statistics);
 
-//		data.setData("attacked", this.attacked);
-//		data.setData("attackedBy", this.attackedBy);
-//		data.setData("attackedThisRound", this.attackedThisRound);
+		// data.setData("attacked", this.attacked);
+		// data.setData("attackedBy", this.attackedBy);
+		// data.setData("attackedThisRound", this.attackedThisRound);
 
 		// protected CombatHandler combat;
 
@@ -275,4 +290,6 @@ public abstract class Actor implements Serializable {
 
 	protected void onTurnFinished() {
 	}
+
+	protected abstract String makeCorrectVerb(String message);
 }

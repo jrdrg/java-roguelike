@@ -96,7 +96,7 @@ public class Tile implements Serializable {
 			return actor.symbol();
 
 		if (items.any())
-			return getTopItem().getSymbol();
+			return getTopItem().symbol();
 
 		return this.symbol;
 	}
@@ -114,7 +114,7 @@ public class Tile implements Serializable {
 			return actor.color();
 
 		if (items.any())
-			return getTopItem().getColor();
+			return getTopItem().color();
 
 		return this.color;
 	}

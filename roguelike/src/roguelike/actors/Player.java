@@ -90,4 +90,29 @@ public class Player extends Actor {
 
 		behavior = DataFactory.createBehavior(behaviorName, this);
 	}
+
+	@Override
+	protected String makeCorrectVerb(String message) {
+		return makeSecondPerson(message);
+	}
+
+	private String makeSecondPerson(String text) {
+		String[] words = text.split(" ");
+		// words[0] = words[0] + "s";
+
+		if (words[0].endsWith("s")) {
+			words[0] = words[0].substring(0, words[0].length() - 1);
+		}
+		if (words[0].endsWith("es")) {
+			words[0] = words[0].substring(0, words[0].length() - 2);
+		}
+
+		StringBuilder builder = new StringBuilder();
+		for (String word : words) {
+			builder.append(" ");
+			builder.append(word);
+		}
+
+		return builder.toString().trim();
+	}
 }
