@@ -13,6 +13,12 @@ public abstract class Behavior {
 
 	public abstract boolean isHostile();
 
+	public void onNoAmmunition() {
+	}
+
+	public void onAttacked(Actor attacker) {
+	}
+
 	public abstract Action getAction();
 
 	/**

@@ -1,7 +1,6 @@
 package roguelike.actors;
 
 import roguelike.actions.Action;
-import roguelike.actors.behaviors.Behavior;
 import roguelike.actors.behaviors.PlayerInputBehavior;
 import roguelike.data.DataFactory;
 import roguelike.util.Log;
@@ -10,7 +9,6 @@ import squidpony.squidcolor.SColor;
 public class Player extends Actor {
 	private static final long serialVersionUID = -1439044065168378557L;
 
-	private Behavior behavior;
 	private String characterName;
 
 	public Player() {
@@ -57,8 +55,7 @@ public class Player extends Actor {
 
 	@Override
 	public int getVisionRadius() {
-		// return 35;
-		return 15;
+		return visionRadius;
 	}
 
 	@Override
@@ -98,13 +95,16 @@ public class Player extends Actor {
 
 	private String makeSecondPerson(String text) {
 		String[] words = text.split(" ");
-		// words[0] = words[0] + "s";
 
-		if (words[0].endsWith("s")) {
+		if (words[0].equals("has")) {
+			words[0] = "have";
+		} else if (words[0].endsWith("es")) {
 			words[0] = words[0].substring(0, words[0].length() - 1);
 		}
-		if (words[0].endsWith("es")) {
-			words[0] = words[0].substring(0, words[0].length() - 2);
+		else if (words[0].endsWith("s")) {
+			words[0] = words[0].substring(0, words[0].length() - 1);
+		} else if (words[0].equals("'s")) {
+			words[0] = "r"; // xxx's = your
 		}
 
 		StringBuilder builder = new StringBuilder();

@@ -12,6 +12,7 @@ import squidpony.squidmath.RNG;
 import squidpony.squidutility.SCollections;
 
 public class MapBuilder extends MapBuilderBase {
+
 	protected MapBuilder() {
 		super("Outside");
 	}

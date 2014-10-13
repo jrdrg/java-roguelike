@@ -7,6 +7,7 @@ import roguelike.Cursor;
 import roguelike.Dialog;
 import roguelike.Game;
 import roguelike.GameLoader;
+import roguelike.ScreenManager;
 import roguelike.TurnEvent;
 import roguelike.TurnResult;
 import roguelike.actors.Actor;
@@ -21,9 +22,6 @@ import roguelike.ui.MainWindow;
 import roguelike.ui.MessageDisplay;
 import roguelike.ui.StatsDisplay;
 import roguelike.ui.animations.AnimationManager;
-import roguelike.ui.animations.AttackAnimation;
-import roguelike.ui.animations.AttackMissedAnimation;
-import roguelike.ui.animations.RangedAttackAnimation;
 import roguelike.ui.windows.TerminalBase;
 import roguelike.util.ArrayUtils;
 import roguelike.util.Coordinate;
@@ -38,8 +36,8 @@ import squidpony.squidgrid.util.RadiusStrategy;
 import squidpony.squidutility.Pair;
 
 public class MainScreen extends Screen {
-	private final static int windowWidth = width - MainWindow.statWidth;
-	private final static int windowHeight = height;
+	private final static int windowWidth = WIDTH - MainWindow.STAT_WIDTH;
+	private final static int windowHeight = HEIGHT;
 
 	private final FOVTranslator fov = new FOVTranslator(new TranslucenceWrapperFOV());
 	private final RadiusStrategy radiusStrategy = BasicRadiusStrategy.CIRCLE;
@@ -95,10 +93,10 @@ public class MainScreen extends Screen {
 
 		int messageLines = 21;
 		TerminalBase messageTerminal =
-				fullTerminal.getWindow(width - MainWindow.statWidth + 1, messageLines - 1, MainWindow.statWidth - 2, height - messageLines);
+				fullTerminal.getWindow(WIDTH - MainWindow.STAT_WIDTH + 1, messageLines - 1, MainWindow.STAT_WIDTH - 2, HEIGHT - messageLines);
 
 		TerminalBase statsTerminal =
-				fullTerminal.getWindow(width - MainWindow.statWidth, 0, MainWindow.statWidth, height);
+				fullTerminal.getWindow(WIDTH - MainWindow.STAT_WIDTH, 0, MainWindow.STAT_WIDTH, HEIGHT);
 
 		messageDisplay = new MessageDisplay(Game.current().messages(), messageTerminal, messageLines);
 		statsDisplay = new StatsDisplay(statsTerminal);
@@ -145,9 +143,10 @@ public class MainScreen extends Screen {
 			run = game.processTurn();
 			currentTurn = run;
 
-			Screen nextScreen = run.getNextScreen();
+			// Screen nextScreen = run.getNextScreen();
+			Screen nextScreen = ScreenManager.getNextScreen(this);
 			if (nextScreen != null) {
-				setNextScreen(nextScreen);
+				setNextScreen(nextScreen, true);
 			}
 
 			if (!run.isRunning()) {
@@ -249,7 +248,7 @@ public class MainScreen extends Screen {
 	}
 
 	private void doFOV(MapArea currentMap, Rectangle screenArea, Coordinate player) {
-		float[][] lighting = new float[width][height];
+		float[][] lighting = new float[WIDTH][HEIGHT];
 
 		lighting = ArrayUtils.getSubArray(currentMap.getLightValues(), screenArea);
 
@@ -293,6 +292,7 @@ public class MainScreen extends Screen {
 				.getVisibleAreaInTiles(windowWidth, windowHeight, game.getCenterScreenPosition());
 
 		for (TurnEvent event : run.getEvents()) {
+
 			Actor initiator = event.getInitiator();
 			Actor target = event.getTarget();
 
@@ -303,6 +303,7 @@ public class MainScreen extends Screen {
 			switch (event.getType()) {
 
 			case TurnEvent.ATTACKED:
+			case TurnEvent.ATTACK_MISSED:
 				targetPos = target.getPosition();
 				diff = initiator
 						.getPosition()
@@ -317,19 +318,7 @@ public class MainScreen extends Screen {
 
 				if (shouldDisplayAnimation(initiatorPos, targetPos, screenArea, true)) {
 
-					animationManager.addAnimation(new AttackAnimation(initiator, target, event.getMessage()));
-					Log.debug("Added attack animation");
-
-				}
-				break;
-
-			case TurnEvent.ATTACK_MISSED:
-				targetPos = target.getPosition();
-				if (shouldDisplayAnimation(initiatorPos, targetPos, screenArea, true)) {
-
-					animationManager.addAnimation(new AttackMissedAnimation(target));
-					Log.debug("Added attack missed animation");
-
+					animationManager.addAnimation(event.getAnimation());
 				}
 				break;
 
@@ -338,7 +327,7 @@ public class MainScreen extends Screen {
 				if (shouldDisplayAnimation(initiatorPos, targetPos, screenArea, false)) { // only target needs to be
 																							// visible here
 
-					animationManager.addAnimation(new RangedAttackAnimation(initiator, target, event.getMessage()));
+					animationManager.addAnimation(event.getAnimation());
 					Log.debug("Added attack animation");
 
 				}
@@ -376,9 +365,7 @@ public class MainScreen extends Screen {
 	}
 
 	private void drawMessages(TurnResult run) {
-		Pair<Point, Boolean> p = run.getCurrentLook();
-		if (p == null || p.getFirst() == null)
-			messageDisplay.draw();
+		messageDisplay.draw();
 	}
 
 	private void drawStats() {

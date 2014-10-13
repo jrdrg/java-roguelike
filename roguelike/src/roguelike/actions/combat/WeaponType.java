@@ -10,6 +10,8 @@ public enum WeaponType {
 	BOW,
 	THROWN,
 	GUN,
+	ARROW,
+	BULLET,
 
 	NATURAL, // for monsters, beasts, etc
 	DEFAULT;

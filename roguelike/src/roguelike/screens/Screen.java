@@ -5,11 +5,12 @@ import roguelike.ui.MainWindow;
 import roguelike.ui.windows.TerminalBase;
 
 public abstract class Screen {
-	final static int width = MainWindow.width;
-	final static int height = MainWindow.height;
+	final static int WIDTH = MainWindow.WIDTH;
+	final static int HEIGHT = MainWindow.HEIGHT;
 
 	protected TerminalBase terminal;
 	private Screen nextScreen;
+	private Screen previousScreen;
 
 	protected Screen(TerminalBase terminal) {
 		this.terminal = terminal;
@@ -21,8 +22,27 @@ public abstract class Screen {
 	}
 
 	protected final void setNextScreen(Screen screen) {
+		setNextScreen(screen, false);
+	}
+
+	protected final void setNextScreen(Screen screen, boolean storePrevious) {
 		nextScreen = screen;
+		if (storePrevious) {
+			nextScreen.previousScreen = this;
+		}
 		DisplayManager.instance().setDirty();
+	}
+
+	protected final void restorePreviousScreen() {
+		if (previousScreen != null) {
+			setNextScreen(previousScreen, false);
+			previousScreen.nextScreen = previousScreen;
+			previousScreen = null;
+		}
+	}
+
+	public Screen getScreen() {
+		return nextScreen();
 	}
 
 	public final long drawScreen() {
@@ -36,6 +56,4 @@ public abstract class Screen {
 	public abstract long draw();
 
 	public abstract void process();
-
-	public abstract Screen getScreen();
 }

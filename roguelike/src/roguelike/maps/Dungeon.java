@@ -9,12 +9,12 @@ public class Dungeon extends MapArea {
 	private int currentFloor;
 	private int totalFloors;
 
-	public Dungeon(int width, int height, MapBuilderBase mapBuilder, int difficulty) {
+	public Dungeon(int width, int height, MapBuilderBase mapBuilder, int difficulty, int totalFloors) {
 		super(width, height, mapBuilder);
 		this.difficulty = difficulty;
 
 		this.currentFloor = 1;
-		this.totalFloors = 10;
+		this.totalFloors = totalFloors;
 	}
 
 }

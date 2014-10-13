@@ -35,7 +35,7 @@ public class TitleScreen extends Screen {
 		String title = "Title Screen";
 		int x = (int) ((terminal.size().width / 2f) - (title.length() / 2f));
 
-		terminal.write(x, 10, "`Yellow`Title Screen");
+		terminal.write(x, 10, "`Yellow`" + title);
 		terminal.write(x, 15, "`Yellow`n) `White`New");
 		terminal.write(x, 16, "`Yellow`l) `White`Load");
 

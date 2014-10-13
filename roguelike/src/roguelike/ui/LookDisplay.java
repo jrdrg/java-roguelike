@@ -90,7 +90,8 @@ public class LookDisplay extends TextWindow {
 			add(textList, "On ground:");
 
 		int itemSize = (this.size.height - (BOTTOM_MARGIN + TOP_MARGIN)) - textList.size();
-		String[] itemDescriptions = inventory.getItemListAsText(itemSize - BOTTOM_MARGIN);
+		// String[] itemDescriptions = inventory.getItemListAsText(itemSize - BOTTOM_MARGIN);
+		String[] itemDescriptions = inventory.getGroupedItemListAsText(itemSize - BOTTOM_MARGIN);
 
 		for (String string : itemDescriptions)
 			add(textList, " " + string);

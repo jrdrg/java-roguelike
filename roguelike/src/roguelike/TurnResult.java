@@ -8,12 +8,12 @@ import roguelike.screens.Screen;
 import squidpony.squidutility.Pair;
 
 public class TurnResult {
+
 	boolean running;
 	boolean playerActed;
 	ArrayList<MessageDisplayProperties> messages;
 	ArrayList<TurnEvent> events;
 	Pair<Point, Boolean> currentLook = new Pair<Point, Boolean>(null, false);
-
 	Screen subScreen;
 
 	private TurnResult(boolean running) {

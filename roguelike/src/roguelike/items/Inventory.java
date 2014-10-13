@@ -3,7 +3,9 @@ package roguelike.items;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class Inventory implements Serializable {
 	private static final long serialVersionUID = 2003563004618547276L;
@@ -60,6 +62,30 @@ public class Inventory implements Serializable {
 			throw new IllegalArgumentException("item cannot be null");
 
 		return items.remove(item);
+	}
+
+	public String[] getGroupedItemListAsText(int maxSize) {
+
+		Map<Object, List<Item>> groupedItems = this.items.stream().collect(Collectors.groupingBy(i -> i.name()));
+
+		String[] items = new String[Math.min(maxSize, groupedItems.size())];
+		boolean displayEllipsis = false;
+		if (maxSize < groupedItems.size()) {
+			displayEllipsis = true;
+		}
+		Object[] keys = groupedItems.keySet().toArray();
+		for (int i = 0; i < groupedItems.size(); i++) {
+			int size = groupedItems.get(keys[i]).size();
+			if (size == 1) {
+				items[i] = keys[i].toString();
+			} else {
+				items[i] = keys[i].toString() + " (x" + size + ")";
+			}
+		}
+		if (displayEllipsis)
+			items[items.length - 1] = String.format("(%d more)", groupedItems.size() - maxSize);
+
+		return items;
 	}
 
 	public String[] getItemListAsText(int maxSize) {

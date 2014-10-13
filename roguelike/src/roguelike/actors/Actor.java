@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import roguelike.Game;
 import roguelike.actions.Action;
 import roguelike.actions.combat.CombatHandler;
+import roguelike.actors.behaviors.Behavior;
 import roguelike.actors.conditions.Condition;
 import roguelike.items.Equipment;
 import roguelike.items.Inventory;
@@ -44,6 +45,9 @@ public abstract class Actor implements Serializable {
 
 	protected ArrayList<Condition> conditions;
 
+	protected int visionRadius;
+	protected Behavior behavior;
+
 	protected Actor(char symbol, SColor color) {
 		if (color == null)
 			throw new IllegalArgumentException("color cannot be null: " + symbol);
@@ -63,6 +67,8 @@ public abstract class Actor implements Serializable {
 		attackedBy = new Stack<AttackAttempt>();
 
 		conditions = new ArrayList<Condition>();
+
+		visionRadius = 15;
 	}
 
 	public char symbol() {
@@ -75,6 +81,15 @@ public abstract class Actor implements Serializable {
 
 	public List<Condition> conditions() {
 		return conditions;
+	}
+
+	public void addCondition(Condition condition) {
+		conditions.add(condition);
+		condition.onConditionAdded(this);
+	}
+	
+	public Behavior behavior(){
+		return this.behavior;
 	}
 
 	public Energy energy() {
@@ -134,7 +149,11 @@ public abstract class Actor implements Serializable {
 	}
 
 	public int getVisionRadius() {
-		return 15;
+		return visionRadius;
+	}
+
+	public void setVisionRadius(int radius) {
+		visionRadius = Math.max(1, radius);
 	}
 
 	public boolean isAdjacentTo(Actor other) {
@@ -175,10 +194,13 @@ public abstract class Actor implements Serializable {
 		}
 	}
 
-	public void applyConditions() {
+	public final void applyConditions() {
+		ArrayList<Condition> toRemove = new ArrayList<Condition>();
 		for (Condition condition : conditions) {
-			condition.process(this);
+			if (condition.process(this))
+				toRemove.add(condition);
 		}
+		conditions.removeAll(toRemove);
 	}
 
 	public final void finishTurn() {
@@ -190,6 +212,8 @@ public abstract class Actor implements Serializable {
 		attackedThisRound = false;
 
 		Log.verboseDebug("Actor.finishTurn(): " + getName());
+
+		applyConditions();
 
 		onTurnFinished();
 	}
@@ -212,6 +236,10 @@ public abstract class Actor implements Serializable {
 	public final void onAttacked(Actor attacker) {
 		attackedBy.add(new AttackAttempt(attacker));
 		attackedThisRound = true;
+
+		if (behavior != null)
+			behavior.onAttacked(attacker);
+
 		onAttackedInternal(attacker);
 	}
 

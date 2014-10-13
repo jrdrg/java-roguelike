@@ -11,6 +11,7 @@ import roguelike.actors.behaviors.Behavior;
 import roguelike.items.Equipment.ItemSlot;
 import roguelike.items.InventoryBuilder;
 import roguelike.items.Item;
+import roguelike.items.RangedWeapon;
 import roguelike.items.Weapon;
 import roguelike.items.WeaponFactory;
 import squidpony.squidutility.SCollections;
@@ -65,6 +66,15 @@ public class EnemyFactory {
 				Weapon defWpn = WeaponFactory.create(data.weapon);
 
 				if (defWpn != null) {
+					if (defWpn instanceof RangedWeapon) {
+						if (((RangedWeapon) defWpn).ammunitionType().equals("arrow")) {
+							for (int x = 0; x < 10; x++) {
+								Weapon arrow = WeaponFactory.create("short arrow");
+								enemy.inventory().add(arrow);
+							}
+						}
+					}
+
 					enemy.inventory().add(defWpn);
 				}
 				else {

@@ -33,13 +33,17 @@ public class MapArea implements Serializable {
 
 	// private PointGraph pointGraph;
 
-	public MapArea(int width, int height, MapBuilderBase mapBuilder) {
+	protected MapArea(int width, int height, MapBuilderBase mapBuilder) {
 		actors = new CurrentItemTracker<Actor>();
 		this.width = width;
 		this.height = height;
 		this.difficulty = 1;
 
 		buildMapArea(mapBuilder);
+	}
+
+	public static MapArea build(int width, int height, MapBuilderBase mapBuilder) {
+		return new Dungeon(width, height, mapBuilder, 1, 10);
 	}
 
 	public int width() {

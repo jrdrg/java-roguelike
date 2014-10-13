@@ -22,7 +22,7 @@ public class RangedAttackAction extends InputRequiredAction<InputCommand> {
 		this.mapArea = mapArea;
 		this.weapon = weapon;
 
-		int maxRange = 10; // TODO: replace with weapon's max range
+		int maxRange = Math.min(actor.getVisionRadius(), 10); // TODO: replace with weapon's max range
 		this.cursor = new AttackCursor(actor.getPosition(), mapArea, maxRange, BasicRadiusStrategy.CUBE);
 		cursor.show();
 	}

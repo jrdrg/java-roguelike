@@ -1,6 +1,5 @@
 package roguelike.items;
 
-import roguelike.Game;
 import roguelike.ui.Menu;
 import roguelike.util.StringEx;
 

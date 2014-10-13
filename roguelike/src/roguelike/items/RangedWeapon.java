@@ -2,6 +2,7 @@ package roguelike.items;
 
 import roguelike.Game;
 import roguelike.actions.combat.Attack;
+import roguelike.actions.combat.NoAmmunitionAttack;
 import roguelike.actions.combat.RangedAttack;
 import roguelike.data.WeaponData;
 
@@ -12,6 +13,7 @@ public class RangedWeapon extends Weapon {
 	protected int maxRange;
 	protected boolean requiresAmmunition;
 	protected String ammunitionType;
+	protected int remainingAmmunition;
 
 	protected RangedWeapon(WeaponData data) {
 		super(data);
@@ -31,10 +33,15 @@ public class RangedWeapon extends Weapon {
 
 	@Override
 	public Attack getAttack() {
-		double randomFactor = Game.current().random().nextDouble() * baseDamage;
-		int totalDamage = (int) (baseDamage + randomFactor / 2);
 
-		return new RangedAttack(attackDescription, totalDamage, this);
+		if (requiresAmmunition && remainingAmmunition > 0) {
+			double randomFactor = Game.current().random().nextDouble() * baseDamage;
+			int totalDamage = (int) (baseDamage + randomFactor / 2);
+
+			return new RangedAttack(attackDescription, totalDamage, this);
+		}
+
+		return new NoAmmunitionAttack(0, this);
 	}
 
 	@Override
@@ -45,5 +52,13 @@ public class RangedWeapon extends Weapon {
 	@Override
 	public String name() {
 		return name;
+	}
+
+	public String ammunitionType() {
+		return this.ammunitionType;
+	}
+	
+	public void reload(Inventory inventory){
+		
 	}
 }

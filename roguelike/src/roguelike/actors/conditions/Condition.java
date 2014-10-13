@@ -6,11 +6,12 @@ import roguelike.util.StringEx;
 public abstract class Condition {
 
 	protected StringEx identifier;
-	protected int duration;
+	protected int duration, initialDuration;
 
 	protected Condition(StringEx identifier, int duration) {
 		this.identifier = identifier;
 		this.duration = duration;
+		this.initialDuration = duration;
 	}
 
 	public int getDuration() {
@@ -22,11 +23,18 @@ public abstract class Condition {
 			duration--;
 			onProcess(actor);
 		}
-		return duration <= 0;
+		if (duration == 0) {
+			onConditionRemoved(actor);
+			return true;
+		}
+		return false;
 	}
 
 	public StringEx identifier() {
 		return identifier;
+	}
+
+	public void onConditionAdded(Actor actor) {
 	}
 
 	protected abstract void onProcess(Actor actor);

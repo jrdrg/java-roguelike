@@ -11,6 +11,7 @@ import roguelike.actors.Player;
 import roguelike.actors.Statistics;
 import roguelike.items.Equipment.ItemSlot;
 import roguelike.items.Weapon;
+import roguelike.ui.animations.AttackAnimation;
 import roguelike.util.DiceRolls;
 import roguelike.util.Log;
 import roguelike.util.Utility;
@@ -81,7 +82,7 @@ public class CombatHandler implements Serializable {
 		int aWeaponProficiency = 3;
 		int dWeaponProficiency = 3;
 		int attackManeuver = 0; // modifier for different attack types, etc
-		int armorValue = 0; // armor value defender is wearing
+		int armorValue = getArmorValue(); // armor value defender is wearing
 		int defenseManeuver = 0; // modifier for defense like evade, dodge, etc
 
 		int attackWeaponTN = 7; // TODO: get these from weapon data or maneuver
@@ -106,11 +107,10 @@ public class CombatHandler implements Serializable {
 		Log.debug("S (A): " + attackerSuccesses + ", TN=" + attackWeaponTN + ", pool=" + attackSuccessPool);
 		Log.debug("S (D): " + defenderSuccesses + ", TN=" + defendWeaponTN + ", pool=" + defendSuccessPool);
 
-		logCombatMessage(String.format("%s rolls %d successes, %s rolls %d: total %d (%s)",
-				attacker.getMessageName(),
+		logCombatMessage(attacker.doAction("rolls %d (%d) successes against %s: total %d (%s)",
 				attackerSuccesses,
-				actor.getMessageName(),
 				defenderSuccesses,
+				actor.getMessageName(),
 				total,
 				(total > 0 ? "Hit" : "Miss")));
 
@@ -162,7 +162,8 @@ public class CombatHandler implements Serializable {
 			Game.current().displayMessage(actor.doAction(message), color);
 
 			/* add an event so we can show an animation */
-			Game.current().addEvent(TurnEvent.attack(actor, target, "" + attack.getDamage(), attack));
+			Game.current().addEvent(
+					TurnEvent.attack(actor, target, "" + attack.getDamage(), attack));
 
 		} else {
 			isDead = false;
@@ -252,10 +253,14 @@ public class CombatHandler implements Serializable {
 			if (targetHealth > 0)
 				message += "! (" + targetHealth + " left)";
 			else
-				message += ("! " + Utility.capitalizeFirstLetter(target.getMessageName()) + " is dead!");
+				message += ("! " + Utility.capitalizeFirstLetter(target.getMessageName() + " is dead!"));
 		} catch (Exception e) {
 			message = "ERROR: " + attack.description;
 		}
 		return message;
+	}
+
+	private int getArmorValue() {
+		return 0;
 	}
 }

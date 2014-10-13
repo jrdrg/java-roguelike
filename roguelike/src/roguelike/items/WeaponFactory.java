@@ -9,6 +9,9 @@ public class WeaponFactory {
 		if (isMeleeWeapon(data)) {
 			MeleeWeapon mWpn = new MeleeWeapon(data);
 			return mWpn;
+		} else if (isAmmunition(data)) {
+			Ammunition ammo = new Ammunition(data);
+			return ammo;
 		} else {
 			RangedWeapon rWpn = new RangedWeapon(data);
 			return rWpn;
@@ -25,6 +28,13 @@ public class WeaponFactory {
 
 	private static boolean isMeleeWeapon(WeaponData data) {
 		if (!data.type.equals("bow")) {
+			return true;
+		}
+		return false;
+	}
+
+	private static boolean isAmmunition(WeaponData data) {
+		if (data.type.equals("arrow") || data.type.equals("bullet")) {
 			return true;
 		}
 		return false;

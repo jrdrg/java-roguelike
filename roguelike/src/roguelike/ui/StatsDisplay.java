@@ -1,14 +1,21 @@
 package roguelike.ui;
 
 import java.util.Arrays;
+import java.util.List;
 
 import roguelike.Game;
 import roguelike.actors.Player;
 import roguelike.actors.Statistics;
+import roguelike.actors.conditions.Condition;
+import roguelike.actors.conditions.Poisoned;
+import roguelike.actors.conditions.ReducedVision;
+import roguelike.actors.conditions.Stunned;
 import roguelike.items.Equipment.ItemSlot;
 import roguelike.items.Weapon;
 import roguelike.ui.windows.TerminalBase;
 import roguelike.ui.windows.TextWindow;
+import roguelike.util.CharEx;
+import roguelike.util.StringEx;
 import squidpony.squidcolor.SColor;
 import squidpony.squidcolor.SColorFactory;
 
@@ -28,6 +35,10 @@ public class StatsDisplay extends TextWindow {
 
 	public void setPlayer(Player player) {
 		this.player = player;
+
+		player.addCondition(new Poisoned(10));
+		player.addCondition(new Stunned(5));
+		player.addCondition(new ReducedVision(14));
 	}
 
 	public void draw() {
@@ -35,6 +46,7 @@ public class StatsDisplay extends TextWindow {
 			return;
 		}
 
+		terminal.fill(0, 0, terminal.size().width, terminal.size().height, ' ');
 		drawBoxShape(terminal.withColor(SColor.DARK_GRAY));
 
 		// terminal.withColor(SColor.TRANSPARENT, SColor.BLACK).fill(0, 0, terminal.size().width,
@@ -76,20 +88,22 @@ public class StatsDisplay extends TextWindow {
 
 	private void drawEquipped() {
 
-		int leftX = 4;
+		int leftX = 9;
 		int startY = 8;
 
 		SColor headerColor = SColor.BLOOD;
 		TerminalBase headerTerm = terminal.withColor(headerColor);
 
-		headerTerm.write(1, startY, "LH ");
-		headerTerm.write(1, startY + 1, "RH ");
-		headerTerm.write(1, startY + 2, "Ar  ");
-		headerTerm.write(1, startY + 3, "Rn ");
+		headerTerm.write(1, startY, "R Hand ");
+		headerTerm.write(1, startY + 1, "L Hand  ");
+		headerTerm.write(1, startY + 2, "Armor   ");
+		headerTerm.write(1, startY + 3, "Ranged  ");
+		headerTerm.write(1, startY + 4, "Ammo    ");
 
 		Weapon left = ItemSlot.LEFT_ARM.getEquippedWeapon(player);
 		Weapon right = ItemSlot.RIGHT_ARM.getEquippedWeapon(player);
 		Weapon ranged = ItemSlot.RANGED.getEquippedWeapon(player);
+		Weapon ammo = ItemSlot.AMMUNITION.getEquippedWeapon(player);
 
 		if (left != null)
 			terminal.write(leftX, startY, String.format("%1$-15s", left.name()));
@@ -99,6 +113,9 @@ public class StatsDisplay extends TextWindow {
 
 		if (ranged != null)
 			terminal.write(leftX, startY + 3, String.format("%1$-15s", ranged.name()));
+
+		if (ammo != null)
+			terminal.write(leftX, startY + 4, String.format("%1$-15s", ammo.name()));
 
 		headerTerm.write(leftX + 16, startY + 5, "MP");
 		int weaponProficiency = 0; // TODO: calculate this
@@ -111,7 +128,7 @@ public class StatsDisplay extends TextWindow {
 
 	private void drawStats() {
 
-		int startY = 13;
+		int startY = 14;
 
 		SColor headerColor = SColor.BRONZE;
 		TerminalBase headerTerm = terminal.withColor(headerColor);
@@ -137,6 +154,20 @@ public class StatsDisplay extends TextWindow {
 	}
 
 	private void drawConditions() {
+		int startY = 17;
 
+		terminal.fill(1, startY, MainWindow.STAT_WIDTH, 3, ' ');
+
+		List<Condition> conditions = player.conditions();
+		StringEx s = new StringEx();
+		CharEx space = new CharEx(' ');
+		for (Condition c : conditions) {
+			s.addAll(c.identifier());
+			s.add(space);
+		}
+		StringEx[] lines = s.wordWrap(MainWindow.STAT_WIDTH);
+		for (int x = 0; x < lines.length; x++) {
+			terminal.write(1, x + startY, lines[x]);
+		}
 	}
 }

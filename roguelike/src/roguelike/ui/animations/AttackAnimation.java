@@ -87,7 +87,7 @@ public class AttackAnimation extends Animation {
 
 		effect.fill(offsetPos.x, offsetPos.y, 1, 1);
 
-		float pctFinished = (currentFrame / (float) totalFrames);
+		// float pctFinished = (currentFrame / (float) totalFrames);
 		// if (pctFinished < 0.5) {
 		// effect.put(offsetPos.x, offsetPos.y, '\\');
 		// }

@@ -37,7 +37,7 @@ public class GameLoader {
 
 		// TODO: make a real map
 		// MapArea currentMapArea = new MapArea(200, 200, new MapBuilder());
-		MapArea currentMapArea = new MapArea(Game.MAP_WIDTH, Game.MAP_HEIGHT, new DungeonMapBuilder());
+		MapArea currentMapArea = MapArea.build(Game.MAP_WIDTH, Game.MAP_HEIGHT, new DungeonMapBuilder());
 		currentMapArea.addActor(player);
 
 		game.setCurrentMapArea(currentMapArea);
@@ -52,7 +52,7 @@ public class GameLoader {
 		// TODO: load game and map from file
 
 		// MapArea currentMapArea = new MapArea(200, 200, new MapBuilder());
-		MapArea currentMapArea = new MapArea(83, 43, new DungeonMapBuilder());
+		MapArea currentMapArea = MapArea.build(83, 43, new DungeonMapBuilder());
 		currentMapArea.addActor(player);
 
 		game.setCurrentMapArea(currentMapArea);

@@ -25,9 +25,9 @@ public class MainWindow {
 	public static final int cellWidth = 9; // in AsciiPanel, this is constant
 	public static final int cellHeight = 16;
 
-	public static final int width = screenWidth / cellWidth;
-	public static final int height = screenHeight / cellHeight;
-	public static final int statWidth = 50, fontSize = 14;
+	public static final int WIDTH = screenWidth / cellWidth;
+	public static final int HEIGHT = screenHeight / cellHeight;
+	public static final int STAT_WIDTH = 50, fontSize = 14;
 
 	private JFrame frame;
 
@@ -129,7 +129,7 @@ public class MainWindow {
 
 		InputManager.registerWithFrame(frame);
 
-		displayManager.init(width, height);
+		displayManager.init(WIDTH, HEIGHT);
 		displayPane = displayManager.displayPane();
 
 		frame.add(displayPane);

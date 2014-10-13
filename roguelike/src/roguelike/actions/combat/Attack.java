@@ -9,7 +9,7 @@ public abstract class Attack {
 	protected String description;
 	protected int baseDamage;
 	protected DamageType damageType;
-	private Weapon weapon;
+	protected Weapon weapon;
 
 	protected Attack(String description, int baseDamage, Weapon weapon) {
 		this.description = description;

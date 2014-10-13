@@ -19,6 +19,10 @@ public class TextWindow {
 	protected void drawBoxShape(TerminalBase term, int top, int height) {
 		int width = size.width;
 
+		TextWindow.drawBoxShape(term, top, height, width);
+	}
+
+	public static void drawBoxShape(TerminalBase term, int top, int height, int width) {
 		for (int x = 0; x < width; x++) {
 			for (int y = 0; y < height; y++) {
 				int sY = top + y;
