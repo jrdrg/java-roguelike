@@ -2,8 +2,6 @@ package roguelike.actors;
 
 import java.io.Serializable;
 
-import roguelike.data.EnemyData;
-
 public class Statistics implements Serializable {
 	private static final long serialVersionUID = 7046880693122391945L;
 
@@ -125,16 +123,4 @@ public class Statistics implements Serializable {
 		return reflexes();
 	}
 
-	void setValues(EnemyData data) {
-		this.speed.setBase(data.speed);
-		this.toughness.setBase(data.toughness);
-		this.conditioning.setBase(data.conditioning);
-		this.perception.setBase(data.perception);
-		this.agility.setBase(data.agility);
-		this.willpower.setBase(data.willpower);
-		this.presence.setBase(data.presence);
-
-		this.reflexBonus = data.reflexBonus;
-		this.aimingBonus = data.aimingBonus;
-	}
 }

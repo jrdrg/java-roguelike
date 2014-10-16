@@ -17,6 +17,18 @@ public abstract class Screen {
 		setNextScreen(this);
 	}
 
+	public Screen getScreen() {
+		return nextScreen();
+	}
+
+	public final long drawScreen() {
+		long start = System.currentTimeMillis();
+		draw();
+		DisplayManager.instance().refresh();
+		long time = System.currentTimeMillis() - start;
+		return time;
+	}
+
 	protected Screen nextScreen() {
 		return nextScreen;
 	}
@@ -38,19 +50,11 @@ public abstract class Screen {
 			setNextScreen(previousScreen, false);
 			previousScreen.nextScreen = previousScreen;
 			previousScreen = null;
+			onLeaveScreen();
 		}
 	}
 
-	public Screen getScreen() {
-		return nextScreen();
-	}
-
-	public final long drawScreen() {
-		long start = System.currentTimeMillis();
-		draw();
-		DisplayManager.instance().refresh();
-		long time = System.currentTimeMillis() - start;
-		return time;
+	protected void onLeaveScreen() {
 	}
 
 	public abstract long draw();

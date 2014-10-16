@@ -1,6 +1,6 @@
 package roguelike.actions.combat;
 
-public enum WeaponType {
+public enum WeaponCategory {
 	SWORD,
 	AXE,
 	DAGGER,
@@ -16,7 +16,7 @@ public enum WeaponType {
 	NATURAL, // for monsters, beasts, etc
 	DEFAULT;
 
-	public static WeaponType fromString(String type) {
-		return WeaponType.valueOf(type.toUpperCase());
+	public static WeaponCategory fromString(String type) {
+		return WeaponCategory.valueOf(type.toUpperCase());
 	}
 }

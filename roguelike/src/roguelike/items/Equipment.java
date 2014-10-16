@@ -12,7 +12,7 @@ public class Equipment implements Serializable {
 	private static final long serialVersionUID = 1006420730103267096L;
 
 	public enum ItemSlot {
-		HEAD, TORSO, LEFT_ARM, RIGHT_ARM, LEGS, RANGED, AMMUNITION;
+		HEAD, TORSO, LEFT_ARM, RIGHT_ARM, LEGS, RANGED, PROJECTILE;
 
 		public Item getItem(Actor actor) {
 			return actor.equipment().getEquipped(this);
@@ -23,7 +23,19 @@ public class Equipment implements Serializable {
 		}
 
 		public Item equipItem(Actor actor, Item item) {
-			return actor.equipment().equipItem(this, item, actor.inventory());
+			Item old = actor.equipment().equipItem(this, item, actor.inventory());
+			if (old != null) {
+				old.onRemoved(actor);
+			}
+			item.onEquipped(actor);
+			return old;
+		}
+
+		public Item removeItem(Actor actor) {
+			Item item = actor.equipment().removeItem(this, actor.inventory());
+			if (item != null)
+				item.onRemoved(actor);
+			return item;
 		}
 	}
 
@@ -73,12 +85,18 @@ public class Equipment implements Serializable {
 		return oldItem;
 	}
 
+	Item removeItem(ItemSlot slot, Inventory inventory) {
+		Item item = equipped.getOrDefault(slot, null);
+		equipped.put(slot, null);
+		return item;
+	}
+
 	Item getEquipped(ItemSlot slot) {
 		return equipped.getOrDefault(slot, null);
 	}
 
 	Weapon getEquippedWeapon(ItemSlot slot) {
-		if (slot == ItemSlot.RIGHT_ARM || slot == ItemSlot.LEFT_ARM || slot == ItemSlot.RANGED) {
+		if (slot == ItemSlot.RIGHT_ARM || slot == ItemSlot.LEFT_ARM || slot == ItemSlot.RANGED || slot == ItemSlot.PROJECTILE) {
 			Item weapon = equipped.getOrDefault(slot, null);
 			if (weapon instanceof Weapon)
 				return (Weapon) weapon;

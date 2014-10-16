@@ -1,0 +1,19 @@
+package roguelike.actors;
+
+public enum EnemyType {
+	WOLF,
+	SNAKE,
+	ARCHER,
+	BANDIT,
+	FIRE_ANT,
+	WORM,
+	GIANT_BAT,
+	POISON_TOAD,
+	GIANT_SPIDER,
+	SNAKE_CULTIST,
+	SWORDSMAN,
+	GIANT_APE,
+	DIRE_WOLF,
+	PYTHON,
+
+}

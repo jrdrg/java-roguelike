@@ -1,44 +1,35 @@
 package roguelike.items;
 
-import roguelike.Game;
 import roguelike.actions.combat.Attack;
 import roguelike.actions.combat.NoAmmunitionAttack;
-import roguelike.actions.combat.RangedAttack;
-import roguelike.data.WeaponData;
+import roguelike.actions.combat.WeaponCategory;
+import roguelike.actors.Actor;
+import roguelike.items.Equipment.ItemSlot;
 
 public class RangedWeapon extends Weapon {
 
 	private static final long serialVersionUID = -340930226160562519L;
 
 	protected int maxRange;
-	protected boolean requiresAmmunition;
-	protected String ammunitionType;
+	protected boolean requiresProjectiles;
+	protected WeaponCategory projectileType;
 	protected int remainingAmmunition;
 
-	protected RangedWeapon(WeaponData data) {
-		super(data);
+	protected Actor owner;
 
-		// TODO: fix attack descriptions
-		if (data.attackDescription == null || data.attackDescription.length() == 0) {
-			this.attackDescription = "shoots at %s";
-		} else {
-			this.attackDescription = data.attackDescription;
-		}
-		// TODO: add actual max range value here
-		this.maxRange = 15;
-
-		this.requiresAmmunition = data.requiresAmmunition;
-		this.ammunitionType = data.ammunitionType;
+	protected RangedWeapon() {
+		super();
 	}
 
 	@Override
 	public Attack getAttack() {
 
-		if (requiresAmmunition && remainingAmmunition > 0) {
-			double randomFactor = Game.current().random().nextDouble() * baseDamage;
-			int totalDamage = (int) (baseDamage + randomFactor / 2);
-
-			return new RangedAttack(attackDescription, totalDamage, this);
+		if (requiresProjectiles) {
+			Projectile projectile = getProjectile();
+			if (projectile != null) {
+				Attack attack = projectile.getAttack();
+				return attack;
+			}
 		}
 
 		return new NoAmmunitionAttack(0, this);
@@ -54,11 +45,31 @@ public class RangedWeapon extends Weapon {
 		return name;
 	}
 
-	public String ammunitionType() {
-		return this.ammunitionType;
+	public WeaponType ammunitionType() {
+		return WeaponType.ARROW;
 	}
-	
-	public void reload(Inventory inventory){
-		
+
+	@Override
+	public void onEquipped(Actor actor) {
+		owner = actor;
+	}
+
+	@Override
+	public void onRemoved(Actor actor) {
+		owner = null;
+		actor.doAction("removed the %s", this.name);
+	}
+
+	public Projectile getProjectile() {
+		if (owner == null)
+			return null;
+
+		Item projectile = ItemSlot.PROJECTILE.removeItem(owner);
+		if (projectile instanceof Projectile) {
+			// TODO: update this to decrement the count instead of setting to null
+			owner.inventory().remove(projectile);
+			return (Projectile) projectile;
+		}
+		return null;
 	}
 }

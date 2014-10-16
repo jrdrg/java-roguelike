@@ -3,6 +3,7 @@ package roguelike.actors;
 import roguelike.actions.Action;
 import roguelike.actors.behaviors.PlayerInputBehavior;
 import roguelike.data.DataFactory;
+import roguelike.util.ActorUtils;
 import roguelike.util.Log;
 import squidpony.squidcolor.SColor;
 
@@ -90,29 +91,7 @@ public class Player extends Actor {
 
 	@Override
 	protected String makeCorrectVerb(String message) {
-		return makeSecondPerson(message);
+		return ActorUtils.makePlayerText(message);
 	}
 
-	private String makeSecondPerson(String text) {
-		String[] words = text.split(" ");
-
-		if (words[0].equals("has")) {
-			words[0] = "have";
-		} else if (words[0].endsWith("es")) {
-			words[0] = words[0].substring(0, words[0].length() - 1);
-		}
-		else if (words[0].endsWith("s")) {
-			words[0] = words[0].substring(0, words[0].length() - 1);
-		} else if (words[0].equals("'s")) {
-			words[0] = "r"; // xxx's = your
-		}
-
-		StringBuilder builder = new StringBuilder();
-		for (String word : words) {
-			builder.append(" ");
-			builder.append(word);
-		}
-
-		return builder.toString().trim();
-	}
 }

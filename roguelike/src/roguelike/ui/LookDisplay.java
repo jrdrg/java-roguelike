@@ -44,7 +44,7 @@ public class LookDisplay extends TextWindow {
 		height += BOTTOM_MARGIN + TOP_MARGIN;
 
 		int top = terminal.size().height - height;
-		if (terminal.size().y == 1)
+		if (terminal.size().y <= 1)
 			top = 0;
 
 		this.drawBoxShape(terminal, top, height + 1);
@@ -63,8 +63,8 @@ public class LookDisplay extends TextWindow {
 
 		Actor actor = drawActor ? map.getActorAt(x, y) : null;
 		if (actor != null) {
-			add(textList, "`" + actor.color().getName() + "`" + actor.getDescription());
-			add(textList, "");
+			add(textList, "`" + actor.color().getName() + "`" + actor.getName() + " =" + actor.behavior().getDescription());
+			add(textList, actor.getDescription());
 			Weapon equipped = ItemSlot.RIGHT_ARM.getEquippedWeapon(actor);
 			add(textList, " `Gray`Weapon");
 			add(textList, "`White`" + equipped.name() + " (" + equipped.defaultDamageType().name() + ")");

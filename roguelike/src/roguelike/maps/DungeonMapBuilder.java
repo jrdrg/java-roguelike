@@ -66,10 +66,10 @@ public class DungeonMapBuilder extends MapBuilderBase {
 
 			/* Initialize map sections */
 			mapSections = new ArrayList<DungeonMapBuilder.MapSection>();
-			mapSections.add(new MapSection(getSubRectangle(mapRect, 0, 0, .5, .5)));
-			mapSections.add(new MapSection(getSubRectangle(mapRect, mapRect.width / 2, 0, .5, .5)));
-			mapSections.add(new MapSection(getSubRectangle(mapRect, mapRect.width / 2, mapRect.height / 2, .5, .5)));
-			mapSections.add(new MapSection(getSubRectangle(mapRect, 0, mapRect.height / 2, .5, .5)));
+			mapSections.add(new MapSection(getSubRectangle(mapRect, 0, 0, .25, .25)));
+			mapSections.add(new MapSection(getSubRectangle(mapRect, mapRect.width / 4, 0, .25, .25)));
+			mapSections.add(new MapSection(getSubRectangle(mapRect, mapRect.width / 4, mapRect.height / 4, .25, .25)));
+			mapSections.add(new MapSection(getSubRectangle(mapRect, 0, mapRect.height / 4, .25, .25)));
 
 			fillMap(Symbol.WALL);
 
@@ -349,27 +349,32 @@ public class DungeonMapBuilder extends MapBuilderBase {
 	}
 
 	private boolean connectToRandomRoom(Room room) {
-		Room randomRoom = CollectionUtils.getRandomElement(rooms);
-		if (randomRoom == null)
+		if (random.nextDouble() < 0.3)
 			return false;
 
-		int maxDistance = 5;
-		if (room.area.getLocation().distance(room.area.getLocation()) <= maxDistance) {
-			// try to connect them
+		for (int x = 0; x < 3; x++) {
+			Room randomRoom = CollectionUtils.getRandomElement(rooms);
+			if (randomRoom == null)
+				return false;
 
-			if (room.doors.stream().anyMatch(d -> d.isDoor)) {
-				if (randomRoom.doors.stream().anyMatch(d -> d.isDoor))
-					return false;
-			}
+			int maxDistance = 25;
+			if (room.area.getLocation().distance(randomRoom.area.getLocation()) <= maxDistance) {
+				// try to connect them
 
-			ConnectionPoint randomDoor = CollectionUtils.getRandomElement(room.doors);
-			if (randomDoor != null) {
-				ConnectionPoint endPoint = buildCorridor(randomDoor, room, randomRoom.area);
-				if (endPoint == null)
-					Log.debug("connect to random room, null endpoint");
-				else
-					Log.debug("endPoint=" + endPoint);
-				return true;
+				if (room.doors.stream().anyMatch(d -> d.isDoor)) {
+					if (randomRoom.doors.stream().anyMatch(d -> d.isDoor))
+						return false;
+				}
+
+				ConnectionPoint randomDoor = CollectionUtils.getRandomElement(room.doors);
+				if (randomDoor != null) {
+					ConnectionPoint endPoint = buildCorridor(randomDoor, room, randomRoom.area);
+					if (endPoint == null)
+						Log.debug("connect to random room, null endpoint");
+					else
+						Log.debug("endPoint=" + endPoint);
+					return true;
+				}
 			}
 		}
 		return false;

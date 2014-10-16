@@ -22,6 +22,13 @@ public class CollectionUtils {
 		return list.get(rng.nextInt(list.size()));
 	}
 
+	public static <T> T getRandomElement(T[] list) {
+		if (list.length <= 0) {
+			return null;
+		}
+		return list[rng.nextInt(list.length)];
+	}
+
 	private CollectionUtils() {
 	}
 }

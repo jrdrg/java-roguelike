@@ -12,7 +12,7 @@ public class MeleeAttack extends Attack {
 
 	@Override
 	public boolean onPerform(Action action, Actor target) {
-		return action.getActor().getCombatHandler().processAttack(action, this, target);
+		return action.getActor().combatHandler().processAttack(action, this, target);
 	}
 
 }

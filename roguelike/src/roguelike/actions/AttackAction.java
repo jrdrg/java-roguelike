@@ -32,7 +32,7 @@ public class AttackAction extends Action {
 			return ActionResult.alternate(new WaitAction(actor)).setMessage(">>> onPerform() >>> Target " + target.getName() + " is dead!");
 		}
 
-		Attack attack = actor.getCombatHandler().getAttack(target);
+		Attack attack = actor.combatHandler().getAttack(target);
 		if (attack != null) {
 			boolean isTargetDead = attack.perform(this, target);
 

@@ -1,111 +1,50 @@
 package roguelike.items;
 
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
 import roguelike.actions.combat.Attack;
 import roguelike.actions.combat.DamageType;
-import roguelike.actions.combat.WeaponType;
-import roguelike.data.WeaponData;
+import roguelike.actions.combat.WeaponCategory;
+import roguelike.actors.conditions.Condition;
+import roguelike.functionalInterfaces.StatisticProvider;
 
 public abstract class Weapon extends Item {
 	private static final long serialVersionUID = -7712813593206574664L;
 
-	private class DamageValue implements Comparable<DamageValue>, Serializable {
-		private static final long serialVersionUID = 6887755506914896126L;
-
-		public DamageType type;
-		public int targetNumber;
-		public int damageRating;
-
-		public DamageValue(DamageType type, int targetNumber, int damageRating) {
-			this.type = type;
-			this.targetNumber = targetNumber;
-			this.damageRating = damageRating;
-
-			if (this.targetNumber <= 0) {
-				this.targetNumber = 10; // max value
-			}
-		}
-
-		public DamageValue(DamageType type, int[] values) {
-			this(type, values[0], values[1]);
-		}
-
-		@Override
-		public int compareTo(DamageValue o) {
-			float f = targetNumber;
-			float of = o.targetNumber;
-
-			if (f < of) {
-				return -1;
-			} else if (f > of) {
-				return 1;
-			} else {
-				return 0;
-			}
-		}
-	}
-
-	protected Map<DamageType, DamageValue> damageValues;
-	protected WeaponType weaponType;
+	protected Map<DamageType, int[]> damage = new HashMap<DamageType, int[]>();
+	protected WeaponCategory weaponCategory;
 
 	protected DamageType defaultDamageType;
 	protected int baseDamage;
-	protected String name;
 	protected String description;
 	protected String attackDescription;
 	protected int defenseTargetNumber;
+
+	protected Condition canCauseCondition;
+	protected StatisticProvider defenseAgainstConditionStat;
+	protected int attackSuccessesToCause;
+	protected int attributeSuccessesToDefend;
 
 	/**
 	 * This decrements periodically depending on usage, when it hits 0 the weapon breaks
 	 */
 	protected int durability;
 
-	protected Weapon(WeaponData data) {
-		super();
+	protected int reach;
 
-		this.name = data.name;
-		this.description = data.description;
-		this.baseDamage = data.baseDamage;
-
-		this.droppable = data.droppable;
-		this.symbol = data.symbol();
-		this.color = data.color();
-
-		this.defenseTargetNumber = data.defenseTargetNumber;
-
-		this.damageValues = new HashMap<DamageType, DamageValue>();
-		damageValues.put(DamageType.SLASHING, new DamageValue(DamageType.SLASHING, data.slash()));
-		damageValues.put(DamageType.PIERCING, new DamageValue(DamageType.PIERCING, data.thrust()));
-		damageValues.put(DamageType.BLUNT, new DamageValue(DamageType.BLUNT, data.blunt()));
-
-		DamageType sortedDv = damageValues
-				.values()
-				.stream()
-				.filter(dv -> dv.targetNumber > 0)
-				.sorted((d1, d2) -> {
-					if (d1.targetNumber < d2.targetNumber)
-						return -1;
-					if (d1.targetNumber > d2.targetNumber)
-						return 1;
-					if (d1.damageRating > d2.damageRating)
-						return -1;
-					if (d1.damageRating < d2.damageRating)
-						return 1;
-					return 0;
-				})
-				.findFirst().get().type;
-
-		defaultDamageType = sortedDv;
-
-		this.reach = data.reach;
-		this.weaponType = WeaponType.fromString(data.type);
+	protected Weapon() {
+		damage.put(DamageType.SLASHING, new int[2]);
+		damage.put(DamageType.PIERCING, new int[2]);
+		damage.put(DamageType.BLUNT, new int[2]);
 	}
 
-	public WeaponType weaponType() {
-		return this.weaponType;
+	public int reach() {
+		return this.reach;
+	}
+
+	public WeaponCategory weaponType() {
+		return this.weaponCategory;
 	}
 
 	public DamageType defaultDamageType() {
@@ -113,7 +52,7 @@ public abstract class Weapon extends Item {
 	}
 
 	public int getTargetNumber(DamageType type) {
-		return damageValues.get(type).targetNumber;
+		return damage.get(type)[0];
 	}
 
 	public int getDefenseTargetNumber() {
@@ -121,7 +60,7 @@ public abstract class Weapon extends Item {
 	}
 
 	public int getDamageRating(DamageType type) {
-		return damageValues.get(type).damageRating;
+		return damage.get(type)[1];
 	}
 
 	public int getReachInTiles() {
@@ -129,6 +68,4 @@ public abstract class Weapon extends Item {
 	}
 
 	public abstract Attack getAttack();
-
-	public final int reach;
 }

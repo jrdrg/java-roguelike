@@ -5,8 +5,10 @@ import roguelike.data.DataFactory;
 import roguelike.data.serialization.PlayerSerializer;
 import roguelike.items.Equipment.ItemSlot;
 import roguelike.items.MeleeWeapon;
+import roguelike.items.Projectile;
 import roguelike.items.RangedWeapon;
 import roguelike.items.WeaponFactory;
+import roguelike.items.WeaponType;
 import roguelike.maps.DungeonMapBuilder;
 import roguelike.maps.MapArea;
 import squidpony.squidmath.RNG;
@@ -62,12 +64,14 @@ public class GameLoader {
 	public Player createPlayer() {
 		Player player = new Player();
 
-		MeleeWeapon sword = (MeleeWeapon) WeaponFactory.create("sword");
-		MeleeWeapon spear = (MeleeWeapon) WeaponFactory.create("spear");
-		RangedWeapon bow = (RangedWeapon) WeaponFactory.create("short bow");
+		MeleeWeapon sword = (MeleeWeapon) WeaponFactory.create(WeaponType.SHORT_SWORD);
+		MeleeWeapon spear = (MeleeWeapon) WeaponFactory.create(WeaponType.SPEAR);
+		RangedWeapon bow = (RangedWeapon) WeaponFactory.create(WeaponType.SHORT_BOW);
+		Projectile arrow = (Projectile) WeaponFactory.create(WeaponType.ARROW);
 
 		player.inventory().add(spear);
 		player.inventory().add(bow);
+		player.inventory().add(arrow);
 
 		ItemSlot.RIGHT_ARM.equipItem(player, sword);
 

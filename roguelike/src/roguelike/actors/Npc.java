@@ -5,7 +5,6 @@ import java.util.List;
 import roguelike.Game;
 import roguelike.actions.Action;
 import roguelike.actors.behaviors.Behavior;
-import roguelike.data.EnemyData;
 import roguelike.items.Inventory;
 import roguelike.items.Item;
 import roguelike.maps.MapArea;
@@ -14,21 +13,13 @@ import squidpony.squidcolor.SColor;
 public class Npc extends Actor {
 	private static final long serialVersionUID = 3959590031674627194L;
 
-	private String name;
+	protected String name = "";
+	protected String description = "";
+	int difficulty = 1;
 
-	public Npc(char symbol, SColor color, String name) {
+	Npc(char symbol, SColor color, String name) {
 		super(symbol, color);
 		this.name = name;
-	}
-
-	public Npc(EnemyData data) {
-		super(data.symbol(), data.color());
-		this.name = data.name;
-
-		Statistics stats = statistics();
-		stats.setValues(data);
-
-		this.health().setMaximum(data.health);
 	}
 
 	public void setBehavior(Behavior behavior) {
@@ -45,8 +36,12 @@ public class Npc extends Actor {
 
 	@Override
 	public String getName() {
-		// return name + " [" + getHealth().getCurrent() + "]";
 		return name;
+	}
+
+	@Override
+	public String getDescription() {
+		return description;
 	}
 
 	@Override

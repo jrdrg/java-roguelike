@@ -54,4 +54,9 @@ public class RandomWalkBehavior extends Behavior {
 
 		return this;
 	}
+
+	@Override
+	public String getDescription() {
+		return "Walking randomly";
+	}
 }

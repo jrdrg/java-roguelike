@@ -103,7 +103,7 @@ public class StatsDisplay extends TextWindow {
 		Weapon left = ItemSlot.LEFT_ARM.getEquippedWeapon(player);
 		Weapon right = ItemSlot.RIGHT_ARM.getEquippedWeapon(player);
 		Weapon ranged = ItemSlot.RANGED.getEquippedWeapon(player);
-		Weapon ammo = ItemSlot.AMMUNITION.getEquippedWeapon(player);
+		Weapon ammo = ItemSlot.PROJECTILE.getEquippedWeapon(player);
 
 		if (left != null)
 			terminal.write(leftX, startY, String.format("%1$-15s", left.name()));
@@ -117,13 +117,13 @@ public class StatsDisplay extends TextWindow {
 		if (ammo != null)
 			terminal.write(leftX, startY + 4, String.format("%1$-15s", ammo.name()));
 
-		headerTerm.write(leftX + 16, startY + 5, "MP");
+		headerTerm.write(leftX + 16, startY + 6, "MP");
 		int weaponProficiency = 0; // TODO: calculate this
-		terminal.write(leftX + 18, startY + 5, String.format("%3d", player.statistics().baseMeleePool(weaponProficiency)));
+		terminal.write(leftX + 18, startY + 6, String.format("%3d", player.statistics().baseMeleePool(weaponProficiency)));
 
-		headerTerm.write(leftX + 16, startY + 6, "RP");
+		headerTerm.write(leftX + 16, startY + 7, "RP");
 		int rangedProficiency = 0; // TODO: calculate this
-		terminal.write(leftX + 18, startY + 6, String.format("%3d", player.statistics().baseMeleePool(rangedProficiency)));
+		terminal.write(leftX + 18, startY + 7, String.format("%3d", player.statistics().baseMeleePool(rangedProficiency)));
 	}
 
 	private void drawStats() {

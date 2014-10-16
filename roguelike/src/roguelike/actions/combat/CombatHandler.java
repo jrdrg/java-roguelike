@@ -11,7 +11,6 @@ import roguelike.actors.Player;
 import roguelike.actors.Statistics;
 import roguelike.items.Equipment.ItemSlot;
 import roguelike.items.Weapon;
-import roguelike.ui.animations.AttackAnimation;
 import roguelike.util.DiceRolls;
 import roguelike.util.Log;
 import roguelike.util.Utility;
@@ -61,6 +60,7 @@ public class CombatHandler implements Serializable {
 		// TODO: dual wielding should return 1 attack dependent on skill
 		Weapon weapon = actor.equipment().getEquippedWeapons().stream().filter(w -> w != null).findFirst().orElse(null);
 		if (weapon != null) {
+			weapon.onAttacking(actor, target);
 			return weapon.getAttack();
 		}
 		return null;
@@ -148,10 +148,10 @@ public class CombatHandler implements Serializable {
 	 * @return The result from onDamaged() - true if the attack killed the target
 	 */
 	boolean processAttack(Action action, Attack attack, Actor target) {
-		attack = target.getCombatHandler().defend(actor, attack);
+		attack = target.combatHandler().defend(actor, attack);
 		boolean isDead;
 		if (attack.baseDamage > 0) {
-			isDead = target.getCombatHandler().onDamaged(attack, actor);
+			isDead = target.combatHandler().onDamaged(attack, actor);
 
 			String message = getAttackMessage(target, attack);
 
@@ -167,7 +167,7 @@ public class CombatHandler implements Serializable {
 
 		} else {
 			isDead = false;
-			Game.current().displayMessage(actor.getMessageName() + " missed " + target.getMessageName() + "!", SColor.DARK_TAN);
+			Game.current().displayMessage(actor.getMessageName() + " missed " + target.getMessageName() + ".", SColor.DARK_TAN);
 
 			Game.current().addEvent(TurnEvent.attackMissed(actor, target, "Missed"));
 		}
@@ -203,8 +203,8 @@ public class CombatHandler implements Serializable {
 
 		Weapon defendingWeapon = ItemSlot.RIGHT_ARM.getEquippedWeapon(actor);
 
-		int attackingReach = attack.getWeapon().reach;
-		int defendingReach = defendingWeapon == null ? 0 : defendingWeapon.reach;
+		int attackingReach = attack.getWeapon().reach();
+		int defendingReach = defendingWeapon == null ? 0 : defendingWeapon.reach();
 		int reachDiff = attackingReach - defendingReach;
 
 		// TODO: need to switch this penalty to the combatant who was damaged most recently
@@ -251,9 +251,9 @@ public class CombatHandler implements Serializable {
 			String attackDescription = String.format(attack.description, target.getMessageName());
 			message = String.format("%s for %d %s damage", attackDescription, attack.baseDamage, attack.damageType);
 			if (targetHealth > 0)
-				message += "! (" + targetHealth + " left)";
+				message += ". (" + targetHealth + " left)";
 			else
-				message += ("! " + Utility.capitalizeFirstLetter(target.getMessageName() + " is dead!"));
+				message += (". " + Utility.capitalizeFirstLetter(target.getMessageName() + " is dead."));
 		} catch (Exception e) {
 			message = "ERROR: " + attack.description;
 		}

@@ -3,7 +3,6 @@ package roguelike.actions;
 import roguelike.CursorResult;
 import roguelike.actions.combat.Attack;
 import roguelike.actors.Actor;
-import roguelike.actors.Player;
 import roguelike.items.RangedWeapon;
 import roguelike.maps.MapArea;
 import roguelike.ui.AttackCursor;
@@ -11,6 +10,12 @@ import roguelike.ui.InputCommand;
 import roguelike.util.Log;
 import squidpony.squidgrid.util.BasicRadiusStrategy;
 
+/**
+ * This is used by the player to display a target to choose which enemy to attack - Npc's can just use AttackActions.
+ * 
+ * @author john
+ *
+ */
 public class RangedAttackAction extends InputRequiredAction<InputCommand> {
 
 	private MapArea mapArea;
@@ -38,7 +43,7 @@ public class RangedAttackAction extends InputRequiredAction<InputCommand> {
 		int y = result.position().y;
 
 		target = mapArea.getActorAt(x, y);
-		if (target != null && !(target instanceof Player)) {
+		if (target != null && target != actor) {
 			// TODO: insert Ranged Attack animation here
 			return attackTarget();
 		}

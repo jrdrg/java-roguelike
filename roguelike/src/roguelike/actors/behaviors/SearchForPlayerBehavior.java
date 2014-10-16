@@ -7,7 +7,6 @@ import roguelike.actions.Action;
 import roguelike.actions.WaitAction;
 import roguelike.actions.WalkAction;
 import roguelike.actors.Actor;
-import roguelike.actors.AttackAttempt;
 import roguelike.maps.AStarPathfinder;
 import roguelike.maps.MapArea;
 import roguelike.maps.Path;
@@ -15,13 +14,12 @@ import roguelike.maps.Path.Step;
 import roguelike.util.Log;
 import squidpony.squidgrid.util.DirectionIntercardinal;
 
-public class SearchForPlayerBehavior extends Behavior {
+public class SearchForPlayerBehavior extends EnemyBehavior {
 
 	AStarPathfinder pathfinder;
 	Path pathToTarget;
 	private Point lastPlayerLocation;
 	private MapArea map;
-	private boolean noPathToPlayer = false;
 
 	public SearchForPlayerBehavior(Actor actor) {
 		super(actor);
@@ -62,6 +60,8 @@ public class SearchForPlayerBehavior extends Behavior {
 				pathToTarget.nextStep();
 				Step step = pathToTarget.getCurrentStep();
 				if (step != null) {
+					nextBehavior = this;
+
 					pathToTarget.nextStep();
 					int ssx = (step.getX()) - sx;
 					int ssy = (step.getY()) - sy;
@@ -70,31 +70,36 @@ public class SearchForPlayerBehavior extends Behavior {
 			}
 		}
 		Log.verboseDebug("Resting, no path to player...");
-		noPathToPlayer = true;
+		nextBehavior = new MoveToRandomPointBehavior(actor);
 		return new WaitAction(actor);
+	}
+
+	@Override
+	public void onAttacked(Actor attacker) {
+		Log.debug("SearchForPlayerBehavior: Switching to targeted attack behavior");
+		nextBehavior = new TargetedAttackBehavior(actor, attacker);
 	}
 
 	@Override
 	public Behavior getNextBehavior() {
 
-		AttackAttempt lastAttackedBy = actor.getLastAttackedBy();
-		if (lastAttackedBy != null && actor.isAdjacentTo(lastAttackedBy.getActor())) {
-
-			Log.debug("SearchForPlayerBehavior: Switching to targeted attack behavior");
-			return new TargetedAttackBehavior(actor, lastAttackedBy.getActor());
+		Actor player = Game.current().getPlayer();
+		if (actor.canSee(player, map)) {
+			if (canAttackTarget(player))
+				nextBehavior = new TargetedAttackBehavior(actor, player);
 		}
 
-		Actor player = Game.current().getPlayer();
 		if (actor.isAdjacentTo(player)) {
 
 			Log.debug("Attacking Player");
 			return new TargetedAttackBehavior(actor, player);
 		}
 
-		if (noPathToPlayer)
-			return new MoveToRandomPointBehavior(actor);
-
-		return this;
+		return nextBehavior;
 	}
 
+	@Override
+	public String getDescription() {
+		return "Looking for you";
+	}
 }

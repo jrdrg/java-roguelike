@@ -116,4 +116,9 @@ public class PlayerInputBehavior extends Behavior {
 		}
 		return null;
 	}
+
+	@Override
+	public String getDescription() {
+		return "Waiting for input";
+	}
 }

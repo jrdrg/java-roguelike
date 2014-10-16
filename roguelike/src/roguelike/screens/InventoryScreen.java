@@ -3,6 +3,7 @@ package roguelike.screens;
 import roguelike.Game;
 import roguelike.actors.Actor;
 import roguelike.items.Equipment.ItemSlot;
+import roguelike.items.Projectile;
 import roguelike.items.Inventory;
 import roguelike.items.Item;
 import roguelike.items.RangedWeapon;
@@ -28,12 +29,18 @@ public class InventoryScreen extends Screen {
 
 		menu = new Menu<Item>(inventory.allItems()) {
 			protected StringEx getTextFor(Item item, int position) {
-				String textLine = String.format("%-40s %12d", item.getDescription(), 111);
+				String textLine = String.format("%-40s %12d", item.name(), 111);
 
 				return new StringEx(getCharForIndex(position) + ") " + textLine);
 			}
 		};
 
+		InputManager.setActiveKeybindings(Menu.KeyBindings);
+	}
+
+	@Override
+	protected void onLeaveScreen() {
+		InputManager.previousKeyMap();
 	}
 
 	@Override
@@ -98,10 +105,12 @@ public class InventoryScreen extends Screen {
 		if (item instanceof RangedWeapon) {
 			ItemSlot.RANGED.equipItem(actor, item);
 			Game.current().displayMessage(actor.doAction("equips the %s", item.name()));
+		} else if (item instanceof Projectile) {
+			ItemSlot.PROJECTILE.equipItem(actor, item);
+			Game.current().displayMessage(actor.doAction("loads the %s", item.name()));
 		} else {
 			ItemSlot.RIGHT_ARM.equipItem(actor, item);
 			Game.current().displayMessage(actor.doAction("equips the %s", item.name()));
 		}
-
 	}
 }

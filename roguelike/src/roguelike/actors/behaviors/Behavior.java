@@ -28,4 +28,5 @@ public abstract class Behavior {
 	 */
 	public abstract Behavior getNextBehavior();
 
+	public abstract String getDescription();
 }

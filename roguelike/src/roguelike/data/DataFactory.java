@@ -2,9 +2,6 @@ package roguelike.data;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import roguelike.actors.Actor;
 import roguelike.actors.behaviors.Behavior;
@@ -18,35 +15,12 @@ import roguelike.actors.behaviors.Behavior;
 public class DataFactory {
 
 	private static DataFactory instance = new DataFactory();
-	private Map<String, EnemyData> monsterData;
-	private Map<String, WeaponData> weaponData;
 
 	private DataFactory() {
-		monsterData = new HashMap<String, EnemyData>();
-		weaponData = new HashMap<String, WeaponData>();
-
-		initWeapons();
-		initMonsters();
 	}
 
 	public static DataFactory instance() {
 		return instance;
-	}
-
-	public Map<String, EnemyData> getMonsters() {
-		return monsterData;
-	}
-
-	public Map<String, WeaponData> getWeapons() {
-		return weaponData;
-	}
-
-	public EnemyData getMonster(String key) {
-		return monsterData.get(key);
-	}
-
-	public WeaponData getWeapon(String key) {
-		return weaponData.get(key);
 	}
 
 	public static Behavior createBehavior(String behavior, Actor actor) {
@@ -73,17 +47,4 @@ public class DataFactory {
 		return (Behavior) instance;
 	}
 
-	private void initWeapons() {
-		List<WeaponData> weapons = WeaponData.create();
-		for (WeaponData data : weapons) {
-			weaponData.put(data.name, data);
-		}
-	}
-
-	private void initMonsters() {
-		List<EnemyData> monsters = EnemyData.create();
-		for (EnemyData data : monsters) {
-			monsterData.put(data.name, data);
-		}
-	}
 }

@@ -5,17 +5,15 @@ import roguelike.actions.Action;
 import roguelike.actions.AttackAction;
 import roguelike.actors.Actor;
 import roguelike.actors.Player;
-import roguelike.items.Weapon;
 import roguelike.util.Coordinate;
 import squidpony.squidcolor.SColor;
 import squidpony.squidgrid.fov.BasicRadiusStrategy;
 import squidpony.squidgrid.fov.RadiusStrategy;
 
-public class TargetedAttackBehavior extends Behavior {
+public class TargetedAttackBehavior extends EnemyBehavior {
 
 	private Actor target;
 	private RadiusStrategy radiusStrategy = BasicRadiusStrategy.CIRCLE;
-	private Behavior nextBehavior;
 
 	protected TargetedAttackBehavior(Actor actor, Actor target) {
 		super(actor);
@@ -45,7 +43,7 @@ public class TargetedAttackBehavior extends Behavior {
 				return new AttackAction(actor, target);
 			}
 			else {
-				Game.current().displayMessage(target.getName() + "is no longer in sight range.");
+				Game.current().displayMessage(target.getName() + " is no longer in sight range.");
 			}
 		} else if (target.isAlive() && isTargetVisible()) {
 
@@ -78,17 +76,8 @@ public class TargetedAttackBehavior extends Behavior {
 		return false;
 	}
 
-	private boolean canAttackTarget(float distance) {
-		int range = 1;
-		Weapon maxRange = actor.equipment().getEquippedWeapons().stream().max((w1, w2) -> {
-			if (w1 == null || w2 == null)
-				return 0;
-			return Integer.compare(w1.reach, w2.reach);
-		}).orElse(null);
-
-		if (maxRange != null)
-			range = maxRange.getReachInTiles();
-
-		return (distance <= range);
+	@Override
+	public String getDescription() {
+		return "Attacking " + target.getMessageName();
 	}
 }

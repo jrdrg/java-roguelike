@@ -1,28 +1,107 @@
 package roguelike.data;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import roguelike.actors.Actor;
+import roguelike.actors.EnemyType;
 import roguelike.actors.Npc;
-import roguelike.actors.behaviors.Behavior;
+import roguelike.actors.NpcBuilder;
+import roguelike.actors.behaviors.MoveToRandomPointBehavior;
+import roguelike.actors.behaviors.SearchForPlayerBehavior;
 import roguelike.items.Equipment.ItemSlot;
 import roguelike.items.InventoryBuilder;
 import roguelike.items.Item;
-import roguelike.items.RangedWeapon;
 import roguelike.items.Weapon;
 import roguelike.items.WeaponFactory;
-import squidpony.squidutility.SCollections;
+import roguelike.items.WeaponType;
+import roguelike.util.CollectionUtils;
+import squidpony.squidcolor.SColor;
 
 public class EnemyFactory {
 
+	private interface NpcBuilderFactory {
+		public Npc create();
+	}
+
+	private static EnemyFactory factory = new EnemyFactory();
 	private static InventoryBuilder inventoryBuilder = new InventoryBuilder();
-	private static Map<Integer, List<EnemyData>> enemiesByDifficulty;
+
+	private Map<EnemyType, NpcBuilderFactory> npcBuilders = new HashMap<EnemyType, EnemyFactory.NpcBuilderFactory>();
+
+	private EnemyFactory() {
+
+		npcBuilders.put(EnemyType.WOLF,
+				() -> NpcBuilder
+						.withIdentifiers("wolf", 'w', SColor.LIGHT_GRAY, 1)
+						.withHealth(15)
+						.withVisionRadius(16)
+						.withDescription("It looks at you with sinister eyes and snarls menacingly.")
+						.withSpeed(30)
+						.withBehavior(a -> new SearchForPlayerBehavior(a))
+						.withStats(5, 6, 6, 6, 4, 3)
+						.equipItem(WeaponFactory.create(WeaponType.BITE), ItemSlot.RIGHT_ARM) // yes, this is funny
+						.buildNpc());
+
+		npcBuilders.put(EnemyType.FIRE_ANT,
+				() -> NpcBuilder
+						.withIdentifiers("fire ant", 'f', SColor.RED, 1)
+						.withHealth(8)
+						.withDescription("A large ant, whose bite is said to cause immense pain.")
+						.withSpeed(15)
+						.withBehavior(a -> new SearchForPlayerBehavior(a))
+						.withStats(4, 3, 4, 4, 4, 4)
+						.equipItem(WeaponFactory.create(WeaponType.MANDIBLES), ItemSlot.RIGHT_ARM)
+						.buildNpc());
+
+		npcBuilders.put(EnemyType.BANDIT,
+				() -> NpcBuilder
+						.withIdentifiers("bandit", 'b', SColor.BRIGHT_PINK, 1)
+						.withHealth(25)
+						.withDescription("Waiting in ambush for their victims, these scoundrels prey upon the weak.")
+						.withSpeed(10)
+						.withBehavior(a -> new SearchForPlayerBehavior(a))
+						.withStats(6, 7, 7, 5, 6, 6)
+						.withInventory(inventoryBuilder.populateRandomInventory())
+						.buildNpc());
+
+		npcBuilders.put(EnemyType.SNAKE,
+				() -> NpcBuilder
+						.withIdentifiers("snake", 's', SColor.LIME, 1)
+						.withHealth(10)
+						.withDescription("A small snake, slithering towards you.")
+						.withSpeed(20)
+						.withBehavior(a -> new SearchForPlayerBehavior(a))
+						.withStats(4, 5, 9, 8, 3, 3)
+						.equipItem(WeaponFactory.create(WeaponType.BITE), ItemSlot.RIGHT_ARM)
+						.buildNpc());
+
+		npcBuilders.put(EnemyType.ARCHER,
+				() -> NpcBuilder
+						.withIdentifiers("archer", 'a', SColor.LIGHT_MAROON, 1)
+						.withHealth(20)
+						.withDescription("Probably a deserter from some king's army.")
+						.withSpeed(10)
+						.withBehavior(a -> new MoveToRandomPointBehavior(a))
+						.withStats(5, 4, 8, 8, 5, 4)
+						.equipItem(WeaponFactory.create(WeaponType.SHORT_BOW), ItemSlot.RIGHT_ARM)
+						.equipItem(WeaponFactory.create(WeaponType.ARROW), ItemSlot.PROJECTILE)
+						.addItem(WeaponFactory.create(WeaponType.ARROW))
+						.addItem(WeaponFactory.create(WeaponType.ARROW))
+						.addItem(WeaponFactory.create(WeaponType.ARROW))
+						.addItem(WeaponFactory.create(WeaponType.ARROW))
+						.addItem(WeaponFactory.create(WeaponType.ARROW))
+						.addItem(WeaponFactory.create(WeaponType.ARROW))
+						.addItem(WeaponFactory.create(WeaponType.ARROW))
+						.addItem(WeaponFactory.create(WeaponType.ARROW))
+						.addItem(WeaponFactory.create(WeaponType.ARROW))
+						.withAimingBonus(1)
+						.buildNpc());
+
+	}
 
 	public static Actor createEnemy(int x, int y, int difficulty) {
-		Npc npc = getRandomEnemyByDifficulty(difficulty);
+		Npc npc = factory.getRandomEnemyByDifficulty(difficulty);
 
 		/* if we have any items, equip the first weapon */
 		if (npc.inventory().getCount() > 0) {
@@ -36,68 +115,14 @@ public class EnemyFactory {
 		return npc;
 	}
 
-	private static Npc getRandomEnemyByDifficulty(int difficulty) {
-		List<EnemyData> enemies = getEnemiesByDifficulty().get(difficulty);
-		EnemyData data = SCollections.getRandomElement(enemies);
-		Npc npc = createEnemy(data);
+	private Npc getRandomEnemyByDifficulty(int difficulty) {
+		EnemyType[] types = new EnemyType[] { EnemyType.WOLF, EnemyType.FIRE_ANT, EnemyType.BANDIT, EnemyType.SNAKE, EnemyType.ARCHER };
+
+		EnemyType randomType = CollectionUtils.getRandomElement(types);
+		NpcBuilderFactory factory = npcBuilders.get(randomType);
+
+		Npc npc = factory.create();
 		return npc;
 	}
 
-	private static EnemyData getEnemyByType(String type, int difficulty) {
-		// TODO: implement getEnemyByType
-		return null;
-	}
-
-	private static Map<String, EnemyData> getEnemyData() {
-		return DataFactory.instance().getMonsters();
-	}
-
-	private static Npc createEnemy(EnemyData data) {
-		Npc enemy = new Npc(data);
-		Behavior behavior = DataFactory.createBehavior(data.behavior, enemy);
-		enemy.setBehavior(behavior);
-
-		if (data.weapon != null) {
-			if (data.weapon.equals("Random")) {
-				/* create random weapon(s) */
-				inventoryBuilder.populateRandomInventory(enemy);
-
-			} else {
-				Weapon defWpn = WeaponFactory.create(data.weapon);
-
-				if (defWpn != null) {
-					if (defWpn instanceof RangedWeapon) {
-						if (((RangedWeapon) defWpn).ammunitionType().equals("arrow")) {
-							for (int x = 0; x < 10; x++) {
-								Weapon arrow = WeaponFactory.create("short arrow");
-								enemy.inventory().add(arrow);
-							}
-						}
-					}
-
-					enemy.inventory().add(defWpn);
-				}
-				else {
-					System.out.println("No default weapon for " + enemy.getName());
-				}
-			}
-		}
-		return enemy;
-	}
-
-	private static Map<Integer, List<EnemyData>> getEnemiesByDifficulty() {
-		if (enemiesByDifficulty == null) {
-			enemiesByDifficulty = new HashMap<Integer, List<EnemyData>>();
-			for (EnemyData e : getEnemyData().values()) {
-				int difficulty = e.difficulty;
-				List<EnemyData> enemiesOfSameDifficulty = enemiesByDifficulty.getOrDefault(difficulty, null);
-				if (enemiesOfSameDifficulty == null) {
-					enemiesOfSameDifficulty = new ArrayList<EnemyData>();
-					enemiesByDifficulty.put(difficulty, enemiesOfSameDifficulty);
-				}
-				enemiesOfSameDifficulty.add(e);
-			}
-		}
-		return enemiesByDifficulty;
-	}
 }

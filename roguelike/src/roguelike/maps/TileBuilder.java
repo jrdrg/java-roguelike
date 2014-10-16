@@ -1,7 +1,7 @@
 package roguelike.maps;
 
-import roguelike.util.Symbol;
 import roguelike.util.Log;
+import roguelike.util.Symbol;
 import squidpony.squidcolor.SColor;
 import squidpony.squidcolor.SColorFactory;
 import squidpony.squidutility.ProbabilityTable;
@@ -16,6 +16,7 @@ public class TileBuilder {
 	private ProbabilityTable<Character> ground;
 	private ProbabilityTable<Character> water;
 	private ProbabilityTable<SColor> waterColor;
+	private ProbabilityTable<SColor> groundColor;
 
 	public TileBuilder() {
 		trees = new ProbabilityTable<Character>();
@@ -26,6 +27,11 @@ public class TileBuilder {
 		waterColor.add(SColor.DARK_BLUE, 10);
 		waterColor.add(SColor.BLUE, 3);
 		waterColor.add(SColorFactory.desaturate(SColor.DARK_BLUE, 0.2), 6);
+
+		groundColor = new ProbabilityTable<SColor>();
+		groundColor.add(SColorFactory.dimmer(SColor.DARK_GRAY), 10);
+		groundColor.add(SColorFactory.desaturate(SColor.BLACK, 0.4), 4);
+		groundColor.add(SColorFactory.desaturate(SColor.BLACK_CHESTNUT_OAK, 0.8), 2);
 
 		trees.add(Symbol.TREE2.symbol(), 15);
 		trees.add(Symbol.TREE1.symbol(), 7);
@@ -77,7 +83,7 @@ public class TileBuilder {
 			break;
 
 		case DUNGEON_FLOOR:
-			t.setValues(character.symbol(), true, SColor.GRAY);
+			t.setValues(character.symbol(), true, SColor.GRAY);// .setBackground(groundColor.random());
 			break;
 
 		case GROUND:

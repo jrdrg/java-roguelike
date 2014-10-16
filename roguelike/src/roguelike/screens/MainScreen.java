@@ -387,7 +387,7 @@ public class MainScreen extends Screen {
 			quadrantIdx++;
 			quadrant = screenQuadrants[quadrantIdx];
 		}
-		TerminalBase term = this.terminal.getWindow(quadrant.x + 1, quadrant.y + 1, quadrant.width - 2, quadrant.height - 2);
+		TerminalBase term = this.terminal.getWindow(quadrant.x + 1, quadrant.y + 0, quadrant.width - 2, quadrant.height - 0);
 
 		lookDisplay
 				.setTerminal(term)

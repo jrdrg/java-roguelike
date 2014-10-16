@@ -123,4 +123,12 @@ public class MoveToRandomPointBehavior extends Behavior {
 
 		return this;
 	}
+
+	@Override
+	public String getDescription() {
+		if (currentTargetLocation != null)
+			return "Moving to " + currentTargetLocation.x + "," + currentTargetLocation.y;
+		else
+			return "Moving to a random point";
+	}
 }
