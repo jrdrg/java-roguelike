@@ -4,24 +4,38 @@ import java.io.Serializable;
 import java.util.UUID;
 
 import roguelike.actors.Actor;
+import roguelike.items.Equipment.ItemSlot;
 import squidpony.squidcolor.SColor;
+import squidpony.squidutility.Pair;
 
 public abstract class Item implements Serializable {
 
 	private static final long serialVersionUID = -7103589500266419030L;
 
 	private UUID itemId = UUID.randomUUID();
+
 	protected String name;
 	protected char symbol = '?';
 	protected SColor color = SColor.WHITE;
 	protected int weight;
+	protected boolean droppable;
+	
+	final boolean stackable;
 
-	boolean droppable;
-	boolean stackable;
+	protected Item(boolean stackable) {
+		this.droppable = true;
+		this.stackable = stackable;
+	}
 
 	public final UUID itemId() {
 		return this.itemId;
 	}
+
+	public boolean isSameItem(UUID otherId) {
+		return itemId() == otherId;
+	}
+
+	public abstract ItemType type();
 
 	public String name() {
 		if (name == null)
@@ -48,23 +62,43 @@ public abstract class Item implements Serializable {
 		return droppable;
 	}
 
-	protected Item() {
-		this.droppable = true;
+	/**
+	 * Methods to cast to a specific subtype
+	 * 
+	 * @return
+	 */
+	public Weapon asWeapon() {
+		return null;
 	}
 
-	protected Item(ItemData data) {
-		this.droppable = data.droppable;
-		this.symbol = data.symbol;
-		this.name = data.name;
+	public Projectile asProjectile() {
+		return null;
+	}
+
+	@SuppressWarnings("unchecked")
+	public <T> T as(Class<T> type) {
+		return (T) this;
+	}
+
+	public boolean canEquip(ItemSlot slot) {
+		return true;
+	}
+
+	/**
+	 * Called when the item is used, returns an item that is the result of using this one. If null, the item should be
+	 * removed from inventory
+	 * 
+	 * @param actor
+	 * @return
+	 */
+	public Pair<Item, Boolean> onUsed() {
+		return new Pair<Item, Boolean>(this, false);
 	}
 
 	public void onEquipped(Actor actor) {
 	}
 
 	public void onRemoved(Actor actor) {
-	}
-
-	public void onUsed(Actor actor) {
 	}
 
 	public void onThrown(Actor actor, Actor target) {

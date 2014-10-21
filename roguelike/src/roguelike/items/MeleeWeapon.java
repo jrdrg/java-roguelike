@@ -9,7 +9,7 @@ public class MeleeWeapon extends Weapon {
 	private static final long serialVersionUID = 682348343481995648L;
 
 	protected MeleeWeapon() {
-		super();
+		super(false);
 	}
 
 	@Override
@@ -19,6 +19,11 @@ public class MeleeWeapon extends Weapon {
 		int totalDamage = (int) (baseDamage + randomFactor / 2);
 
 		return new MeleeAttack(attackDescription, totalDamage, this);
+	}
+
+	@Override
+	public ItemType type() {
+		return ItemType.WEAPON;
 	}
 
 	@Override

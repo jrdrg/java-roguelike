@@ -8,6 +8,7 @@ import roguelike.actions.combat.DamageType;
 import roguelike.actions.combat.WeaponCategory;
 import roguelike.actors.conditions.Condition;
 import roguelike.functionalInterfaces.StatisticProvider;
+import roguelike.items.Equipment.ItemSlot;
 
 public abstract class Weapon extends Item {
 	private static final long serialVersionUID = -7712813593206574664L;
@@ -33,10 +34,21 @@ public abstract class Weapon extends Item {
 
 	protected int reach;
 
-	protected Weapon() {
+	protected Weapon(boolean stackable) {
+		super(stackable);
 		damage.put(DamageType.SLASHING, new int[2]);
 		damage.put(DamageType.PIERCING, new int[2]);
 		damage.put(DamageType.BLUNT, new int[2]);
+	}
+
+	@Override
+	public Weapon asWeapon() {
+		return this;
+	}
+
+	@Override
+	public boolean canEquip(ItemSlot slot) {
+		return (slot == ItemSlot.LEFT_ARM || slot == ItemSlot.RIGHT_ARM);
 	}
 
 	public int reach() {

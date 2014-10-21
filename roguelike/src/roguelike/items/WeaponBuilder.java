@@ -100,7 +100,18 @@ public class WeaponBuilder {
 		return this;
 	}
 
+	public WeaponBuilder withWeight(int weight) {
+		weapon.weight = weight;
+		return this;
+	}
+
 	public Weapon build() {
+		/* validate */
+		if (weapon.defaultDamageType == null)
+			throw new RuntimeException("Default damage type cannot be null");
+		if (weapon.weaponCategory == null)
+			throw new RuntimeException("Weapon category cannot be null");
+
 		return weapon;
 	}
 }

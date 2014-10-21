@@ -61,7 +61,7 @@ public class TileBuilder {
 		case TREE:
 			t.setValues(trees.random(), true, SColor.KELLY_GREEN)
 					.setLighting(0.5f)
-					.setSpeedModifier(-15);// .setBackground(SColor.GREEN);
+					.setSpeedModifier(-10);// .setBackground(SColor.GREEN);
 			break;
 
 		case BUILDING_FLOOR:
@@ -72,6 +72,13 @@ public class TileBuilder {
 			t.setValues(water.random(), false, SColorFactory.blend(waterColor.random(), SColorFactory.asSColor(50, 150, 255), .5))
 					.setLighting(0f)
 					.setBackground(waterColor.random());
+			break;
+
+		case SHALLOW_WATER:
+			t.setValues(water.random(), true, SColorFactory.blend(waterColor.random(), SColorFactory.asSColor(30, 100, 255), .5))
+					.setLighting(0f)
+					.setSpeedModifier(-15)
+					.setBackground(SColorFactory.desaturate(waterColor.random(), 0.1));
 			break;
 
 		case MOUNTAIN:

@@ -66,7 +66,7 @@ public class StatsDisplay extends TextWindow {
 		TerminalBase bracketTerm = terminal.withColor(SColor.WHITE);
 
 		int startY = 5;
-		int barWidth = 20;
+		int barWidth = 10;
 
 		bracketTerm.put(leftMargin, startY + 1, '[');
 		bracketTerm.put(leftMargin + barWidth, startY + 1, ']');
@@ -88,17 +88,17 @@ public class StatsDisplay extends TextWindow {
 
 	private void drawEquipped() {
 
-		int leftX = 9;
+		int leftX = 5;
 		int startY = 8;
 
 		SColor headerColor = SColor.BLOOD;
 		TerminalBase headerTerm = terminal.withColor(headerColor);
 
-		headerTerm.write(1, startY, "R Hand ");
-		headerTerm.write(1, startY + 1, "L Hand  ");
-		headerTerm.write(1, startY + 2, "Armor   ");
-		headerTerm.write(1, startY + 3, "Ranged  ");
-		headerTerm.write(1, startY + 4, "Ammo    ");
+		headerTerm.write(1, startY, "RH  ");
+		headerTerm.write(1, startY + 1, "LH  ");
+		headerTerm.write(1, startY + 2, "Arm ");
+		headerTerm.write(1, startY + 3, "Rng ");
+		headerTerm.write(1, startY + 4, "Prj ");
 
 		Weapon left = ItemSlot.LEFT_ARM.getEquippedWeapon(player);
 		Weapon right = ItemSlot.RIGHT_ARM.getEquippedWeapon(player);
@@ -117,13 +117,13 @@ public class StatsDisplay extends TextWindow {
 		if (ammo != null)
 			terminal.write(leftX, startY + 4, String.format("%1$-15s", ammo.name()));
 
-		headerTerm.write(leftX + 16, startY + 6, "MP");
+		headerTerm.write(leftX + 14, startY + 6, "MP");
 		int weaponProficiency = 0; // TODO: calculate this
-		terminal.write(leftX + 18, startY + 6, String.format("%3d", player.statistics().baseMeleePool(weaponProficiency)));
+		terminal.write(leftX + 16, startY + 6, String.format("%3d", player.statistics().baseMeleePool(weaponProficiency)));
 
-		headerTerm.write(leftX + 16, startY + 7, "RP");
+		headerTerm.write(leftX + 14, startY + 7, "RP");
 		int rangedProficiency = 0; // TODO: calculate this
-		terminal.write(leftX + 18, startY + 7, String.format("%3d", player.statistics().baseMeleePool(rangedProficiency)));
+		terminal.write(leftX + 16, startY + 7, String.format("%3d", player.statistics().baseMeleePool(rangedProficiency)));
 	}
 
 	private void drawStats() {

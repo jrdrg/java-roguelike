@@ -3,6 +3,7 @@ package roguelike.actions;
 import roguelike.actors.Actor;
 import roguelike.items.Equipment.ItemSlot;
 import roguelike.items.Item;
+import roguelike.items.ItemType;
 import roguelike.items.RangedWeapon;
 
 public class EquipItemAction extends Action {
@@ -21,7 +22,7 @@ public class EquipItemAction extends Action {
 	protected ActionResult onPerform() {
 		ActionResult result = ActionResult.incomplete();
 
-		if (item instanceof RangedWeapon) {
+		if (item.type() == ItemType.RANGED_WEAPON) {
 			ItemSlot.RANGED.equipItem(actor, item);
 			result = ActionResult.success().setMessage("Equipped ranged weapon: " + item.name());
 		} else {

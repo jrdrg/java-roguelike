@@ -5,6 +5,7 @@ import roguelike.actions.combat.NoAmmunitionAttack;
 import roguelike.actions.combat.WeaponCategory;
 import roguelike.actors.Actor;
 import roguelike.items.Equipment.ItemSlot;
+import squidpony.squidutility.Pair;
 
 public class RangedWeapon extends Weapon {
 
@@ -18,7 +19,22 @@ public class RangedWeapon extends Weapon {
 	protected Actor owner;
 
 	protected RangedWeapon() {
-		super();
+		super(false);
+	}
+
+	@Override
+	public Weapon asWeapon() {
+		return this;
+	}
+
+	@Override
+	public ItemType type() {
+		return ItemType.RANGED_WEAPON;
+	}
+
+	@Override
+	public boolean canEquip(ItemSlot slot) {
+		return slot == ItemSlot.RANGED;
 	}
 
 	@Override
@@ -64,11 +80,17 @@ public class RangedWeapon extends Weapon {
 		if (owner == null)
 			return null;
 
-		Item projectile = ItemSlot.PROJECTILE.removeItem(owner);
-		if (projectile instanceof Projectile) {
-			// TODO: update this to decrement the count instead of setting to null
-			owner.inventory().remove(projectile);
-			return (Projectile) projectile;
+		Item projectile = ItemSlot.PROJECTILE.getItem(owner);
+		if (projectile != null) {
+			Pair<Item, Boolean> used = projectile.onUsed();
+			if (used != null) {
+				if (used.getSecond()) {
+					// TODO: update this to decrement the count instead of setting to null
+					owner.inventory().remove(projectile);
+					ItemSlot.PROJECTILE.removeItem(owner);
+				}
+				return (Projectile) used.getFirst();
+			}
 		}
 		return null;
 	}

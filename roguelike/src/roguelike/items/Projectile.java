@@ -4,13 +4,29 @@ import roguelike.Game;
 import roguelike.actions.combat.Attack;
 import roguelike.actions.combat.RangedAttack;
 import roguelike.actors.Actor;
+import roguelike.items.Equipment.ItemSlot;
+import squidpony.squidutility.Pair;
 
 public class Projectile extends Weapon {
 	private static final long serialVersionUID = -5440292549086531435L;
 
 	protected Projectile() {
-		super();
-		this.stackable = true;
+		super(true);
+	}
+
+	@Override
+	public ItemType type() {
+		return ItemType.PROJECTILE;
+	}
+
+	@Override
+	public boolean canEquip(ItemSlot slot) {
+		return super.canEquip(slot) || slot == ItemSlot.PROJECTILE;
+	}
+
+	@Override
+	public Projectile asProjectile() {
+		return this;
 	}
 
 	@Override
@@ -33,5 +49,10 @@ public class Projectile extends Weapon {
 
 	@Override
 	public void onRemoved(Actor actor) {
+	}
+
+	@Override
+	public Pair<Item, Boolean> onUsed() {
+		return new Pair<Item, Boolean>(this, true);
 	}
 }

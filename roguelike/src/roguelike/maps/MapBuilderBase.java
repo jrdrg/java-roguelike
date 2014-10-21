@@ -151,7 +151,8 @@ public abstract class MapBuilderBase {
 	}
 
 	protected void setTile(int x, int y, Symbol character) {
-		map[x][y] = tb.buildTile(character);
+		if (MapHelpers.isWithinBounds(map, x, y))
+			map[x][y] = tb.buildTile(character);
 	}
 
 	protected void setTile(Point point, Symbol character) {

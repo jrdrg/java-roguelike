@@ -102,15 +102,25 @@ public class InventoryScreen extends Screen {
 
 	private void equipItem(Item item) {
 		Actor actor = Game.current().getPlayer();
-		if (item instanceof RangedWeapon) {
-			ItemSlot.RANGED.equipItem(actor, item);
-			Game.current().displayMessage(actor.doAction("equips the %s", item.name()));
-		} else if (item instanceof Projectile) {
-			ItemSlot.PROJECTILE.equipItem(actor, item);
-			Game.current().displayMessage(actor.doAction("loads the %s", item.name()));
-		} else {
-			ItemSlot.RIGHT_ARM.equipItem(actor, item);
-			Game.current().displayMessage(actor.doAction("equips the %s", item.name()));
+
+		ItemSlot[] slots = new ItemSlot[] { ItemSlot.PROJECTILE, ItemSlot.RANGED, ItemSlot.RIGHT_ARM };
+		for (int i = 0; i < slots.length; i++) {
+			if (item.canEquip(slots[i])) {
+				slots[i].equipItem(actor, item);
+				Game.current().displayMessage(actor.doAction("equips the %s", item.name()));
+				break;
+			}
 		}
+
+		// if (item instanceof RangedWeapon) {
+		// ItemSlot.RANGED.equipItem(actor, item);
+		// Game.current().displayMessage(actor.doAction("equips the %s", item.name()));
+		// } else if (item instanceof Projectile) {
+		// ItemSlot.PROJECTILE.equipItem(actor, item);
+		// Game.current().displayMessage(actor.doAction("loads the %s", item.name()));
+		// } else {
+		// ItemSlot.RIGHT_ARM.equipItem(actor, item);
+		// Game.current().displayMessage(actor.doAction("equips the %s", item.name()));
+		// }
 	}
 }

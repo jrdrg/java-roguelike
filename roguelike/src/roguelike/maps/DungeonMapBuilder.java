@@ -93,6 +93,8 @@ public class DungeonMapBuilder extends MapBuilderBase {
 			if (roomsGenerated >= roomCount)
 				break;
 		}
+
+		createRandomPools();
 	}
 
 	private Room chooseRandomStartRoom() {
@@ -402,5 +404,39 @@ public class DungeonMapBuilder extends MapBuilderBase {
 	private void setDoor(ConnectionPoint doorPoint) {
 		setTile(doorPoint, Symbol.DOOR);
 		doorPoint.isDoor = true;
+	}
+
+	private void createRandomPools() {
+		int numPools = random.between(1, 20);
+
+		for (int i = 0; i < numPools; i++) {
+			Room randomRoom = CollectionUtils.getRandomElement(rooms);
+
+			int sx = randomRoom.getRandomX();
+			int sy = randomRoom.getRandomY();
+			int turns = random.between(4, 10);
+
+			createPool(sx, sy, turns);
+		}
+
+	}
+
+	private void createPool(int x, int y, int count) {
+		if (count <= 0)
+			return;
+		if (!MapHelpers.isWithinBounds(map, x, y))
+			return;
+
+		if (map[x][y].symbol == Symbol.DUNGEON_FLOOR.symbol())
+			setTile(x, y, Symbol.SHALLOW_WATER);
+
+		if (random.nextBoolean())
+			createPool(x - 1, y, count - 1);
+		if (random.nextBoolean())
+			createPool(x + 1, y, count - 1);
+		if (random.nextBoolean())
+			createPool(x, y - 1, count - 1);
+		if (random.nextBoolean())
+			createPool(x, y + 1, count - 1);
 	}
 }

@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 public class Inventory implements Serializable {
 	private static final long serialVersionUID = 2003563004618547276L;
 
-	private ArrayList<Item> items;
+	private List<Item> items;
 
 	public Inventory() {
 		items = new ArrayList<Item>();
@@ -30,7 +30,7 @@ public class Inventory implements Serializable {
 
 	public Item getItem(UUID itemId) {
 		for (Item i : items)
-			if (i.itemId() == itemId) {
+			if (i.isSameItem(itemId)) {
 				return i;
 			}
 		return null;
@@ -55,6 +55,8 @@ public class Inventory implements Serializable {
 			throw new IllegalArgumentException("item cannot be null");
 
 		items.add(item);
+
+		items = ItemStack.getItemStack(items);
 	}
 
 	public boolean remove(Item item) {

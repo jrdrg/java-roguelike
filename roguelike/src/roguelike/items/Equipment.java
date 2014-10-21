@@ -61,7 +61,7 @@ public class Equipment implements Serializable {
 	public RangedWeapon getRangedWeapon() {
 		Weapon wpn = getEquippedWeapon(ItemSlot.RANGED);
 		if (wpn != null) {
-			if (wpn instanceof RangedWeapon)
+			if (wpn.type() == ItemType.RANGED_WEAPON)
 				return (RangedWeapon) wpn;
 		}
 		return null;
@@ -98,8 +98,12 @@ public class Equipment implements Serializable {
 	Weapon getEquippedWeapon(ItemSlot slot) {
 		if (slot == ItemSlot.RIGHT_ARM || slot == ItemSlot.LEFT_ARM || slot == ItemSlot.RANGED || slot == ItemSlot.PROJECTILE) {
 			Item weapon = equipped.getOrDefault(slot, null);
-			if (weapon instanceof Weapon)
-				return (Weapon) weapon;
+			if (weapon != null) {
+				if (weapon.type() == ItemType.WEAPON || weapon.type() == ItemType.RANGED_WEAPON)
+					return weapon.asWeapon();
+				else if (weapon.type() == ItemType.PROJECTILE)
+					return weapon.asProjectile();
+			}
 		}
 		return null;
 	}

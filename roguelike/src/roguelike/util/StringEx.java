@@ -68,6 +68,7 @@ public class StringEx extends ArrayList<CharEx> {
 		StringEx line;
 
 		int lastWrapPoint = 0;
+		int prevLastWrapPoint = 0;
 		int thisLineStart = 0;
 		for (int i = 0; i < size(); i++)
 		{
@@ -75,6 +76,8 @@ public class StringEx extends ArrayList<CharEx> {
 
 			if (c.isWhitespace())
 			{
+				if (lastWrapPoint > 0)
+					prevLastWrapPoint = lastWrapPoint;
 				lastWrapPoint = i;
 			}
 
@@ -84,8 +87,17 @@ public class StringEx extends ArrayList<CharEx> {
 				if (lastWrapPoint != 0)
 				{
 					// have a recent point to wrap at, so word wrap
-					line = substring(thisLineStart, lastWrapPoint - thisLineStart);
-					thisLineStart = lastWrapPoint;
+					if (lastWrapPoint - thisLineStart > lineWidth && lastWrapPoint > 0) {
+
+						line = substring(thisLineStart, prevLastWrapPoint - thisLineStart);
+						thisLineStart = prevLastWrapPoint;
+					} else {
+
+						line = substring(thisLineStart, lastWrapPoint - thisLineStart);
+						thisLineStart = lastWrapPoint;
+					}
+
+					lastWrapPoint = 0;
 				}
 				else
 				{

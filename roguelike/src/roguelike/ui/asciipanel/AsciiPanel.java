@@ -109,6 +109,8 @@ public class AsciiPanel extends JPanel {
 	private int heightInCharacters;
 	private int charWidth = 9;
 	private int charHeight = 16;
+	// private int charWidth = 16;
+	// private int charHeight = 16;
 	private Color defaultBackgroundColor;
 	private Color defaultForegroundColor;
 	private int cursorX;
@@ -346,6 +348,7 @@ public class AsciiPanel extends JPanel {
 	private void loadGlyphs() {
 		try {
 			InputStream file = MainWindow.class.getResourceAsStream("/resources/cp437.png");
+			// InputStream file = MainWindow.class.getResourceAsStream("/resources/cga.png");
 			glyphSprite = ImageIO.read(file);
 		} catch (IOException e) {
 			System.err.println("loadGlyphs(): " + e.getMessage());
@@ -354,6 +357,8 @@ public class AsciiPanel extends JPanel {
 		for (int i = 0; i < 256; i++) {
 			int sx = (i % 32) * charWidth + 8;
 			int sy = (i / 32) * charHeight + 8;
+			// int sx = (i % 32) * charWidth + 0;
+			// int sy = (i / 32) * charHeight - 16;
 
 			glyphs[i] = new BufferedImage(charWidth, charHeight, BufferedImage.TYPE_INT_ARGB);
 			glyphs[i].getGraphics().drawImage(glyphSprite, 0, 0, charWidth, charHeight, sx, sy, sx + charWidth, sy + charHeight, null);

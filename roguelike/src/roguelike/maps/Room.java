@@ -12,6 +12,7 @@ import roguelike.util.CollectionUtils;
 import roguelike.util.Symbol;
 import squidpony.squidgrid.util.DirectionCardinal;
 import squidpony.squidmath.RNG;
+import squidpony.squidutility.ProbabilityTable;
 
 public class Room {
 	protected final RNG random = Game.current().random();
@@ -148,6 +149,20 @@ public class Room {
 			for (int y = (int) rect.getMinY() + 1; y < rect.getMaxY() - 1; y++) {
 
 				map[x][y] = tb.buildTile(tile);
+
+				if (!map[x][y].isWall() && isFloorAdjacentToWall(map, x, y)) {
+					floorTiles.add(new Point(x, y));
+				}
+			}
+		}
+	}
+
+	public void fillRoom(Tile[][] map, TileBuilder tb, ProbabilityTable<Symbol> tiles) {
+		Rectangle rect = this.area;
+		for (int x = (int) rect.getMinX() + 1; x < rect.getMaxX() - 1; x++) {
+			for (int y = (int) rect.getMinY() + 1; y < rect.getMaxY() - 1; y++) {
+
+				map[x][y] = tb.buildTile(tiles.random());
 
 				if (!map[x][y].isWall() && isFloorAdjacentToWall(map, x, y)) {
 					floorTiles.add(new Point(x, y));

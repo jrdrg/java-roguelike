@@ -13,6 +13,7 @@ public enum Symbol {
 	TREE1(5), // ♣
 	TREE2('&'),
 	WATER(247), // ≈
+	SHALLOW_WATER(247), // ≈
 	// WATER('='),
 	GROUND1('.'),
 	GROUND2('`'),
