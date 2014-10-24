@@ -2,7 +2,6 @@ package roguelike.actors;
 
 import java.util.List;
 
-import roguelike.Game;
 import roguelike.actions.Action;
 import roguelike.actors.behaviors.Behavior;
 import roguelike.items.Inventory;
@@ -11,7 +10,7 @@ import roguelike.maps.MapArea;
 import squidpony.squidcolor.SColor;
 
 public class Npc extends Actor {
-	private static final long serialVersionUID = 3959590031674627194L;
+	private static final long serialVersionUID = 1L;
 
 	protected String name = "";
 	protected String description = "";
@@ -63,18 +62,18 @@ public class Npc extends Actor {
 
 		// chance to drop whatever is in inventory
 		Inventory inventory = this.inventory();
-		MapArea map = Game.current().getCurrentMapArea();
+		MapArea map = game.getCurrentMapArea();
 
 		List<Item> droppableItems = inventory.getDroppableItems();
 
 		for (int x = 0; x < droppableItems.size(); x++) {
 
-			if (Game.current().random().nextFloat() < 0.7) {
+			if (game.random().nextFloat() < 0.7) {
 
 				Item i = droppableItems.get(x);
 				map.addItem(i, getPosition().x, getPosition().y);
 
-				Game.current().displayMessage("Dropped " + i.name(), SColor.GREEN);
+				game.displayMessage("Dropped " + i.name(), SColor.GREEN);
 			}
 
 		}

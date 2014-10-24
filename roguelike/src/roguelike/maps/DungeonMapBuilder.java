@@ -2,6 +2,8 @@ package roguelike.maps;
 
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.Stack;
 
@@ -14,6 +16,7 @@ import squidpony.squidgrid.util.DirectionCardinal;
 import squidpony.squidutility.ProbabilityTable;
 
 public class DungeonMapBuilder extends MapBuilderBase {
+	private static final long serialVersionUID = 1L;
 
 	/**
 	 * Divide the map up into equal sections to try and get a reasonably even distribution of rooms
@@ -41,8 +44,8 @@ public class DungeonMapBuilder extends MapBuilderBase {
 		}
 	}
 
-	private ArrayList<Room> rooms;
-	private ArrayList<MapSection> mapSections;
+	private transient ArrayList<Room> rooms;
+	private transient ArrayList<MapSection> mapSections;
 	private int level;
 
 	public DungeonMapBuilder() {
@@ -53,6 +56,11 @@ public class DungeonMapBuilder extends MapBuilderBase {
 		super("Dungeon, floor " + level);
 		rooms = new ArrayList<Room>();
 		this.level = level;
+	}
+
+	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+		in.defaultReadObject();
+		rooms = new ArrayList<Room>();
 	}
 
 	@Override
@@ -85,6 +93,8 @@ public class DungeonMapBuilder extends MapBuilderBase {
 			int startX = (int) startRoom.area.getCenterX();
 			int startY = (int) startRoom.area.getCenterY();
 			Game.current().getPlayer().setPosition(startX, startY);
+
+			addStairsUp(new Point(startX, startY));
 
 			int roomsGenerated = generateMainPath(startRoom);
 
@@ -392,9 +402,14 @@ public class DungeonMapBuilder extends MapBuilderBase {
 		return sections.random();
 	}
 
+	private void addStairsUp(Point point) {
+		map[point.x][point.y] =
+				new Stairs(this, false).setValues(Symbol.STAIRS_UP.symbol(), true, SColor.WHITE);
+	}
+
 	private void addStairsDown(Point point) {
 		map[point.x][point.y] =
-				new Stairs(new DungeonMapBuilder(level + 1)).setValues(Symbol.STAIRS.symbol(), true, SColor.WHITE);
+				new Stairs(new DungeonMapBuilder(level + 1), true).setValues(Symbol.STAIRS_DOWN.symbol(), true, SColor.WHITE);
 	}
 
 	private void addRoom(Room room) {

@@ -1,9 +1,12 @@
 package roguelike.actors.conditions;
 
+import java.io.Serializable;
+
 import roguelike.actors.Actor;
 import roguelike.util.StringEx;
 
-public abstract class Condition {
+public abstract class Condition implements Serializable {
+	private static final long serialVersionUID = 1L;
 
 	protected StringEx identifier;
 	protected int duration, initialDuration;

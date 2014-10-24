@@ -1,8 +1,20 @@
 package roguelike;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.ObjectInput;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutput;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
+
 import roguelike.actors.Player;
-import roguelike.data.DataFactory;
-import roguelike.data.serialization.PlayerSerializer;
+import roguelike.actors.conditions.Poisoned;
+import roguelike.actors.conditions.ReducedVision;
+import roguelike.actors.conditions.Stunned;
 import roguelike.items.Equipment.ItemSlot;
 import roguelike.items.MeleeWeapon;
 import roguelike.items.Projectile;
@@ -11,19 +23,14 @@ import roguelike.items.WeaponFactory;
 import roguelike.items.WeaponType;
 import roguelike.maps.DungeonMapBuilder;
 import roguelike.maps.MapArea;
+import roguelike.util.Log;
 import squidpony.squidmath.RNG;
 
 public class GameLoader {
 
 	private static GameLoader gameLoader = new GameLoader();
 
-	/**
-	 * Singleton DataFactory
-	 */
-	final DataFactory dataFactory;
-
 	private GameLoader() {
-		dataFactory = DataFactory.instance();
 	}
 
 	public static GameLoader instance() {
@@ -34,11 +41,6 @@ public class GameLoader {
 
 		Game game = new Game();
 		Player player = game.getPlayer();
-
-		// player.setPosition(1, 1);
-
-		// TODO: make a real map
-		// MapArea currentMapArea = new MapArea(200, 200, new MapBuilder());
 		MapArea currentMapArea = MapArea.build(Game.MAP_WIDTH, Game.MAP_HEIGHT, new DungeonMapBuilder());
 		currentMapArea.addActor(player);
 
@@ -46,18 +48,38 @@ public class GameLoader {
 		return game;
 	}
 
-	public Game load() {
+	public static void save(Game game) {
+		try {
+			OutputStream file = new FileOutputStream("saves/game.ser");
+			GZIPOutputStream gzip = new GZIPOutputStream(file);
+			ObjectOutput output = new ObjectOutputStream(gzip);
 
-		Game game = Game.load();
-		Player player = game.getPlayer();
+			output.writeObject(game);
 
-		// TODO: load game and map from file
+			output.close();
 
-		// MapArea currentMapArea = new MapArea(200, 200, new MapBuilder());
-		MapArea currentMapArea = MapArea.build(83, 43, new DungeonMapBuilder());
-		currentMapArea.addActor(player);
+		} catch (Exception e) {
+			e.printStackTrace();
+			Log.warning(e.toString());
+		}
+	}
 
-		game.setCurrentMapArea(currentMapArea);
+	public static Game load() {
+		Game game = new Game();
+		try {
+			InputStream file = new FileInputStream("saves/game.ser");
+			GZIPInputStream gzip = new GZIPInputStream(file);
+			ObjectInput input = new ObjectInputStream(gzip);
+
+			game = (Game) input.readObject();
+
+			input.close();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			Log.warning(e.toString());
+			return null;
+		}
 		return game;
 	}
 
@@ -73,13 +95,13 @@ public class GameLoader {
 		player.inventory().add(bow);
 		player.inventory().add(arrow);
 
-		ItemSlot.RIGHT_ARM.equipItem(player, sword);
+		ItemSlot.RIGHT_HAND.equipItem(player, sword);
+
+		player.addCondition(new Poisoned(10));
+		player.addCondition(new Stunned(5));
+		player.addCondition(new ReducedVision(114));
 
 		return player;
-	}
-
-	public Player loadPlayer() {
-		return PlayerSerializer.deserialize();
 	}
 
 	public RNG getRandom() {

@@ -4,6 +4,7 @@ import roguelike.actions.combat.DamageType;
 import roguelike.actions.combat.WeaponCategory;
 import roguelike.actors.conditions.Condition;
 import roguelike.functionalInterfaces.StatisticProvider;
+import roguelike.items.Equipment.ItemSlot;
 import squidpony.squidcolor.SColor;
 
 public class WeaponBuilder {
@@ -85,8 +86,18 @@ public class WeaponBuilder {
 		return this;
 	}
 
+	public WeaponBuilder canEquip(ItemSlot equippable) {
+		weapon.equippable = equippable;
+		return this;
+	}
+
 	public WeaponBuilder withReach(MeleeRange reach) {
 		weapon.reach = reach.reach;
+		return this;
+	}
+
+	public WeaponBuilder withRange(int range) {
+		((RangedWeapon) weapon).maxRange = range;
 		return this;
 	}
 

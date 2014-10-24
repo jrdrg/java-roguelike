@@ -1,6 +1,8 @@
 package roguelike.actors.behaviors;
 
 import java.awt.Point;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 
 import roguelike.Game;
 import roguelike.actions.Action;
@@ -15,15 +17,22 @@ import roguelike.util.Log;
 import squidpony.squidgrid.util.DirectionIntercardinal;
 
 public class SearchForPlayerBehavior extends EnemyBehavior {
+	private static final long serialVersionUID = 1L;
 
-	AStarPathfinder pathfinder;
-	Path pathToTarget;
 	private Point lastPlayerLocation;
+	private transient AStarPathfinder pathfinder;
+	private transient Path pathToTarget;
 	private MapArea map;
 
 	public SearchForPlayerBehavior(Actor actor) {
 		super(actor);
 		this.map = Game.current().getCurrentMapArea();
+
+		pathfinder = new AStarPathfinder(map, actor.getVisionRadius() * 2);
+	}
+
+	private void readObject(ObjectInputStream in) throws ClassNotFoundException, IOException {
+		in.defaultReadObject();
 
 		pathfinder = new AStarPathfinder(map, actor.getVisionRadius() * 2);
 	}

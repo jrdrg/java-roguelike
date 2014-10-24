@@ -3,7 +3,7 @@ package roguelike.actors;
 import java.io.Serializable;
 
 public class Health implements Serializable {
-	private static final long serialVersionUID = -5806775611708522340L;
+	private static final long serialVersionUID = 1L;
 
 	private int current;
 	private int maximum;
@@ -21,15 +21,6 @@ public class Health implements Serializable {
 		return this.maximum;
 	}
 
-	public void heal(int amount) {
-		this.current = Math.min(current + amount, maximum);
-	}
-
-	public boolean damage(int amount) {
-		this.current -= amount;
-		return current <= 0;
-	}
-
 	public void setMaximum(int maximum) {
 		setMaximum(maximum, maximum < current);
 	}
@@ -38,5 +29,14 @@ public class Health implements Serializable {
 		this.maximum = maximum;
 		if (setCurrentToMax)
 			this.current = maximum;
+	}
+
+	public void heal(int amount) {
+		this.current = Math.min(current + amount, maximum);
+	}
+
+	boolean damage(int amount) {
+		this.current -= amount;
+		return current <= 0;
 	}
 }

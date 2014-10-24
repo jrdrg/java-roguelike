@@ -1,6 +1,9 @@
 package roguelike.actors.behaviors;
 
 import java.awt.Point;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
 import roguelike.Game;
 import roguelike.actions.Action;
@@ -16,9 +19,11 @@ import roguelike.util.Log;
 import squidpony.squidgrid.util.DirectionIntercardinal;
 
 public class MoveToRandomPointBehavior extends Behavior {
+	private static final long serialVersionUID = 1L;
 
-	AStarPathfinder pathfinder;
-	Path pathToTarget;
+	transient AStarPathfinder pathfinder;
+	transient Path pathToTarget;
+
 	private Point currentTargetLocation;
 	private MapArea map;
 	private Point previousPosition;
@@ -28,6 +33,23 @@ public class MoveToRandomPointBehavior extends Behavior {
 		this.map = Game.current().getCurrentMapArea();
 
 		pathfinder = new AStarPathfinder(map, actor.getVisionRadius() * 2);
+	}
+
+	private void writeObject(ObjectOutputStream out) throws IOException {
+		out.defaultWriteObject();
+	}
+
+	private void readObject(ObjectInputStream in) throws ClassNotFoundException, IOException {
+		in.defaultReadObject();
+
+		pathfinder = new AStarPathfinder(map, actor.getVisionRadius() * 2);
+
+		// Point position = actor.getPosition();
+		// int sx = position.x;
+		// int sy = position.y;
+		// int tx = currentTargetLocation.x;
+		// int ty = currentTargetLocation.y;
+		// pathToTarget = pathfinder.findPath(map, sx, sy, tx, ty);
 	}
 
 	@Override

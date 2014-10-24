@@ -6,9 +6,6 @@ import squidpony.squidgrid.util.DirectionIntercardinal;
 import squidpony.squidgrid.util.RadiusStrategy;
 
 public class Coordinate extends Point {
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 9154408085653477925L;
 
 	public Coordinate() {

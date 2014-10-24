@@ -7,11 +7,11 @@ import roguelike.maps.MapArea;
 import roguelike.maps.Stairs;
 import roguelike.maps.Tile;
 
-public class StairsDownAction extends Action {
+public class StairsUpAction extends Action {
 
 	private MapArea map;
 
-	public StairsDownAction(Actor actor, MapArea map) {
+	public StairsUpAction(Actor actor, MapArea map) {
 		super(actor);
 		this.map = map;
 	}
@@ -25,13 +25,13 @@ public class StairsDownAction extends Action {
 			return ActionResult.failure().setMessage("No stairs");
 
 		Stairs stairs = (Stairs) t;
-		if (stairs.isDown()) {
+		if (!stairs.isDown()) {
 
 			stairs.use();
-			return ActionResult.success().setMessage(actor.doAction("walks down the stairs."));
+			return ActionResult.success().setMessage(actor.doAction("walks up the stairs."));
 		} else {
 
-			return ActionResult.failure().setMessage("No stairs down.");
+			return ActionResult.failure().setMessage("No stairs up.");
 		}
 	}
 

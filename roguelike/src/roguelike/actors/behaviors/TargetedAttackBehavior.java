@@ -1,5 +1,9 @@
 package roguelike.actors.behaviors;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
 import roguelike.Game;
 import roguelike.actions.Action;
 import roguelike.actions.AttackAction;
@@ -11,9 +15,10 @@ import squidpony.squidgrid.fov.BasicRadiusStrategy;
 import squidpony.squidgrid.fov.RadiusStrategy;
 
 public class TargetedAttackBehavior extends EnemyBehavior {
+	private static final long serialVersionUID = 1L;
 
 	private Actor target;
-	private RadiusStrategy radiusStrategy = BasicRadiusStrategy.CIRCLE;
+	private transient RadiusStrategy radiusStrategy = BasicRadiusStrategy.CIRCLE;
 
 	protected TargetedAttackBehavior(Actor actor, Actor target) {
 		super(actor);
@@ -21,6 +26,15 @@ public class TargetedAttackBehavior extends EnemyBehavior {
 		Game.current().displayMessage(actor.getName() + " is now attacking " + target.getName(), SColor.PURPLE);
 		this.target = target;
 		this.nextBehavior = this;
+	}
+
+	private void writeObject(ObjectOutputStream out) throws IOException {
+		out.defaultWriteObject();
+	}
+
+	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+		in.defaultReadObject();
+		radiusStrategy = BasicRadiusStrategy.CIRCLE;
 	}
 
 	@Override

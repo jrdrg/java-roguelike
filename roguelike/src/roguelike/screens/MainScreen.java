@@ -112,7 +112,7 @@ public class MainScreen extends Screen {
 		drawStats();
 
 		InputManager.setInputEnabled(true);
-		// InputManager.previousKeyMap();
+		InputManager.previousKeyMap();
 		displayManager.setDirty();
 	}
 
@@ -150,6 +150,8 @@ public class MainScreen extends Screen {
 			}
 
 			if (!run.isRunning()) {
+				GameLoader.save(this.game);
+				Log.debug("Saving game...");
 				setNextScreen(new TitleScreen(fullTerminal));
 			}
 

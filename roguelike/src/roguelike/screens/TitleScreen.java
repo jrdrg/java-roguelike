@@ -7,11 +7,22 @@ import roguelike.GameLoader;
 import roguelike.ui.DisplayManager;
 import roguelike.ui.InputCommand;
 import roguelike.ui.InputManager;
+import roguelike.ui.KeyMap;
 import roguelike.ui.windows.TerminalBase;
 import roguelike.util.Log;
 import squidpony.squidcolor.SColor;
 
 public class TitleScreen extends Screen {
+
+	public static KeyMap KeyBindings = new KeyMap("Menu")
+			.bindKey(KeyEvent.VK_ENTER, InputCommand.CONFIRM)
+			.bindKey(KeyEvent.VK_ESCAPE, InputCommand.CANCEL)
+			.bindKey(KeyEvent.VK_N, InputCommand.NEW)
+			.bindKey(KeyEvent.VK_L, InputCommand.LOAD)
+			.bindKey(KeyEvent.VK_UP, InputCommand.UP)
+			.bindKey(KeyEvent.VK_DOWN, InputCommand.DOWN)
+			.bindKey(KeyEvent.VK_LEFT, InputCommand.PREVIOUS_PAGE)
+			.bindKey(KeyEvent.VK_RIGHT, InputCommand.NEXT_PAGE);
 
 	public TitleScreen(TerminalBase terminal) {
 		super(terminal);
@@ -25,6 +36,7 @@ public class TitleScreen extends Screen {
 		terminal.fill(0, 0, terminal.size().width, terminal.size().height, ' ');
 
 		InputManager.setInputEnabled(true);
+		InputManager.setActiveKeybindings(KeyBindings);
 		DisplayManager.instance().setDirty();
 	}
 
@@ -51,17 +63,12 @@ public class TitleScreen extends Screen {
 		if (cmd != null) {
 			switch (cmd) {
 
-			case FROM_KEYDATA:
-				switch (cmd.getKeyData()) {
+			case NEW:
+				setNextScreen(new MainScreen(this.terminal));
+				break;
 
-				case KeyEvent.VK_L:
-					setNextScreen(new MainScreen(this.terminal, loadGame()));
-					break;
-
-				case KeyEvent.VK_N:
-					setNextScreen(new MainScreen(this.terminal));
-					break;
-				}
+			case LOAD:
+				setNextScreen(new MainScreen(this.terminal, loadGame()));
 				break;
 
 			case CANCEL:
@@ -78,6 +85,6 @@ public class TitleScreen extends Screen {
 	}
 
 	private Game loadGame() {
-		return GameLoader.instance().load();
+		return GameLoader.load();
 	}
 }

@@ -12,6 +12,7 @@ import squidpony.squidmath.RNG;
 import squidpony.squidutility.SCollections;
 
 public class MapBuilder extends MapBuilderBase {
+	private static final long serialVersionUID = 1L;
 
 	protected MapBuilder() {
 		super("Outside");

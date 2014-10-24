@@ -48,7 +48,7 @@ public class LookDialog extends Dialog<InputCommand> {
 		if (actor != null) {
 			textList.add("`" + actor.color().getName() + "`" + actor.getDescription());
 			textList.add("");
-			Weapon equipped = ItemSlot.RIGHT_ARM.getEquippedWeapon(actor);
+			Weapon equipped = ItemSlot.RIGHT_HAND.getEquippedWeapon(actor);
 			textList.add(" `Gray`Weapon: `White`" + equipped.getDescription() + " (" + equipped.defaultDamageType().name() + ")");
 
 			Statistics stats = actor.statistics();

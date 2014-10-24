@@ -4,6 +4,11 @@ import squidpony.squidgrid.util.DirectionIntercardinal;
 
 public enum InputCommand {
 
+	NEW,
+	LOAD,
+	QUIT,
+	SAVE_QUIT,
+
 	CANCEL,
 	CONFIRM,
 
@@ -17,6 +22,7 @@ public enum InputCommand {
 	DOWN_RIGHT,
 
 	STAIRS_DOWN,
+	STAIRS_UP,
 
 	NEXT_PAGE,
 	PREVIOUS_PAGE,

@@ -3,10 +3,8 @@ package roguelike.screens;
 import roguelike.Game;
 import roguelike.actors.Actor;
 import roguelike.items.Equipment.ItemSlot;
-import roguelike.items.Projectile;
 import roguelike.items.Inventory;
 import roguelike.items.Item;
-import roguelike.items.RangedWeapon;
 import roguelike.ui.InputCommand;
 import roguelike.ui.InputManager;
 import roguelike.ui.Menu;
@@ -100,10 +98,10 @@ public class InventoryScreen extends Screen {
 		}
 	}
 
-	private void equipItem(Item item) {
+	public void equipItem(Item item) {
 		Actor actor = Game.current().getPlayer();
 
-		ItemSlot[] slots = new ItemSlot[] { ItemSlot.PROJECTILE, ItemSlot.RANGED, ItemSlot.RIGHT_ARM };
+		ItemSlot[] slots = new ItemSlot[] { ItemSlot.PROJECTILE, ItemSlot.RANGED, ItemSlot.RIGHT_HAND, ItemSlot.LEFT_HAND };
 		for (int i = 0; i < slots.length; i++) {
 			if (item.canEquip(slots[i])) {
 				slots[i].equipItem(actor, item);
@@ -111,16 +109,11 @@ public class InventoryScreen extends Screen {
 				break;
 			}
 		}
+	}
 
-		// if (item instanceof RangedWeapon) {
-		// ItemSlot.RANGED.equipItem(actor, item);
-		// Game.current().displayMessage(actor.doAction("equips the %s", item.name()));
-		// } else if (item instanceof Projectile) {
-		// ItemSlot.PROJECTILE.equipItem(actor, item);
-		// Game.current().displayMessage(actor.doAction("loads the %s", item.name()));
-		// } else {
-		// ItemSlot.RIGHT_ARM.equipItem(actor, item);
-		// Game.current().displayMessage(actor.doAction("equips the %s", item.name()));
-		// }
+	public void equipItem(Item item, ItemSlot slot) {
+		Actor actor = Game.current().getPlayer();
+		slot.equipItem(actor, item);
+		Game.current().displayMessage(actor.doAction("equips the %s", item.name()));
 	}
 }

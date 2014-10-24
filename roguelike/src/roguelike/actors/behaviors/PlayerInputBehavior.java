@@ -10,6 +10,7 @@ import roguelike.actions.QuitAction;
 import roguelike.actions.RangedAttackAction;
 import roguelike.actions.ShowMessagesAction;
 import roguelike.actions.StairsDownAction;
+import roguelike.actions.StairsUpAction;
 import roguelike.actions.WaitAction;
 import roguelike.actions.WalkAction;
 import roguelike.actors.Actor;
@@ -19,6 +20,7 @@ import roguelike.ui.InputManager;
 import squidpony.squidgrid.util.DirectionIntercardinal;
 
 public class PlayerInputBehavior extends Behavior {
+	private static final long serialVersionUID = 1L;
 
 	public PlayerInputBehavior(Actor actor) {
 		super(actor);
@@ -74,8 +76,11 @@ public class PlayerInputBehavior extends Behavior {
 		case CLOSE_DOOR:
 			return new CloseDoorAction(actor, Game.current().getCurrentMapArea());
 
+		case STAIRS_UP:
+			return useStairsUp();
+
 		case STAIRS_DOWN:
-			return useStairs();
+			return useStairsDown();
 
 		case PICK_UP:
 			return new GetItemAction(actor, Game.current().getCurrentMapArea());
@@ -103,7 +108,11 @@ public class PlayerInputBehavior extends Behavior {
 		return new WalkAction(actor, Game.current().getCurrentMapArea(), direction);
 	}
 
-	private Action useStairs() {
+	private Action useStairsUp() {
+		return new StairsUpAction(actor, Game.current().getCurrentMapArea());
+	}
+
+	private Action useStairsDown() {
 		return new StairsDownAction(actor, Game.current().getCurrentMapArea());
 	}
 

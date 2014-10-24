@@ -3,7 +3,7 @@ package roguelike.actors;
 import java.io.Serializable;
 
 public class AttackAttempt implements Serializable {
-	private static final long serialVersionUID = -5168348162191174142L;
+	private static final long serialVersionUID = 1L;
 
 	private Actor actor;
 

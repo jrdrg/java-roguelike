@@ -9,8 +9,7 @@ import squidpony.squidcolor.SColor;
 import squidpony.squidutility.Pair;
 
 public abstract class Item implements Serializable {
-
-	private static final long serialVersionUID = -7103589500266419030L;
+	private static final long serialVersionUID = 1L;
 
 	private UUID itemId = UUID.randomUUID();
 
@@ -19,7 +18,8 @@ public abstract class Item implements Serializable {
 	protected SColor color = SColor.WHITE;
 	protected int weight;
 	protected boolean droppable;
-	
+	protected ItemSlot equippable;
+
 	final boolean stackable;
 
 	protected Item(boolean stackable) {
@@ -81,8 +81,16 @@ public abstract class Item implements Serializable {
 	}
 
 	public boolean canEquip(ItemSlot slot) {
-		return true;
+		if (equippable == null)
+			return true;
+
+		if ((slot.value & equippable.value) == slot.value) {
+			return true;
+		}
+		return false;
 	}
+
+	public abstract boolean canUse(Actor user, Actor target);
 
 	/**
 	 * Called when the item is used, returns an item that is the result of using this one. If null, the item should be

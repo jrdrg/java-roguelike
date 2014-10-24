@@ -1,24 +1,35 @@
 package roguelike;
 
 import java.awt.Point;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 import roguelike.screens.Screen;
 import squidpony.squidutility.Pair;
 
-public class TurnResult {
+public class TurnResult implements Serializable {
+	private static final long serialVersionUID = 1L;
 
 	boolean running;
 	boolean playerActed;
 	ArrayList<MessageDisplayProperties> messages;
-	ArrayList<TurnEvent> events;
-	Pair<Point, Boolean> currentLook = new Pair<Point, Boolean>(null, false);
-	Screen subScreen;
+	transient ArrayList<TurnEvent> events;
+	transient Pair<Point, Boolean> currentLook = new Pair<Point, Boolean>(null, false);
+	transient Screen subScreen;
 
 	private TurnResult(boolean running) {
 		this.running = running;
 		this.messages = new ArrayList<MessageDisplayProperties>();
+		this.events = new ArrayList<TurnEvent>();
+	}
+
+	private void readObject(ObjectInputStream in) throws ClassNotFoundException, IOException {
+		in.defaultReadObject();
+
+		this.currentLook = new Pair<Point, Boolean>(null, false);
 		this.events = new ArrayList<TurnEvent>();
 	}
 

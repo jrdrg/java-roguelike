@@ -3,6 +3,9 @@ package roguelike.items;
 import roguelike.Game;
 import roguelike.actions.combat.Attack;
 import roguelike.actions.combat.MeleeAttack;
+import roguelike.actors.Actor;
+import roguelike.util.Coordinate;
+import squidpony.squidgrid.util.BasicRadiusStrategy;
 
 public class MeleeWeapon extends Weapon {
 
@@ -34,5 +37,14 @@ public class MeleeWeapon extends Weapon {
 	@Override
 	public String getDescription() {
 		return description;
+	}
+
+	@Override
+	public boolean canUse(Actor user, Actor target) {
+		Coordinate userPos = user.getPosition();
+		Coordinate targetPos = target.getPosition();
+
+		float distance = targetPos.distance(userPos, BasicRadiusStrategy.CIRCLE);
+		return distance <= getReachInTiles();
 	}
 }

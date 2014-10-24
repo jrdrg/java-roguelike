@@ -12,6 +12,7 @@ import roguelike.util.Log;
 import squidpony.squidgrid.util.DirectionIntercardinal;
 
 public class RandomWalkBehavior extends Behavior {
+	private static final long serialVersionUID = 1L;
 
 	public RandomWalkBehavior(Actor actor) {
 		super(actor);

@@ -12,20 +12,6 @@ public class SerializationData implements Serializable {
 	public SerializationData() {
 	}
 
-	public Actor restoreActor() {
-		Actor actor = null;
-		boolean isPlayer = (boolean) getData("isPlayer");
-		if (isPlayer) {
-			actor = new Player();
-		}
-
-		if (actor != null) {
-			actor.onDeserialize(this);
-			return actor;
-		}
-		return null;
-	}
-
 	public void setData(String key, Object data) {
 		savedData.put(key, data);
 	}

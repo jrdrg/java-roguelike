@@ -2,8 +2,6 @@ package roguelike.ui;
 
 import java.awt.Point;
 import java.awt.Toolkit;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -13,8 +11,6 @@ import javax.imageio.ImageIO;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 
-import roguelike.Game;
-import roguelike.data.serialization.PlayerSerializer;
 import roguelike.screens.Screen;
 import roguelike.screens.TitleScreen;
 import roguelike.util.Log;
@@ -31,7 +27,7 @@ public class MainWindow {
 
 	private JFrame frame;
 
-	final int FRAMES_PER_SECOND = 50;
+	final int FRAMES_PER_SECOND = 40;
 	final int SKIP_TICKS = 1000 / FRAMES_PER_SECOND;
 
 	private JComponent displayPane;
@@ -73,8 +69,6 @@ public class MainWindow {
 					e.printStackTrace();
 				}
 			} else {
-				// Log.warning("d SLEEPTIME < 0, skipping next keypress: " + sleepTime);
-				// InputManager.nextCommand();
 				Log.warning("draw SLEEPTIME < 0: " + sleepTime + " drawTicks=" + drawTicks);
 			}
 		}
@@ -94,6 +88,7 @@ public class MainWindow {
 				.bindKey(KeyEvent.VK_LEFT, true, InputCommand.DOWN_LEFT)
 
 				.bindKey(KeyEvent.VK_PERIOD, true, InputCommand.STAIRS_DOWN)
+				.bindKey(KeyEvent.VK_COMMA, true, InputCommand.STAIRS_UP)
 
 				.bindKey(KeyEvent.VK_ENTER, InputCommand.CONFIRM)
 				.bindKey(KeyEvent.VK_ESCAPE, InputCommand.CANCEL)
@@ -143,24 +138,24 @@ public class MainWindow {
 
 		hideMouseCursor();
 
-		frame.addComponentListener(new ComponentAdapter() {
-			@Override
-			public void componentHidden(ComponentEvent e) {
+		// frame.addComponentListener(new ComponentAdapter() {
+		// @Override
+		// public void componentHidden(ComponentEvent e) {
+		//
+		// // GameSerializer.serialize(Game.current().getPlayer());
+		// //
+		// // ((JFrame) (e.getComponent())).dispose();
+		// }
+		// });
 
-				PlayerSerializer.serialize(Game.current().getPlayer());
-
-				((JFrame) (e.getComponent())).dispose();
-			}
-		});
-
-		Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
-			public void run() {
-
-				if (Game.current() != null && Game.current().getPlayer() != null)
-					PlayerSerializer.serialize(Game.current().getPlayer());
-
-			}
-		}, "Shutdown-thread"));
+		// Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+		// public void run() {
+		//
+		// if (Game.current() != null && Game.current().getPlayer() != null)
+		// GameSerializer.serialize(Game.current().getPlayer());
+		//
+		// }
+		// }, "Shutdown-thread"));
 
 	}
 

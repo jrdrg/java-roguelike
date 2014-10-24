@@ -5,6 +5,8 @@ import roguelike.actions.combat.NoAmmunitionAttack;
 import roguelike.actions.combat.WeaponCategory;
 import roguelike.actors.Actor;
 import roguelike.items.Equipment.ItemSlot;
+import roguelike.util.Coordinate;
+import squidpony.squidgrid.util.BasicRadiusStrategy;
 import squidpony.squidutility.Pair;
 
 public class RangedWeapon extends Weapon {
@@ -20,6 +22,10 @@ public class RangedWeapon extends Weapon {
 
 	protected RangedWeapon() {
 		super(false);
+	}
+
+	public int range() {
+		return maxRange;
 	}
 
 	@Override
@@ -74,6 +80,15 @@ public class RangedWeapon extends Weapon {
 	public void onRemoved(Actor actor) {
 		owner = null;
 		actor.doAction("removed the %s", this.name);
+	}
+
+	@Override
+	public boolean canUse(Actor user, Actor target) {
+		Coordinate userPos = user.getPosition();
+		Coordinate targetPos = target.getPosition();
+
+		float distance = targetPos.distance(userPos, BasicRadiusStrategy.CIRCLE);
+		return distance <= this.maxRange;
 	}
 
 	public Projectile getProjectile() {

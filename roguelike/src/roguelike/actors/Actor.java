@@ -1,12 +1,14 @@
 package roguelike.actors;
 
 import java.awt.Point;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import roguelike.Game;
 import roguelike.actions.Action;
@@ -24,16 +26,15 @@ import squidpony.squidcolor.SColor;
 import squidpony.squidcolor.SColorFactory;
 
 public abstract class Actor implements Serializable {
-	private static final long serialVersionUID = 6622760709734146790L;
+	private static final long serialVersionUID = 1L;
+
+	protected transient Game game = Game.current();
 
 	protected UUID actorId = UUID.randomUUID();
 
 	protected Coordinate position;
 	protected char symbol;
-	protected SColor color;
-
-	protected Stack<AttackAttempt> attacked;
-	protected Stack<AttackAttempt> attackedBy;
+	protected int visionRadius;
 	protected boolean attackedThisRound;
 
 	protected Energy energy;
@@ -42,11 +43,12 @@ public abstract class Actor implements Serializable {
 	protected Health health;
 	protected Inventory inventory;
 	protected Equipment equipment;
-
 	protected ArrayList<Condition> conditions;
 
-	protected int visionRadius;
 	protected Behavior behavior;
+	protected Stack<AttackAttempt> attacked;
+	protected Stack<AttackAttempt> attackedBy;
+	protected transient SColor color;
 
 	protected Actor(char symbol, SColor color) {
 		if (color == null)
@@ -69,6 +71,28 @@ public abstract class Actor implements Serializable {
 		conditions = new ArrayList<Condition>();
 
 		visionRadius = 15;
+
+		game.actorStorage.addIfNotExists(this.actorId, this);
+	}
+
+	private void writeObject(ObjectOutputStream out) throws IOException {
+		out.defaultWriteObject();
+
+		out.writeInt(color.getRGB());
+		Log.debug("writing actor: " + actorId);
+	}
+
+	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+		in.defaultReadObject();
+
+		game = Game.current();
+		color = SColorFactory.asSColor(in.readInt());
+
+		Log.debug("reading actor: " + actorId);
+		Log.debug("game=" + game.toString());
+
+		// attacked = new Stack<AttackAttempt>();
+		// attackedBy = new Stack<AttackAttempt>();
 	}
 
 	public char symbol() {
@@ -87,8 +111,8 @@ public abstract class Actor implements Serializable {
 		conditions.add(condition);
 		condition.onConditionAdded(this);
 	}
-	
-	public Behavior behavior(){
+
+	public Behavior behavior() {
 		return this.behavior;
 	}
 
@@ -219,18 +243,22 @@ public abstract class Actor implements Serializable {
 	}
 
 	public final void dead() {
+		game = Game.current();
+
 		onKilled();
 
-		MapArea currentArea = Game.current().getCurrentMapArea();
+		MapArea currentArea = game.getCurrentMapArea();
 		if (Player.isPlayer(this)) {
 			this.finishTurn();
-			Game.current().reset();
+			game.reset();
 		}
 		currentArea.removeActor(this);
+		game.actorStorage.remove(this.actorId);
 
+		/* display bloodstain */
 		currentArea.getTileAt(this.getPosition()).setBackground(SColorFactory.dimmer(SColor.DARK_RED));
 
-		Game.current().displayMessage("Target is dead");
+		game.displayMessage("Target is dead");
 	}
 
 	public final void onAttacked(Actor attacker) {
@@ -243,11 +271,17 @@ public abstract class Actor implements Serializable {
 		onAttackedInternal(attacker);
 	}
 
+	public final void onDamaged(int amount) {
+		if (health.damage(amount)) {
+			dead();
+		}
+	}
+
 	public abstract String getName();
 
 	public abstract Action getNextAction();
 
-	public void onKilled() {
+	protected void onKilled() {
 	}
 
 	/**
@@ -263,61 +297,10 @@ public abstract class Actor implements Serializable {
 		return true;
 	}
 
-	public void onSerialize(SerializationData data) {
-		int[] color = new int[3];
-		color[0] = this.color.getRed();
-		color[1] = this.color.getGreen();
-		color[2] = this.color.getBlue();
-
-		data.setData("color", color);
-
-		boolean isPlayer = Player.isPlayer(this);
-		data.setData("isPlayer", isPlayer);
-
-		data.setData("actorId", this.actorId);
-
-		data.setData("symbol", this.symbol);
-		data.setData("position", this.position);
-		data.setData("currentEnergy", this.energy);
-		data.setData("conditions", this.conditions.stream().map(c -> c.identifier().toString()).collect(Collectors.toList()));
-
-		data.setData("inventory", this.inventory);
-		data.setData("equipment", this.equipment);
-		data.setData("health", this.health);
-		data.setData("statistics", this.statistics);
-
-		data.setData("attacked", this.attacked);
-		data.setData("attackedBy", this.attackedBy);
-		data.setData("attackedThisRound", this.attackedThisRound);
-
-		// protected CombatHandler combat;
-
-		// TODO: need to serialize condition durations too
-		// protected ArrayList<Condition> conditions;
-	}
-
-	@SuppressWarnings("unchecked")
-	public void onDeserialize(SerializationData data) {
-		this.actorId = (UUID) data.getData("actorId");
-
-		int[] color = (int[]) data.getData("color");
-		this.color = SColorFactory.asSColor(color[0], color[1], color[2]);
-		this.symbol = 'X';// symbol;
-		// actor.position = position; // TODO: load position when we load maps
-		this.energy = (Energy) data.getData("currentEnergy");
-		this.inventory = (Inventory) data.getData("inventory");
-		this.equipment = (Equipment) data.getData("equipment");
-		this.health = (Health) data.getData("health");
-		this.statistics = (Statistics) data.getData("statistics");
-		this.attacked = (Stack<AttackAttempt>) data.getData("attacked");
-		this.attackedBy = (Stack<AttackAttempt>) data.getData("attackedBy");
-		this.attackedThisRound = (boolean) data.getData("attackedThisRound");
+	protected void onTurnFinished() {
 	}
 
 	protected abstract void onAttackedInternal(Actor attacker);
-
-	protected void onTurnFinished() {
-	}
 
 	protected abstract String makeCorrectVerb(String message);
 }

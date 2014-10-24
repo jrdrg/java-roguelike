@@ -3,9 +3,9 @@ package roguelike.actors;
 import java.io.Serializable;
 
 public class Energy implements Serializable {
-	private static final long serialVersionUID = 6031761333954684789L;
+	private static final long serialVersionUID = 1L;
 
-	private final int ACTION_THRESHOLD = 100;
+	private static final int ACTION_THRESHOLD = 100;
 	int current;
 
 	public int getCurrent() {

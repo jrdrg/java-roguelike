@@ -1,10 +1,13 @@
 package roguelike;
 
+import java.io.Serializable;
+
 import roguelike.util.StringEx;
 import roguelike.util.Utility;
 import squidpony.squidcolor.SColor;
 
-public class MessageDisplayProperties {
+public class MessageDisplayProperties implements Serializable {
+	private static final long serialVersionUID = 1L;
 
 	private StringEx text;
 	private SColor color;

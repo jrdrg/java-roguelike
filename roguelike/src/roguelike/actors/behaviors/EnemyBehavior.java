@@ -6,6 +6,7 @@ import roguelike.util.Coordinate;
 import squidpony.squidgrid.util.BasicRadiusStrategy;
 
 public abstract class EnemyBehavior extends Behavior {
+	private static final long serialVersionUID = 1L;
 
 	protected Behavior nextBehavior;
 

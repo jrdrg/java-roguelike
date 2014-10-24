@@ -1,10 +1,12 @@
 package roguelike.util;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class CurrentItemTracker<T> {
+public class CurrentItemTracker<T> implements Serializable {
+	private static final long serialVersionUID = 1L;
 
 	private ArrayList<T> list;
 	private int currentItem;

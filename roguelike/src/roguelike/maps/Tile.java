@@ -1,5 +1,8 @@
 package roguelike.maps;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
 import roguelike.actors.Actor;
@@ -9,8 +12,7 @@ import squidpony.squidcolor.SColor;
 import squidpony.squidcolor.SColorFactory;
 
 public class Tile implements Serializable {
-
-	private static final long serialVersionUID = -5752164119434588867L;
+	private static final long serialVersionUID = 1L;
 
 	protected boolean visible;
 	protected boolean wall;
@@ -33,6 +35,22 @@ public class Tile implements Serializable {
 		this.background = SColor.BLACK;
 		this.lightValue = SColor.BLACK;
 		this.items = new Inventory();
+	}
+
+	private void writeObject(ObjectOutputStream out) throws IOException {
+		out.defaultWriteObject();
+
+		// out.writeInt(lightValue.getRGB());
+		// out.writeInt(color.getRGB());
+		// out.writeInt(background.getRGB());
+	}
+
+	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+		in.defaultReadObject();
+
+		// lightValue = SColorFactory.asSColor(in.readInt());
+		// color = SColorFactory.asSColor(in.readInt());
+		// background = SColorFactory.asSColor(in.readInt());
 	}
 
 	/**
@@ -104,8 +122,8 @@ public class Tile implements Serializable {
 	public SColor getColor() {
 		if (!visible) {
 			if (explored)
-				 return SColorFactory.dimmer(SColor.GRAY);
-//				return SColorFactory.light(SColor.DARK_GRAY);
+				return SColorFactory.dimmer(SColor.GRAY);
+			// return SColorFactory.light(SColor.DARK_GRAY);
 
 			return SColor.BLACK;
 			// return SColor.DARK_INDIGO;

@@ -3,10 +3,10 @@ package roguelike.actors;
 import java.io.Serializable;
 
 public class Statistics implements Serializable {
-	private static final long serialVersionUID = 7046880693122391945L;
+	private static final long serialVersionUID = 1L;
 
 	public class Statistic implements Serializable {
-		private static final long serialVersionUID = -159928992533926261L;
+		private static final long serialVersionUID = 1L;
 
 		private int[] stat = new int[2];
 

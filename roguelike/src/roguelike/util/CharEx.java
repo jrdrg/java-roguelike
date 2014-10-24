@@ -1,13 +1,21 @@
 package roguelike.util;
 
-import squidpony.squidcolor.SColor;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 
-public class CharEx {
+import squidpony.squidcolor.SColor;
+import squidpony.squidcolor.SColorFactory;
+
+public class CharEx implements Serializable {
+	private static final long serialVersionUID = -506720251888391231L;
+
 	static SColor DEFAULT_FOREGROUND = SColor.WHITE;
 	static SColor DEFAULT_BACKGROUND = SColor.BLACK;
 
-	private SColor foreground;
-	private SColor background;
+	private transient SColor foreground;
+	private transient SColor background;
 	private char symbol;
 
 	public CharEx(char symbol) {
@@ -31,6 +39,19 @@ public class CharEx {
 			throw new IllegalArgumentException("Invalid text passed to Character.parse");
 
 		return new CharEx(elements[0].charAt(0));
+	}
+
+	private void writeObject(ObjectOutputStream out) throws IOException {
+		out.defaultWriteObject();
+
+		out.writeInt(foreground.getRGB());
+		out.writeInt(background.getRGB());
+	}
+
+	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+		in.defaultReadObject();
+		foreground = SColorFactory.asSColor(in.readInt());
+		background = SColorFactory.asSColor(in.readInt());
 	}
 
 	public char symbol() {

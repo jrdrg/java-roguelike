@@ -5,6 +5,7 @@ import roguelike.util.StringEx;
 import squidpony.squidcolor.SColor;
 
 public class Poisoned extends Condition {
+	private static final long serialVersionUID = 1028488464330263032L;
 
 	public Poisoned(int duration) {
 		super(new StringEx("Poisoned", SColor.GREEN, SColor.BLACK), duration);
@@ -12,7 +13,7 @@ public class Poisoned extends Condition {
 
 	@Override
 	protected void onProcess(Actor actor) {
-		actor.health().damage(1);
+		actor.onDamaged(1);
 	}
 
 }

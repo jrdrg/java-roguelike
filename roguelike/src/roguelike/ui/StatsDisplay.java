@@ -7,9 +7,6 @@ import roguelike.Game;
 import roguelike.actors.Player;
 import roguelike.actors.Statistics;
 import roguelike.actors.conditions.Condition;
-import roguelike.actors.conditions.Poisoned;
-import roguelike.actors.conditions.ReducedVision;
-import roguelike.actors.conditions.Stunned;
 import roguelike.items.Equipment.ItemSlot;
 import roguelike.items.Weapon;
 import roguelike.ui.windows.TerminalBase;
@@ -35,10 +32,6 @@ public class StatsDisplay extends TextWindow {
 
 	public void setPlayer(Player player) {
 		this.player = player;
-
-		player.addCondition(new Poisoned(10));
-		player.addCondition(new Stunned(5));
-		player.addCondition(new ReducedVision(14));
 	}
 
 	public void draw() {
@@ -100,8 +93,8 @@ public class StatsDisplay extends TextWindow {
 		headerTerm.write(1, startY + 3, "Rng ");
 		headerTerm.write(1, startY + 4, "Prj ");
 
-		Weapon left = ItemSlot.LEFT_ARM.getEquippedWeapon(player);
-		Weapon right = ItemSlot.RIGHT_ARM.getEquippedWeapon(player);
+		Weapon left = ItemSlot.LEFT_HAND.getEquippedWeapon(player);
+		Weapon right = ItemSlot.RIGHT_HAND.getEquippedWeapon(player);
 		Weapon ranged = ItemSlot.RANGED.getEquippedWeapon(player);
 		Weapon ammo = ItemSlot.PROJECTILE.getEquippedWeapon(player);
 

@@ -40,7 +40,7 @@ public class EnemyFactory {
 						.withSpeed(30)
 						.withBehavior(a -> new SearchForPlayerBehavior(a))
 						.withStats(5, 6, 6, 6, 4, 3)
-						.equipItem(WeaponFactory.create(WeaponType.BITE), ItemSlot.RIGHT_ARM) // yes, this is funny
+						.equipItem(WeaponFactory.create(WeaponType.BITE), ItemSlot.RIGHT_HAND) // yes, this is funny
 						.buildNpc());
 
 		npcBuilders.put(EnemyType.FIRE_ANT,
@@ -51,7 +51,7 @@ public class EnemyFactory {
 						.withSpeed(15)
 						.withBehavior(a -> new SearchForPlayerBehavior(a))
 						.withStats(4, 3, 4, 4, 4, 4)
-						.equipItem(WeaponFactory.create(WeaponType.MANDIBLES), ItemSlot.RIGHT_ARM)
+						.equipItem(WeaponFactory.create(WeaponType.MANDIBLES), ItemSlot.RIGHT_HAND)
 						.buildNpc());
 
 		npcBuilders.put(EnemyType.BANDIT,
@@ -73,7 +73,7 @@ public class EnemyFactory {
 						.withSpeed(20)
 						.withBehavior(a -> new SearchForPlayerBehavior(a))
 						.withStats(4, 5, 9, 8, 3, 3)
-						.equipItem(WeaponFactory.create(WeaponType.BITE), ItemSlot.RIGHT_ARM)
+						.equipItem(WeaponFactory.create(WeaponType.BITE), ItemSlot.RIGHT_HAND)
 						.buildNpc());
 
 		npcBuilders.put(EnemyType.ARCHER,
@@ -84,7 +84,7 @@ public class EnemyFactory {
 						.withSpeed(10)
 						.withBehavior(a -> new MoveToRandomPointBehavior(a))
 						.withStats(5, 4, 8, 8, 5, 4)
-						.equipItem(WeaponFactory.create(WeaponType.SHORT_BOW), ItemSlot.RIGHT_ARM)
+						.equipItem(WeaponFactory.create(WeaponType.SHORT_BOW), ItemSlot.RIGHT_HAND)
 						.equipItem(WeaponFactory.create(WeaponType.ARROW), ItemSlot.PROJECTILE)
 						.addItem(WeaponFactory.create(WeaponType.ARROW))
 						.addItem(WeaponFactory.create(WeaponType.ARROW))
@@ -107,7 +107,7 @@ public class EnemyFactory {
 		if (npc.inventory().getCount() > 0) {
 			Item first = npc.inventory().getItem(0);
 			if (first instanceof Weapon) {
-				ItemSlot.RIGHT_ARM.equipItem(npc, first);
+				ItemSlot.RIGHT_HAND.equipItem(npc, first);
 			}
 		}
 

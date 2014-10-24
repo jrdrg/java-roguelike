@@ -5,6 +5,7 @@ import roguelike.util.StringEx;
 import squidpony.squidcolor.SColor;
 
 public class Stunned extends Condition {
+	private static final long serialVersionUID = -5457623122809872866L;
 
 	public Stunned(int duration) {
 		super(new StringEx("Stunned", SColor.ZINNWALDITE, SColor.BLACK), duration);

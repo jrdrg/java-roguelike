@@ -6,6 +6,7 @@ import java.util.Map;
 import roguelike.actions.combat.DamageType;
 import roguelike.actions.combat.WeaponCategory;
 import roguelike.actors.conditions.Poisoned;
+import roguelike.items.Equipment.ItemSlot;
 import squidpony.squidcolor.SColor;
 
 public class WeaponFactory {
@@ -16,7 +17,7 @@ public class WeaponFactory {
 
 	private static WeaponFactory factory = new WeaponFactory();
 
-	private Map<WeaponType, WeaponBuilderFactory> weaponBuilders = new HashMap<WeaponType, WeaponBuilderFactory>();
+	private transient Map<WeaponType, WeaponBuilderFactory> weaponBuilders = new HashMap<WeaponType, WeaponBuilderFactory>();
 
 	private WeaponFactory() {
 		createNaturalWeapons();
@@ -104,6 +105,7 @@ public class WeaponFactory {
 						.withReach(MeleeRange.SHORT)
 						.withDroppable(true)
 						.withDefenseTargetNumber(9)
+						.withRange(10)
 						.build());
 	}
 
@@ -118,6 +120,7 @@ public class WeaponFactory {
 						.withTargetNumberAndDamageValue(DamageType.PIERCING, 6, 0)
 						.withReach(MeleeRange.SHORT)
 						.withDroppable(true)
+						.canEquip(ItemSlot.PROJECTILE)
 						.build());
 	}
 

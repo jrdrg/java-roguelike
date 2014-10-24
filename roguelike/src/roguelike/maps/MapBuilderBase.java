@@ -2,20 +2,26 @@ package roguelike.maps;
 
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 
 import roguelike.Game;
 import roguelike.util.Symbol;
 import squidpony.squidgrid.util.DirectionCardinal;
 import squidpony.squidmath.RNG;
 
-public abstract class MapBuilderBase {
-	protected RNG random = Game.current().random();
-	protected TileBuilder tb = new TileBuilder();
-	protected Tile[][] map;
+public abstract class MapBuilderBase implements Serializable {
+	private static final long serialVersionUID = 1L;
 
-	protected int width;
-	protected int height;
-	protected Rectangle mapRect;
+	protected transient RNG random = Game.current().random();
+	protected transient TileBuilder tb = new TileBuilder();
+	protected transient Tile[][] map;
+
+	protected transient int width;
+	protected transient int height;
+	protected transient Rectangle mapRect;
 
 	protected String mapName;
 
@@ -32,6 +38,17 @@ public abstract class MapBuilderBase {
 		onBuildMap(map);
 
 		return mapName;
+	}
+
+	private void writeObject(ObjectOutputStream out) throws IOException {
+		out.defaultWriteObject();
+	}
+
+	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+		in.defaultReadObject();
+
+		tb = new TileBuilder();
+		random = Game.current().random();
 	}
 
 	/**

@@ -5,6 +5,8 @@ import roguelike.actions.combat.Attack;
 import roguelike.actions.combat.RangedAttack;
 import roguelike.actors.Actor;
 import roguelike.items.Equipment.ItemSlot;
+import roguelike.util.Coordinate;
+import squidpony.squidgrid.util.BasicRadiusStrategy;
 import squidpony.squidutility.Pair;
 
 public class Projectile extends Weapon {
@@ -12,6 +14,15 @@ public class Projectile extends Weapon {
 
 	protected Projectile() {
 		super(true);
+	}
+
+	@Override
+	public boolean canUse(Actor user, Actor target) {
+		Coordinate userPos = user.getPosition();
+		Coordinate targetPos = target.getPosition();
+
+		float distance = targetPos.distance(userPos, BasicRadiusStrategy.CIRCLE);
+		return distance <= 1;
 	}
 
 	@Override

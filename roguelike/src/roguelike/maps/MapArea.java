@@ -2,6 +2,8 @@ package roguelike.maps;
 
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.List;
 
@@ -18,8 +20,7 @@ import squidpony.squidcolor.SColor;
 import squidpony.squidmath.RNG;
 
 public class MapArea implements Serializable {
-
-	private static final long serialVersionUID = -4489131745717955264L;
+	private static final long serialVersionUID = 1L;
 
 	private Tile[][] map;
 	private float[][] lightResistances;
@@ -33,6 +34,9 @@ public class MapArea implements Serializable {
 
 	// private PointGraph pointGraph;
 
+	// private MapArea() {
+	// }
+
 	protected MapArea(int width, int height, MapBuilderBase mapBuilder) {
 		actors = new CurrentItemTracker<Actor>();
 		this.width = width;
@@ -44,6 +48,11 @@ public class MapArea implements Serializable {
 
 	public static MapArea build(int width, int height, MapBuilderBase mapBuilder) {
 		return new Dungeon(width, height, mapBuilder, 1, 10);
+	}
+
+	private void readObject(ObjectInputStream in) throws ClassNotFoundException, IOException {
+		in.defaultReadObject();
+		Log.debug("Read map");
 	}
 
 	public int width() {
@@ -423,4 +432,5 @@ public class MapArea implements Serializable {
 		// pointGraph.calculateEdges();
 		// Log.debug("done");
 	}
+
 }

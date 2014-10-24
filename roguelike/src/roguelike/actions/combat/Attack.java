@@ -16,8 +16,15 @@ public abstract class Attack {
 		this.baseDamage = baseDamage;
 		this.weapon = weapon;
 
-		// TODO: put this in constructor parameter
 		damageType = weapon.defaultDamageType();
+	}
+
+	protected Attack(String description, int baseDamage, Weapon weapon, DamageType damageType) {
+		this.description = description;
+		this.baseDamage = baseDamage;
+		this.weapon = weapon;
+
+		this.damageType = damageType;
 	}
 
 	public int getDamage() {

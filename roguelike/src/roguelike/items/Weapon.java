@@ -1,5 +1,8 @@
 package roguelike.items;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -11,7 +14,7 @@ import roguelike.functionalInterfaces.StatisticProvider;
 import roguelike.items.Equipment.ItemSlot;
 
 public abstract class Weapon extends Item {
-	private static final long serialVersionUID = -7712813593206574664L;
+	private static final long serialVersionUID = 1L;
 
 	protected Map<DamageType, int[]> damage = new HashMap<DamageType, int[]>();
 	protected WeaponCategory weaponCategory;
@@ -41,6 +44,19 @@ public abstract class Weapon extends Item {
 		damage.put(DamageType.BLUNT, new int[2]);
 	}
 
+	private void writeObject(ObjectOutputStream out) throws IOException {
+		out.defaultWriteObject();
+
+		// StatisticProvider s = (Serializable & StatisticProvider) defenseAgainstConditionStat;
+		// out.writeObject(s);
+	}
+
+	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+		in.defaultReadObject();
+
+		// defenseAgainstConditionStat = (StatisticProvider) in.readObject();
+	}
+
 	@Override
 	public Weapon asWeapon() {
 		return this;
@@ -48,7 +64,7 @@ public abstract class Weapon extends Item {
 
 	@Override
 	public boolean canEquip(ItemSlot slot) {
-		return (slot == ItemSlot.LEFT_ARM || slot == ItemSlot.RIGHT_ARM);
+		return (slot == ItemSlot.LEFT_HAND || slot == ItemSlot.RIGHT_HAND);
 	}
 
 	public int reach() {

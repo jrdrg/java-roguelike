@@ -8,7 +8,8 @@ public enum Symbol {
 	DUNGEON_FLOOR('.'),
 	HILLS('.'),
 	GROUND('.'),
-	STAIRS('>'),
+	STAIRS_UP('<'),
+	STAIRS_DOWN('>'),
 
 	TREE1(5), // ♣
 	TREE2('&'),

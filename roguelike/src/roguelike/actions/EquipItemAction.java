@@ -4,7 +4,6 @@ import roguelike.actors.Actor;
 import roguelike.items.Equipment.ItemSlot;
 import roguelike.items.Item;
 import roguelike.items.ItemType;
-import roguelike.items.RangedWeapon;
 
 public class EquipItemAction extends Action {
 

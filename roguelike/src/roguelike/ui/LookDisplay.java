@@ -65,7 +65,7 @@ public class LookDisplay extends TextWindow {
 		if (actor != null) {
 			add(textList, "`" + actor.color().getName() + "`" + actor.getName() + " =" + actor.behavior().getDescription());
 			add(textList, actor.getDescription());
-			Weapon equipped = ItemSlot.RIGHT_ARM.getEquippedWeapon(actor);
+			Weapon equipped = ItemSlot.RIGHT_HAND.getEquippedWeapon(actor);
 			add(textList, " `Gray`Weapon");
 			add(textList, "`White`" + equipped.name() + " (" + equipped.defaultDamageType().name() + ")");
 			add(textList, "");

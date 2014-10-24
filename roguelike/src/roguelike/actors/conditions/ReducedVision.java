@@ -5,6 +5,7 @@ import roguelike.util.StringEx;
 import squidpony.squidcolor.SColor;
 
 public class ReducedVision extends Condition {
+	private static final long serialVersionUID = 7729159918086465466L;
 
 	private int oldVisionRadius;
 

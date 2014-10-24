@@ -1,6 +1,9 @@
 package roguelike;
 
 import java.awt.Point;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Stack;
@@ -10,8 +13,9 @@ import roguelike.actions.ActionResult;
 import roguelike.actors.Actor;
 import roguelike.actors.Energy;
 import roguelike.actors.Player;
-import roguelike.data.DataFactory;
+import roguelike.data.serialization.ObjectIdStorage;
 import roguelike.items.Inventory;
+import roguelike.items.Item;
 import roguelike.maps.MapArea;
 import roguelike.ui.DisplayManager;
 import roguelike.util.Coordinate;
@@ -28,7 +32,9 @@ import squidpony.squidmath.RNG;
  * @author john
  * 
  */
-public class Game {
+public class Game implements Serializable {
+	private static final long serialVersionUID = 1L;
+
 	public final static int MAP_WIDTH = 83;
 	public final static int MAP_HEIGHT = 43;
 
@@ -47,7 +53,8 @@ public class Game {
 	Cursor activeCursor;
 	MessageLog messages;
 
-	final DataFactory dataFactory;
+	public final ObjectIdStorage<Actor> actorStorage;
+	public final ObjectIdStorage<Item> itemStorage;
 
 	/**
 	 * This should only be called by GameLoader
@@ -56,7 +63,9 @@ public class Game {
 	 */
 	Game() {
 		GameLoader gameLoader = GameLoader.instance();
-		this.player = gameLoader.createPlayer();
+
+		this.actorStorage = new ObjectIdStorage<Actor>();
+		this.itemStorage = new ObjectIdStorage<Item>();
 
 		this.queuedActions = new LinkedList<Action>();
 		this.rng = gameLoader.getRandom();
@@ -65,14 +74,14 @@ public class Game {
 		currentGame = this;
 		Log.debug("Created Game");
 
-		this.dataFactory = gameLoader.dataFactory;
 		this.messages = new MessageLog();
+
+		this.player = gameLoader.createPlayer();
 	}
 
-	public static Game load() {
-		Game g = new Game();
-		g.player = GameLoader.instance().loadPlayer();
-		return g;
+	private void readObject(ObjectInputStream in) throws ClassNotFoundException, IOException {
+		in.defaultReadObject();
+		currentGame = this;
 	}
 
 	/**

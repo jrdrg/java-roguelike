@@ -97,8 +97,11 @@ public class TileBuilder {
 			t.setValues(ground.random(), true, SColorFactory.asSColor(50, 200, 100));// .setBackground(SColor.DARK_GREEN);
 			break;
 
-		case STAIRS:
-			return new Stairs(new DungeonMapBuilder()).setValues(character.symbol(), true, SColor.WHITE);
+		case STAIRS_DOWN:
+			return new Stairs(new DungeonMapBuilder(), true).setValues(character.symbol(), true, SColor.WHITE);
+
+		case STAIRS_UP:
+			return new Stairs(new DungeonMapBuilder(), false).setValues(character.symbol(), true, SColor.WHITE);
 
 		case BOX_BOTTOM_LEFT_SINGLE:
 			// TODO: change the character and make this a torch or something

@@ -5,12 +5,14 @@ import roguelike.actors.Actor;
 
 public class Stairs extends Tile {
 
-	private static final long serialVersionUID = -6367110457761317507L;
+	private static final long serialVersionUID = 1L;
 
 	private MapBuilderBase mapBuilder;
+	private boolean down;
 
-	public Stairs(MapBuilderBase mapBuilder) {
+	public Stairs(MapBuilderBase mapBuilder, boolean isDown) {
 		this.mapBuilder = mapBuilder;
+		this.down = isDown;
 	}
 
 	@Override
@@ -19,7 +21,11 @@ public class Stairs extends Tile {
 			return getActor().symbol();
 		}
 
-		return '>';
+		return down ? '>' : '<';
+	}
+
+	public boolean isDown() {
+		return down;
 	}
 
 	public void use() {

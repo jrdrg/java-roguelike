@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import roguelike.actors.Actor;
 import roguelike.util.Log;
 import squidpony.squidutility.Pair;
 
@@ -108,5 +109,13 @@ public class ItemStack extends Item {
 
 	public List<Item> unstack() {
 		return items;
+	}
+
+	@Override
+	public boolean canUse(Actor user, Actor target) {
+		if (items.size() == 0)
+			return false;
+
+		return items.get(0).canUse(user, target);
 	}
 }

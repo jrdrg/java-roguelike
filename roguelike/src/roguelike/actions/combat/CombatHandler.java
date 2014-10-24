@@ -1,5 +1,7 @@
 package roguelike.actions.combat;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.Serializable;
 
 import roguelike.Game;
@@ -41,12 +43,18 @@ import squidpony.squidcolor.SColor;
  * 
  */
 public class CombatHandler implements Serializable {
-	private static final long serialVersionUID = 4714367235773250418L;
+	private static final long serialVersionUID = 1L;
 
+	protected transient Game game = Game.current();
 	private Actor actor;
 
 	public CombatHandler(Actor actor) {
 		this.actor = actor;
+	}
+
+	private void readObject(ObjectInputStream in) throws ClassNotFoundException, IOException {
+		in.defaultReadObject();
+		game = Game.current();
 	}
 
 	/**
@@ -133,10 +141,8 @@ public class CombatHandler implements Serializable {
 	 * @param attacker
 	 * @return True if the attack killed the target
 	 */
-	public boolean onDamaged(Attack attack, Actor attacker) {
-		boolean isDead = actor.health().damage(attack.baseDamage);
-
-		return isDead;
+	public void onDamaged(Attack attack, Actor attacker) {
+		actor.onDamaged(attack.baseDamage);
 	}
 
 	/**
@@ -148,10 +154,12 @@ public class CombatHandler implements Serializable {
 	 * @return The result from onDamaged() - true if the attack killed the target
 	 */
 	boolean processAttack(Action action, Attack attack, Actor target) {
+		game = Game.current();
 		attack = target.combatHandler().defend(actor, attack);
 		boolean isDead;
 		if (attack.baseDamage > 0) {
-			isDead = target.combatHandler().onDamaged(attack, actor);
+			target.combatHandler().onDamaged(attack, actor);
+			isDead = target.isAlive();
 
 			String message = getAttackMessage(target, attack);
 
@@ -159,17 +167,17 @@ public class CombatHandler implements Serializable {
 			if (Player.isPlayer(target))
 				color = SColor.RED;
 
-			Game.current().displayMessage(actor.doAction(message), color);
+			game.displayMessage(actor.doAction(message), color);
 
 			/* add an event so we can show an animation */
-			Game.current().addEvent(
+			game.addEvent(
 					TurnEvent.attack(actor, target, "" + attack.getDamage(), attack));
 
 		} else {
 			isDead = false;
-			Game.current().displayMessage(actor.getMessageName() + " missed " + target.getMessageName() + ".", SColor.DARK_TAN);
+			game.displayMessage(actor.getMessageName() + " missed " + target.getMessageName() + ".", SColor.DARK_TAN);
 
-			Game.current().addEvent(TurnEvent.attackMissed(actor, target, "Missed"));
+			game.addEvent(TurnEvent.attackMissed(actor, target, "Missed"));
 		}
 		target.onAttacked(actor);
 
@@ -201,7 +209,7 @@ public class CombatHandler implements Serializable {
 
 	private int determineReachDifference(Actor attacker, Attack attack) {
 
-		Weapon defendingWeapon = ItemSlot.RIGHT_ARM.getEquippedWeapon(actor);
+		Weapon defendingWeapon = ItemSlot.RIGHT_HAND.getEquippedWeapon(actor);
 
 		int attackingReach = attack.getWeapon().reach();
 		int defendingReach = defendingWeapon == null ? 0 : defendingWeapon.reach();
