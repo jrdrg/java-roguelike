@@ -30,6 +30,8 @@ public abstract class Weapon extends Item {
 	protected int attackSuccessesToCause;
 	protected int attributeSuccessesToDefend;
 
+	protected Material material;
+
 	/**
 	 * This decrements periodically depending on usage, when it hits 0 the weapon breaks
 	 */

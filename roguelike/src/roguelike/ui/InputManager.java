@@ -20,6 +20,9 @@ public class InputManager {
 	private static KeyMap activeKeyMap = new KeyMap(".");
 	private static Stack<KeyMap> keyBindings = new Stack<KeyMap>();
 
+	private InputManager() {
+	}
+
 	public static void registerWithFrame(JFrame frame) {
 		frame.addKeyListener(keyListener);
 	}

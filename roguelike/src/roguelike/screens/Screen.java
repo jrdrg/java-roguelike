@@ -1,5 +1,7 @@
 package roguelike.screens;
 
+import java.awt.Rectangle;
+
 import roguelike.ui.DisplayManager;
 import roguelike.ui.MainWindow;
 import roguelike.ui.windows.TerminalBase;
@@ -9,32 +11,44 @@ public abstract class Screen {
 	final static int HEIGHT = MainWindow.HEIGHT;
 
 	protected TerminalBase terminal;
-	private Screen nextScreen;
+	private static Screen nextScreen;
 	private Screen previousScreen;
 
 	protected Screen(TerminalBase terminal) {
+		if (terminal == null)
+			throw new IllegalArgumentException("terminal cannot be null");
+
 		this.terminal = terminal;
-		setNextScreen(this);
+		setNextScreen(this, false);
 	}
 
-	public Screen getScreen() {
-		return nextScreen();
+	public static Screen currentScreen() {
+		return nextScreen;
 	}
 
-	public final long drawScreen() {
+	public final TerminalBase terminal() {
+		return terminal;
+	}
+
+	public Rectangle getDrawableArea() {
+		return new Rectangle(0, 0, terminal.size().width, terminal.size().height);
+	}
+
+	public final long draw() {
 		long start = System.currentTimeMillis();
-		draw();
-		DisplayManager.instance().refresh();
+		onDraw();
 		long time = System.currentTimeMillis() - start;
 		return time;
 	}
 
-	protected Screen nextScreen() {
-		return nextScreen;
+	public final void setNextScreen(Screen screen) {
+		setNextScreen(screen, true);
 	}
 
-	protected final void setNextScreen(Screen screen) {
-		setNextScreen(screen, false);
+	public abstract void process();
+
+	protected Screen nextScreen() {
+		return nextScreen;
 	}
 
 	protected final void setNextScreen(Screen screen, boolean storePrevious) {
@@ -48,7 +62,7 @@ public abstract class Screen {
 	protected final void restorePreviousScreen() {
 		if (previousScreen != null) {
 			setNextScreen(previousScreen, false);
-			previousScreen.nextScreen = previousScreen;
+			// previousScreen.nextScreen = previousScreen;
 			previousScreen = null;
 			onLeaveScreen();
 		}
@@ -57,7 +71,6 @@ public abstract class Screen {
 	protected void onLeaveScreen() {
 	}
 
-	public abstract long draw();
+	protected abstract void onDraw();
 
-	public abstract void process();
 }

@@ -28,16 +28,10 @@ import squidpony.squidmath.RNG;
 
 public class GameLoader {
 
-	private static GameLoader gameLoader = new GameLoader();
-
 	private GameLoader() {
 	}
 
-	public static GameLoader instance() {
-		return gameLoader;
-	}
-
-	public Game newGame() {
+	public static Game newGame() {
 
 		Game game = new Game();
 		Player player = game.getPlayer();
@@ -83,7 +77,7 @@ public class GameLoader {
 		return game;
 	}
 
-	public Player createPlayer() {
+	public static Player createPlayer() {
 		Player player = new Player();
 
 		MeleeWeapon sword = (MeleeWeapon) WeaponFactory.create(WeaponType.SHORT_SWORD);
@@ -104,7 +98,7 @@ public class GameLoader {
 		return player;
 	}
 
-	public RNG getRandom() {
+	public static RNG getRandom() {
 		return new RNG();
 	}
 }

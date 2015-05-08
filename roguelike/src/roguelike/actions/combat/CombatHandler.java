@@ -159,7 +159,7 @@ public class CombatHandler implements Serializable {
 		boolean isDead;
 		if (attack.baseDamage > 0) {
 			target.combatHandler().onDamaged(attack, actor);
-			isDead = target.isAlive();
+			isDead = !target.isAlive();
 
 			String message = getAttackMessage(target, attack);
 

@@ -1,29 +1,31 @@
 package roguelike.actions;
 
-import roguelike.ScreenManager;
 import roguelike.actors.Actor;
 import roguelike.items.Item;
 import roguelike.screens.InventoryScreen;
-import roguelike.ui.DisplayManager;
+import roguelike.screens.Screen;
+import roguelike.util.Log;
 
-public class InventoryAction extends InputRequiredAction<Item> {
+public class InventoryAction extends DialogInputRequiredAction<Item> {
 
 	public InventoryAction(Actor actor) {
 		super(actor);
 
 		this.usesEnergy = false;
+		Screen screen = Screen.currentScreen();
+		screen.setNextScreen(new InventoryScreen(screen, screen.terminal()));
 	}
 
 	@Override
 	protected ActionResult onPerform() {
-		ScreenManager.setNextScreen(self -> new InventoryScreen(self, DisplayManager.instance().getTerminal()));
+		Log.debug("InventoryAction");
 		return ActionResult.success();
 	}
 
 	@Override
 	public boolean checkForIncomplete() {
 		boolean incomplete = super.checkForIncomplete();
-		return incomplete;// || (itemActionDialog != null && itemActionDialog.waitingForResult());
+		return incomplete;
 	}
 
 }

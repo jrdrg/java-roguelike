@@ -60,11 +60,9 @@ public abstract class Dialog<T> extends TextWindow {
 	}
 
 	public final void show() {
-		if (Game.current().setActiveDialog(this)) {
-			InputManager.setActiveKeybindings(this.getKeyBindings());
-			isOpen = true;
-			onShow();
-		}
+		InputManager.setActiveKeybindings(this.getKeyBindings());
+		isOpen = true;
+		onShow();
 	}
 
 	public final boolean process() {
@@ -74,7 +72,6 @@ public abstract class Dialog<T> extends TextWindow {
 		if (result != null) {
 			InputManager.previousKeyMap();
 			isOpen = false;
-			Game.current().setActiveDialog(null);
 		}
 		this.result = result;
 

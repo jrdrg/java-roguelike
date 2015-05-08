@@ -32,23 +32,24 @@ public abstract class Actor implements Serializable {
 
 	protected UUID actorId = UUID.randomUUID();
 
-	protected Coordinate position;
 	protected char symbol;
 	protected int visionRadius;
 	protected boolean attackedThisRound;
 
-	protected Energy energy;
-	protected Statistics statistics;
-	protected CombatHandler combat;
-	protected Health health;
-	protected Inventory inventory;
-	protected Equipment equipment;
+	protected final Energy energy;
+	protected final Statistics statistics;
+	protected final CombatHandler combat;
+	protected final Health health;
+	protected final Equipment equipment;
+	protected final Inventory inventory;
 	protected ArrayList<Condition> conditions;
 
 	protected Behavior behavior;
 	protected Stack<AttackAttempt> attacked;
 	protected Stack<AttackAttempt> attackedBy;
 	protected transient SColor color;
+
+	public final Coordinate position;
 
 	protected Actor(char symbol, SColor color) {
 		if (color == null)
@@ -71,8 +72,6 @@ public abstract class Actor implements Serializable {
 		conditions = new ArrayList<Condition>();
 
 		visionRadius = 15;
-
-		game.actorStorage.addIfNotExists(this.actorId, this);
 	}
 
 	private void writeObject(ObjectOutputStream out) throws IOException {
@@ -253,7 +252,6 @@ public abstract class Actor implements Serializable {
 			game.reset();
 		}
 		currentArea.removeActor(this);
-		game.actorStorage.remove(this.actorId);
 
 		/* display bloodstain */
 		currentArea.getTileAt(this.getPosition()).setBackground(SColorFactory.dimmer(SColor.DARK_RED));

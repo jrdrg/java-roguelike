@@ -167,6 +167,9 @@ public class DungeonMapBuilder extends MapBuilderBase {
 					setTile(door, Symbol.DUNGEON_FLOOR);
 					setTile(endPoint, Symbol.DUNGEON_FLOOR);
 
+					if (random.nextBoolean())
+						setDoor(door);
+
 					currentRoom.doors.add(door);
 
 					addRoom(newRoom);
@@ -244,6 +247,9 @@ public class DungeonMapBuilder extends MapBuilderBase {
 
 					setTile(door, Symbol.BUILDING_FLOOR);
 					setTile(endPoint, Symbol.BUILDING_FLOOR);
+
+					if (random.nextBoolean())
+						setDoor(door);
 
 					randomRoom.doors.add(door);
 
@@ -417,7 +423,9 @@ public class DungeonMapBuilder extends MapBuilderBase {
 	}
 
 	private void setDoor(ConnectionPoint doorPoint) {
-		setTile(doorPoint, Symbol.DOOR);
+		// setTile(doorPoint, Symbol.DOOR);
+		map[doorPoint.x][doorPoint.y] = tb.buildTile(Symbol.DOOR);
+		Log.debug("Created door at " + doorPoint.x + ", " + doorPoint.y);
 		doorPoint.isDoor = true;
 	}
 

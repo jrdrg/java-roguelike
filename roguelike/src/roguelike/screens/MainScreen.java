@@ -3,11 +3,8 @@ package roguelike.screens;
 import java.awt.Point;
 import java.awt.Rectangle;
 
-import roguelike.Cursor;
-import roguelike.Dialog;
 import roguelike.Game;
 import roguelike.GameLoader;
-import roguelike.ScreenManager;
 import roguelike.TurnEvent;
 import roguelike.TurnResult;
 import roguelike.actors.Actor;
@@ -42,10 +39,9 @@ public class MainScreen extends Screen {
 	private final FOVTranslator fov = new FOVTranslator(new TranslucenceWrapperFOV());
 	private final RadiusStrategy radiusStrategy = BasicRadiusStrategy.CIRCLE;
 
-	TerminalBase fullTerminal;
+	TerminalBase windowTerminal;
 
 	Game game;
-	GameLoader gameLoader;
 	MessageDisplay messageDisplay;
 	StatsDisplay statsDisplay;
 	LookDisplay lookDisplay;
@@ -57,18 +53,12 @@ public class MainScreen extends Screen {
 
 	private Rectangle[] screenQuadrants = new Rectangle[4];
 
-	public MainScreen(TerminalBase fullTerminal) {
-		this(fullTerminal, null);
-	}
+	public MainScreen(TerminalBase terminal, Game initialGame) {
+		super(terminal);
+		if (initialGame == null)
+			throw new IllegalArgumentException("initialGame cannot be null");
 
-	public MainScreen(TerminalBase fullTerminal, Game initialGame) {
-		super(fullTerminal.getWindow(0, 0, windowWidth, windowHeight));
-
-		if (initialGame == null) {
-			this.game = GameLoader.instance().newGame();
-		} else {
-			this.game = initialGame;
-		}
+		this.game = initialGame;
 
 		int midX = windowWidth / 2;
 		int midY = windowHeight / 2;
@@ -80,7 +70,7 @@ public class MainScreen extends Screen {
 
 		game.initialize();
 
-		this.fullTerminal = fullTerminal;
+		this.windowTerminal = terminal.getWindow(0, 0, windowWidth, windowHeight);
 
 		Log.debug("Window tile size: " + windowWidth + "x" + windowHeight);
 
@@ -93,10 +83,10 @@ public class MainScreen extends Screen {
 
 		int messageLines = 21;
 		TerminalBase messageTerminal =
-				fullTerminal.getWindow(WIDTH - MainWindow.STAT_WIDTH + 1, messageLines - 1, MainWindow.STAT_WIDTH - 2, HEIGHT - messageLines);
+				terminal.getWindow(WIDTH - MainWindow.STAT_WIDTH + 1, messageLines - 1, MainWindow.STAT_WIDTH - 2, HEIGHT - messageLines);
 
 		TerminalBase statsTerminal =
-				fullTerminal.getWindow(WIDTH - MainWindow.STAT_WIDTH, 0, MainWindow.STAT_WIDTH, HEIGHT);
+				terminal.getWindow(WIDTH - MainWindow.STAT_WIDTH, 0, MainWindow.STAT_WIDTH, HEIGHT);
 
 		messageDisplay = new MessageDisplay(Game.current().messages(), messageTerminal, messageLines);
 		statsDisplay = new StatsDisplay(statsTerminal);
@@ -117,8 +107,13 @@ public class MainScreen extends Screen {
 	}
 
 	@Override
-	public long draw() {
-		return drawFrame();
+	public Rectangle getDrawableArea() {
+		return new Rectangle(0, 0, windowWidth, windowHeight);
+	}
+
+	@Override
+	public void onDraw() {
+		drawFrame();
 	}
 
 	@Override
@@ -135,7 +130,7 @@ public class MainScreen extends Screen {
 			if (killedBy != null)
 				killedByActor = killedBy.getActor();
 
-			setNextScreen(new PlayerDiedScreen(killedByActor, this.fullTerminal));
+			setNextScreen(new PlayerDiedScreen(killedByActor, terminal), false);
 
 		} else {
 
@@ -143,16 +138,10 @@ public class MainScreen extends Screen {
 			run = game.processTurn();
 			currentTurn = run;
 
-			// Screen nextScreen = run.getNextScreen();
-			Screen nextScreen = ScreenManager.getNextScreen(this);
-			if (nextScreen != null) {
-				setNextScreen(nextScreen, true);
-			}
-
 			if (!run.isRunning()) {
 				GameLoader.save(this.game);
 				Log.debug("Saving game...");
-				setNextScreen(new TitleScreen(fullTerminal));
+				setNextScreen(new TitleScreen(terminal), false);
 			}
 
 			/* recalculate FOV if player moved/acted */
@@ -162,27 +151,17 @@ public class MainScreen extends Screen {
 		}
 	}
 
-	@Override
-	public Screen getScreen() {
-		return nextScreen();
-	}
-
-	private long drawFrame() {
-		long start = System.currentTimeMillis();
-
+	private void drawFrame() {
 		if (currentTurn == null) {
-			return 0;
+			return;
 		}
 
-		if (!drawActiveWindow(currentTurn)) {
-			drawMap();
-		}
+		drawMap();
+
 		drawStats();
 		drawLookDisplay(currentTurn);
 		drawMessages(currentTurn);
 		drawEvents(currentTurn);
-
-		drawCursor(currentTurn);
 
 		/*
 		 * this will only refresh if player input has occurred or something has reset the dirty flag
@@ -193,9 +172,6 @@ public class MainScreen extends Screen {
 		if (animationProcessed || animationManager.shouldRefresh()) {
 			displayManager.setDirty();
 		}
-
-		long end = System.currentTimeMillis();
-		return end - start;
 	}
 
 	private void drawMap() {
@@ -341,31 +317,6 @@ public class MainScreen extends Screen {
 		run.getEvents().clear();
 	}
 
-	private void drawCursor(TurnResult run) {
-		Cursor activeCursor = run.getCursor();
-		if (activeCursor == null)
-			return;
-
-		MapArea currentMap = game.getCurrentMapArea();
-		Coordinate centerPosition = game.getCenterScreenPosition();
-		Rectangle screenArea = currentMap
-				.getVisibleAreaInTiles(windowWidth, windowHeight, centerPosition);
-
-		activeCursor.draw(terminal, screenArea);
-		displayManager.setDirty();
-	}
-
-	private boolean drawActiveWindow(TurnResult run) {
-		Dialog<?> window = run.getActiveWindow();
-		if (window != null) {
-			window.showInPane(window.showFullscreen() ? fullTerminal : terminal);
-			window.draw();
-
-			return true;
-		}
-		return false;
-	}
-
 	private void drawMessages(TurnResult run) {
 		messageDisplay.draw();
 	}
@@ -375,6 +326,9 @@ public class MainScreen extends Screen {
 	}
 
 	private void drawLookDisplay(TurnResult run) {
+
+		// TODO: make this based on the player's position instead of using a global property on the Game object
+
 		Pair<Point, Boolean> p = run.getCurrentLook();
 		if (p == null || p.getFirst() == null) {
 			// lookDisplay.erase();
@@ -391,9 +345,10 @@ public class MainScreen extends Screen {
 		}
 		TerminalBase term = this.terminal.getWindow(quadrant.x + 1, quadrant.y + 0, quadrant.width - 2, quadrant.height - 0);
 
-		lookDisplay
+		int height = lookDisplay
 				.setTerminal(term)
-				.draw(game.getCurrentMapArea(), p.getFirst().x, p.getFirst().y, p.getSecond(), p.getSecond() ? "Looking at" : "On ground");
+				.getHeight(game.getCurrentMapArea(), p.getFirst().x, p.getFirst().y, p.getSecond(), p.getSecond() ? "Looking at" : "On ground");
+		lookDisplay.draw(height);
 	}
 
 	private boolean shouldDisplayAnimation(Point initiatorPos, Point targetPos, Rectangle screenArea, boolean initiatorMustBeVisible) {

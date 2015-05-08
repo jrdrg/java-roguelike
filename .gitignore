@@ -1,0 +1,6 @@
+.metadata
+.DS_Store
+roguelike/bin
+roguelike/saves
+*~
+*.log

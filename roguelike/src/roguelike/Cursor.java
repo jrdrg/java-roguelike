@@ -42,7 +42,6 @@ public class Cursor {
 	}
 
 	public final void show() {
-		Game.current().setCursor(this);
 		isActive = true;
 		onShow();
 	}
@@ -70,7 +69,6 @@ public class Cursor {
 		if (processed != null) {
 			isActive = false;
 			this.result = processed;
-			Game.current().setCursor(null);
 		}
 		return !isActive;
 	}

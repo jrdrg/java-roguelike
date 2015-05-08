@@ -1,5 +1,6 @@
 package roguelike.ui;
 
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.ArrayList;
 
@@ -20,10 +21,12 @@ public class LookDisplay extends TextWindow {
 	private final int BOTTOM_MARGIN = 1;
 	private final int TOP_MARGIN = 1;
 	private TerminalBase terminal;
+	private ArrayList<StringEx> textLines;
 
 	public LookDisplay(TerminalBase terminal, int width, int height) {
 		super(width, height);
-		this.terminal = terminal;
+		// this.terminal = terminal;
+		setTerminal(terminal);
 	}
 
 	public LookDisplay setTerminal(TerminalBase terminal)
@@ -33,21 +36,26 @@ public class LookDisplay extends TextWindow {
 		return this;
 	}
 
-	public void draw(MapArea map, int x, int y) {
-		draw(map, x, y, true, "Looking at");
+	public void draw(MapArea map, int x, int y, Point screenLookPoint) {
+		int height = getHeight(map, x, y, true, "Looking at");
+		draw(height);
 	}
 
-	public void draw(MapArea map, int x, int y, boolean drawActor, String caption) {
-
-		ArrayList<StringEx> textLines = getTextLines(map, x, y, drawActor);
+	public int getHeight(MapArea map, int x, int y, boolean drawActor, String caption) {
+		textLines = getTextLines(map, x, y, drawActor);
 		int height = Math.min(textLines.size(), this.size.height - 4);
 		height += BOTTOM_MARGIN + TOP_MARGIN;
 
-		int top = terminal.size().height - height;
-		if (terminal.size().y <= 1)
+		return height;
+
+	}
+
+	public void draw(int height) {
+		int top = terminal.size().height - height - 1;
+		if (terminal.size().y > Game.current().getPlayer().position.y)
 			top = 0;
 
-		this.drawBoxShape(terminal, top, height + 1);
+		this.drawBoxShape(terminal, top, height + 1, true);
 		// terminal.write(2, 0, caption);
 		drawInfo(textLines, top, height);
 	}

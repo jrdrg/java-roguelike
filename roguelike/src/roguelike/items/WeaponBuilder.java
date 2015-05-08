@@ -7,26 +7,32 @@ import roguelike.functionalInterfaces.StatisticProvider;
 import roguelike.items.Equipment.ItemSlot;
 import squidpony.squidcolor.SColor;
 
-public class WeaponBuilder {
+public class WeaponBuilder extends ItemBuilder {
 
 	private Weapon weapon;
 
-	private WeaponBuilder() {
+	private WeaponBuilder(Weapon weapon) {
+		super(weapon);
 
+		this.weapon = weapon;
+	}
+
+	private Weapon weapon() {
+		return (Weapon) item;
 	}
 
 	public static WeaponBuilder melee(String name, String attackDescription, char symbol, SColor color) {
-		WeaponBuilder wb = new WeaponBuilder();
-		wb.weapon = new MeleeWeapon();
-		wb.weapon.name = name;
-		wb.weapon.attackDescription = attackDescription;
-		wb.weapon.symbol = symbol;
-		wb.weapon.color = color;
+		Weapon weapon = new MeleeWeapon();
+		weapon.name = name;
+		weapon.attackDescription = attackDescription;
+		weapon.symbol = symbol;
+		weapon.color = color;
+
+		WeaponBuilder wb = new WeaponBuilder(weapon);
 		return wb;
 	}
 
 	public static WeaponBuilder ranged(String name, String attackDescription, char symbol, SColor color, int maxRange, WeaponCategory projectileType) {
-		WeaponBuilder wb = new WeaponBuilder();
 		RangedWeapon w = new RangedWeapon();
 		w.name = name;
 		w.attackDescription = attackDescription;
@@ -42,19 +48,18 @@ public class WeaponBuilder {
 			w.requiresProjectiles = true;
 		}
 
-		wb.weapon = w;
+		WeaponBuilder wb = new WeaponBuilder(w);
 		return wb;
 	}
 
 	public static WeaponBuilder projectile(String name, String attackDescription, char symbol, SColor color) {
-		WeaponBuilder wb = new WeaponBuilder();
 		Projectile w = new Projectile();
 		w.name = name;
 		w.attackDescription = attackDescription;
 		w.symbol = symbol;
 		w.color = color;
 
-		wb.weapon = w;
+		WeaponBuilder wb = new WeaponBuilder(w);
 		return wb;
 	}
 
@@ -105,15 +110,13 @@ public class WeaponBuilder {
 		weapon.defaultDamageType = damageType;
 		return this;
 	}
-
+	
 	public WeaponBuilder withDroppable(boolean droppable) {
-		weapon.droppable = droppable;
-		return this;
+		return (WeaponBuilder) super.withDroppable(droppable);
 	}
-
+	
 	public WeaponBuilder withWeight(int weight) {
-		weapon.weight = weight;
-		return this;
+		return (WeaponBuilder) super.withWeight(weight);
 	}
 
 	public Weapon build() {

@@ -34,12 +34,7 @@ public class AttackAction extends Action {
 
 		Attack attack = actor.combatHandler().getAttack(target);
 		if (attack != null) {
-			boolean isTargetDead = attack.perform(this, target);
-
-			if (isTargetDead) {
-				target.dead();
-			}
-
+			attack.perform(this, target);
 			return ActionResult.success();
 		}
 		else {

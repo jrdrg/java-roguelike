@@ -40,7 +40,7 @@ public class NpcBuilder {
 	}
 
 	public NpcBuilder withInventory(Inventory inventory) {
-		npc.inventory = inventory;
+		npc.inventory.allItems().addAll(inventory.allItems());
 		return this;
 	}
 

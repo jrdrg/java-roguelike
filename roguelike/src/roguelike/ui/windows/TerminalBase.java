@@ -35,6 +35,41 @@ public abstract class TerminalBase {
 		return this.size;
 	}
 
+	public TerminalBase cloneTerminal() {
+		final TerminalBase self = this;
+		TerminalBase clone = new TerminalBase(terminalChanged) {
+
+			private TerminalBase parent = self;
+
+			@Override
+			public TerminalBase withColor(SColor foreground, SColor background) {
+				return parent.withColor(foreground, background);
+			}
+
+			@Override
+			public TerminalBase withColor(SColor color) {
+				return parent.withColor(color);
+			}
+
+			@Override
+			public TerminalBase getWindow(int x, int y, int width, int height) {
+				return parent.getWindow(x, y, width, height);
+			}
+		};
+
+		clone.data = new CharEx[data.length][data[0].length];
+		for (int i = 0; i < data.length; i++) {
+			for (int j = 0; j < data[0].length; j++) {
+				clone.data[i][j] = data[i][j];
+			}
+		}
+		clone.size = this.size;
+		clone.colors = this.colors;
+		clone.cursor = this.cursor;
+
+		return clone;
+	}
+
 	public abstract TerminalBase getWindow(int x, int y, int width, int height);
 
 	public abstract TerminalBase withColor(SColor color);
@@ -94,4 +129,13 @@ public abstract class TerminalBase {
 		return this;
 	}
 
+	public TerminalBase refresh(int x, int y, int width, int height) {
+		for (int i = 0; i < width; i++) {
+			for (int j = 0; j < height; j++) {
+				CharEx oldChar = this.data[i + x][j + y];
+				put(i + x, j + y, oldChar);
+			}
+		}
+		return this;
+	}
 }

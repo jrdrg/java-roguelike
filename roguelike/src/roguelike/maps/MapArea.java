@@ -9,7 +9,7 @@ import java.util.List;
 
 import roguelike.Game;
 import roguelike.actors.Actor;
-import roguelike.data.EnemyFactory;
+import roguelike.actors.EnemyFactory;
 import roguelike.items.Inventory;
 import roguelike.items.Item;
 import roguelike.ui.windows.TerminalBase;

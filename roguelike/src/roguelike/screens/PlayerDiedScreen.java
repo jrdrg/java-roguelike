@@ -26,18 +26,13 @@ public class PlayerDiedScreen extends Screen {
 	}
 
 	@Override
-	public long draw() {
-		long start = System.currentTimeMillis();
-
+	public void onDraw() {
 		String title = "You died";
 		int x = 5;
 
 		terminal.write(x, 10, title);
 		if (killedBy != null)
 			terminal.write(x, 15, "Killed by: " + killedBy.getName());
-
-		long end = System.currentTimeMillis() - start;
-		return end;
 	}
 
 	@Override
@@ -47,7 +42,7 @@ public class PlayerDiedScreen extends Screen {
 			switch (cmd) {
 
 			case CONFIRM:
-				setNextScreen(new TitleScreen(DisplayManager.instance().getTerminal()));
+				setNextScreen(new TitleScreen(DisplayManager.instance().getTerminal()), false);
 				break;
 
 			case CANCEL:
@@ -57,10 +52,4 @@ public class PlayerDiedScreen extends Screen {
 			}
 		}
 	}
-
-	@Override
-	public Screen getScreen() {
-		return nextScreen();
-	}
-
 }

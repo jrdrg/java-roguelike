@@ -41,18 +41,13 @@ public class TitleScreen extends Screen {
 	}
 
 	@Override
-	public long draw() {
-		long start = System.currentTimeMillis();
-
+	public void onDraw() {
 		String title = "Title Screen";
 		int x = (int) ((terminal.size().width / 2f) - (title.length() / 2f));
 
 		terminal.write(x, 10, "`Yellow`" + title);
 		terminal.write(x, 15, "`Yellow`n) `White`New");
 		terminal.write(x, 16, "`Yellow`l) `White`Load");
-
-		long end = System.currentTimeMillis() - start;
-		return end;
 	}
 
 	@Override
@@ -64,11 +59,11 @@ public class TitleScreen extends Screen {
 			switch (cmd) {
 
 			case NEW:
-				setNextScreen(new MainScreen(this.terminal));
+				setNextScreen(new NewGameScreen(terminal));
 				break;
 
 			case LOAD:
-				setNextScreen(new MainScreen(this.terminal, loadGame()));
+				setNextScreen(new MainScreen(this.terminal, loadGame()), false);
 				break;
 
 			case CANCEL:
@@ -77,11 +72,6 @@ public class TitleScreen extends Screen {
 			default:
 			}
 		}
-	}
-
-	@Override
-	public Screen getScreen() {
-		return nextScreen();
 	}
 
 	private Game loadGame() {

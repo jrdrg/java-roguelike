@@ -34,7 +34,6 @@ public class DisplayManager {
 	private AsciiPanel asciiPanel;
 	private AsciiPanelTerminalView terminalView;
 
-	// TODO: this is a hack, for now
 	private static DisplayManager self;
 
 	public DisplayManager(int fontSize) {

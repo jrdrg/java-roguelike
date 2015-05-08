@@ -42,19 +42,17 @@ public class InventoryScreen extends Screen {
 	}
 
 	@Override
-	public long draw() {
-		long start = System.currentTimeMillis();
-
+	public void onDraw() {
 		String title = "Inventory";
 		// int x = (int) ((terminal.size().width / 2f) - (title.length() / 2f));
 		int x = (int) ((60 / 2f) - (title.length() / 2f));
 
 		TerminalBase bg = terminal.withColor(SColor.BLACK, SColor.BLACK);
 		bg.fill(0, 1, terminal.size().width, terminal.size().height, ' ');
-		TextWindow.drawBoxShape(terminal, 1, terminal.size().height - 2, terminal.size().width);
+		TextWindow.drawBoxShape(terminal, 1, terminal.size().height - 2, terminal.size().width, false);
 
 		TerminalBase leftBox = terminal.getWindow(0, 1, 60, terminal.size().height - 2);
-		TextWindow.drawBoxShape(leftBox, 0, leftBox.size().height, leftBox.size().width);
+		TextWindow.drawBoxShape(leftBox, 0, leftBox.size().height, leftBox.size().width, false);
 
 		TerminalBase term = terminal.getWindow(5, 0, 20, 20).withColor(SColor.LIGHT_BLUE);
 		term.write(x, 1, title);
@@ -73,9 +71,6 @@ public class InventoryScreen extends Screen {
 			terminal.write(2, displayY, color + item.getText());
 			displayY++;
 		}
-
-		long end = System.currentTimeMillis() - start;
-		return end;
 	}
 
 	@Override

@@ -39,18 +39,10 @@ public class Tile implements Serializable {
 
 	private void writeObject(ObjectOutputStream out) throws IOException {
 		out.defaultWriteObject();
-
-		// out.writeInt(lightValue.getRGB());
-		// out.writeInt(color.getRGB());
-		// out.writeInt(background.getRGB());
 	}
 
 	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
 		in.defaultReadObject();
-
-		// lightValue = SColorFactory.asSColor(in.readInt());
-		// color = SColorFactory.asSColor(in.readInt());
-		// background = SColorFactory.asSColor(in.readInt());
 	}
 
 	/**
@@ -122,7 +114,7 @@ public class Tile implements Serializable {
 	public SColor getColor() {
 		if (!visible) {
 			if (explored)
-				return SColorFactory.dimmer(SColor.GRAY);
+				return SColorFactory.dimmer(SColor.DARK_CERULEAN);
 			// return SColorFactory.light(SColor.DARK_GRAY);
 
 			return SColor.BLACK;

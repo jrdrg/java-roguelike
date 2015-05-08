@@ -8,7 +8,7 @@ import roguelike.items.ItemType;
 import roguelike.ui.InputCommand;
 import roguelike.ui.windows.ChooseItemCommandDialog;
 
-public class ChooseItemCommandAction extends InputRequiredAction<InputCommand> {
+public class ChooseItemCommandAction extends DialogInputRequiredAction<InputCommand> {
 
 	private Item selectedItem;
 
@@ -17,7 +17,7 @@ public class ChooseItemCommandAction extends InputRequiredAction<InputCommand> {
 		this.selectedItem = selectedItem;
 
 		this.dialog = new ChooseItemCommandDialog();
-		dialog.show();
+		showDialog(dialog);
 	}
 
 	@Override

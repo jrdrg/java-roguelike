@@ -16,6 +16,7 @@ import roguelike.screens.TitleScreen;
 import roguelike.util.Log;
 
 public class MainWindow {
+
 	public static final int screenWidth = 1200;
 	public static final int screenHeight = 690;
 	public static final int cellWidth = 9; // in AsciiPanel, this is constant
@@ -23,7 +24,8 @@ public class MainWindow {
 
 	public static final int WIDTH = screenWidth / cellWidth;
 	public static final int HEIGHT = screenHeight / cellHeight;
-	public static final int STAT_WIDTH = 50, fontSize = 14;
+	public static final int STAT_WIDTH = 50;
+	public static final int fontSize = 14;
 
 	private JFrame frame;
 
@@ -53,14 +55,14 @@ public class MainWindow {
 		while (true) {
 
 			currentScreen.process();
-			currentScreen = currentScreen.getScreen();
+			currentScreen = Screen.currentScreen();
 			long drawTicks = currentScreen.draw();
 
 			displayManager.setDirty();
 			displayManager.refresh();
 
 			nextTick += SKIP_TICKS;
-			// long sleepTime = SKIP_TICKS - drawTicks;
+
 			long sleepTime = nextTick - System.currentTimeMillis();
 			if (sleepTime >= 0) {
 				try {
@@ -137,26 +139,6 @@ public class MainWindow {
 		Log.info("Window size: " + frame.getSize().width + "x" + frame.getSize().height);
 
 		hideMouseCursor();
-
-		// frame.addComponentListener(new ComponentAdapter() {
-		// @Override
-		// public void componentHidden(ComponentEvent e) {
-		//
-		// // GameSerializer.serialize(Game.current().getPlayer());
-		// //
-		// // ((JFrame) (e.getComponent())).dispose();
-		// }
-		// });
-
-		// Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
-		// public void run() {
-		//
-		// if (Game.current() != null && Game.current().getPlayer() != null)
-		// GameSerializer.serialize(Game.current().getPlayer());
-		//
-		// }
-		// }, "Shutdown-thread"));
-
 	}
 
 	private void hideMouseCursor() {

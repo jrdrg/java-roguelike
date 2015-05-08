@@ -1,12 +1,8 @@
-package roguelike.data;
+package roguelike.actors;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import roguelike.actors.Actor;
-import roguelike.actors.EnemyType;
-import roguelike.actors.Npc;
-import roguelike.actors.NpcBuilder;
 import roguelike.actors.behaviors.MoveToRandomPointBehavior;
 import roguelike.actors.behaviors.SearchForPlayerBehavior;
 import roguelike.items.Equipment.ItemSlot;

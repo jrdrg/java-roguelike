@@ -1,12 +1,11 @@
 package roguelike.actions;
 
-import roguelike.DialogResult;
 import roguelike.Game;
 import roguelike.actors.Actor;
 import roguelike.ui.InputCommand;
 import roguelike.ui.windows.MessageLogWindow;
 
-public class ShowMessagesAction extends InputRequiredAction<InputCommand> {
+public class ShowMessagesAction extends DialogInputRequiredAction<InputCommand> {
 
 	public ShowMessagesAction(Actor actor) {
 		super(actor);
@@ -14,12 +13,11 @@ public class ShowMessagesAction extends InputRequiredAction<InputCommand> {
 		this.usesEnergy = false;
 
 		dialog = new MessageLogWindow(60, 30, Game.current().messages());
-		dialog.show();
+		showDialog(dialog);
 	}
 
 	@Override
 	protected ActionResult onPerform() {
-		DialogResult<InputCommand> result = dialog.result();
 		if (result != null)
 			return ActionResult.success();
 

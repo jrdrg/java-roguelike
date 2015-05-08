@@ -16,7 +16,7 @@ import squidpony.squidgrid.util.BasicRadiusStrategy;
  * @author john
  *
  */
-public class RangedAttackAction extends InputRequiredAction<InputCommand> {
+public class RangedAttackAction extends CursorInputRequiredAction<InputCommand> {
 
 	private MapArea mapArea;
 	private Actor target;
@@ -28,8 +28,8 @@ public class RangedAttackAction extends InputRequiredAction<InputCommand> {
 		this.weapon = weapon;
 
 		int maxRange = Math.min(actor.getVisionRadius(), weapon.range());
-		this.cursor = new AttackCursor(actor.getPosition(), mapArea, maxRange, BasicRadiusStrategy.CUBE);
-		cursor.show();
+		cursor = new AttackCursor(actor.getPosition(), mapArea, maxRange, BasicRadiusStrategy.CUBE);
+		showCursor(cursor);
 	}
 
 	@Override
@@ -62,12 +62,7 @@ public class RangedAttackAction extends InputRequiredAction<InputCommand> {
 
 		Attack attack = weapon.getAttack();
 		if (attack != null) {
-			boolean isTargetDead = attack.perform(this, target);
-
-			if (isTargetDead) {
-				target.dead();
-			}
-
+			attack.perform(this, target);
 			return ActionResult.success();
 		}
 		else {

@@ -50,7 +50,7 @@ public class TileBuilder {
 
 		switch (character) {
 		case WALL:
-			t.setValues(character.symbol(), false, SColor.PINE_GREEN, true)
+			t.setValues(character.symbol(), false, SColor.LIGHT_YELLOW_DYE, true)
 					.setLighting(1f);
 			// .setBackground(SColor.DARK_BLUE_LAPIS_LAZULI);
 			break;
@@ -90,7 +90,8 @@ public class TileBuilder {
 			break;
 
 		case DUNGEON_FLOOR:
-			t.setValues(character.symbol(), true, SColor.GRAY);// .setBackground(groundColor.random());
+			t.setValues(character.symbol(), true, SColor.AUBURN)
+					.setLighting(0.1f);// .setBackground(groundColor.random());
 			break;
 
 		case GROUND:

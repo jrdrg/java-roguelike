@@ -1,15 +1,21 @@
 package roguelike.ui;
 
 import roguelike.Cursor;
-import roguelike.Game;
 import roguelike.maps.MapArea;
+import roguelike.screens.LookScreen;
 import roguelike.util.Coordinate;
 
 public class LookCursor extends Cursor {
 
+	private LookScreen lookScreen;
+
 	public LookCursor(Coordinate initialPosition, MapArea mapArea) {
 		super(initialPosition, mapArea);
-		setCurrentLookPoint(initialPosition);
+	}
+
+	public void setLookScreen(LookScreen lookScreen) {
+		this.lookScreen = lookScreen;
+		setCurrentLookPoint(position);
 	}
 
 	@Override
@@ -23,15 +29,18 @@ public class LookCursor extends Cursor {
 		// Make sure that only visible tiles can be looked at
 		if (!mapArea.getTileAt(position).isVisible())
 		{
-			Game.current().setCurrentlyLookingAt(null);
+			lookScreen.lookAt(mapArea, null);
 			return;
 		}
 
-		if (mapArea.getActorAt(position.x, position.y) != null)
-			Game.current().setCurrentlyLookingAt(position);
-		else if (mapArea.getItemsAt(position.x, position.y).any())
-			Game.current().setCurrentlyLookingAt(position);
-		else
-			Game.current().setCurrentlyLookingAt(null);
+		if (mapArea.getActorAt(position.x, position.y) != null) {
+			lookScreen.lookAt(mapArea, position);
+			return;
+		}
+		else if (mapArea.getItemsAt(position.x, position.y).any()) {
+			lookScreen.lookAt(mapArea, position);
+			return;
+		}
+		lookScreen.lookAt(mapArea, null);
 	}
 }

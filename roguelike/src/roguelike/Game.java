@@ -6,16 +6,13 @@ import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.Queue;
-import java.util.Stack;
 
 import roguelike.actions.Action;
 import roguelike.actions.ActionResult;
 import roguelike.actors.Actor;
 import roguelike.actors.Energy;
 import roguelike.actors.Player;
-import roguelike.data.serialization.ObjectIdStorage;
 import roguelike.items.Inventory;
-import roguelike.items.Item;
 import roguelike.maps.MapArea;
 import roguelike.ui.DisplayManager;
 import roguelike.util.Coordinate;
@@ -48,13 +45,8 @@ public class Game implements Serializable {
 	private Queue<Action> queuedActions;
 	private TurnResult currentTurnResult;
 
-	Stack<Dialog<?>> windows;
-	Dialog<?> activeWindow;
 	Cursor activeCursor;
 	MessageLog messages;
-
-	public final ObjectIdStorage<Actor> actorStorage;
-	public final ObjectIdStorage<Item> itemStorage;
 
 	/**
 	 * This should only be called by GameLoader
@@ -62,21 +54,15 @@ public class Game implements Serializable {
 	 * @param gameLoader
 	 */
 	Game() {
-		GameLoader gameLoader = GameLoader.instance();
-
-		this.actorStorage = new ObjectIdStorage<Actor>();
-		this.itemStorage = new ObjectIdStorage<Item>();
-
 		this.queuedActions = new LinkedList<Action>();
-		this.rng = gameLoader.getRandom();
-		this.windows = new Stack<Dialog<?>>();
+		this.rng = GameLoader.getRandom();
 
 		currentGame = this;
 		Log.debug("Created Game");
 
 		this.messages = new MessageLog();
 
-		this.player = gameLoader.createPlayer();
+		this.player = GameLoader.createPlayer();
 	}
 
 	private void readObject(ObjectInputStream in) throws ClassNotFoundException, IOException {
@@ -118,7 +104,7 @@ public class Game implements Serializable {
 	}
 
 	public Coordinate getCenterScreenPosition() {
-		return player.getPosition();
+		return player.position;
 	}
 
 	public MapArea getCurrentMapArea() {
@@ -130,9 +116,6 @@ public class Game implements Serializable {
 			return;
 
 		currentMapArea = mapArea;
-
-		// TODO: set player position somewhere besides 1,1
-		// this.player.setPosition(1, 1);
 	}
 
 	public void initialize() {
@@ -183,56 +166,12 @@ public class Game implements Serializable {
 	}
 
 	/**
-	 * Sets the currently active dialog window. If there was an active window prior to this call, it gets pushed on the
-	 * stack. Passing null to this method will cause the active dialog to be set to the next value in the stack, or null
-	 * if it's empty.
-	 * 
-	 * @param dialog
-	 *            A window to make active, or null to close the current one.
-	 * @return
-	 */
-	boolean setActiveDialog(Dialog<?> dialog) {
-		if (activeWindow != null && activeWindow.equals(dialog))
-			return false;
-
-		if (dialog != null) {
-			if (activeWindow != null)
-				windows.push(activeWindow);
-
-			activeWindow = dialog;
-		}
-		else {
-			activeWindow = windows.size() > 0 ? windows.pop() : null;
-		}
-		return true;
-	}
-
-	/**
-	 * Sets the current cursor, which will be drawn until it's set to null.
-	 * 
-	 * @param cursor
-	 */
-	void setCursor(Cursor cursor) {
-		activeCursor = cursor;
-	}
-
-	/**
 	 * Processes one turn
 	 * 
 	 * @return
 	 */
 	private TurnResult onProcessing() {
 		TurnResult turnResult = null;
-
-		if (activeWindow != null) {
-			turnResult = processActiveWindow();
-
-		} else if (activeCursor != null) {
-			turnResult = processCursor();
-
-		}
-		if (turnResult != null)
-			return turnResult;
 
 		turnResult = TurnResult.reset(currentTurnResult, running);
 		currentTurnResult = turnResult;
@@ -257,34 +196,6 @@ public class Game implements Serializable {
 				return turnResult;
 
 		}
-	}
-
-	/**
-	 * Processes the active window, if there is one. If this method returns null, it means that the active window has
-	 * received some input and has returned a result.
-	 * 
-	 * @return The current turn result if there is an active window waiting for input, null otherwise.
-	 */
-	private TurnResult processActiveWindow() {
-		if (activeWindow.waitingForResult()) {
-			if (!activeWindow.process())
-				return currentTurnResult;
-		}
-		return null;
-	}
-
-	/**
-	 * Processes the active cursor, if there is one. If this method returns null, it means that the player has either
-	 * selected a tile or has canceled the cursor.
-	 * 
-	 * @return The current turn result if there is an active cursor, null otherwise.
-	 */
-	private TurnResult processCursor() {
-		if (activeCursor.waitingForResult()) {
-			if (!activeCursor.process())
-				return currentTurnResult;
-		}
-		return null;
 	}
 
 	/**
