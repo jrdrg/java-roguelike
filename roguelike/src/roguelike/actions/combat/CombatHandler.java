@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import roguelike.Game;
 import roguelike.MessageDisplayProperties;
 import roguelike.TurnEvent;
@@ -14,7 +17,6 @@ import roguelike.actors.Statistics;
 import roguelike.items.Equipment.ItemSlot;
 import roguelike.items.Weapon;
 import roguelike.util.DiceRolls;
-import roguelike.util.Log;
 import roguelike.util.Utility;
 import squidpony.squidcolor.SColor;
 
@@ -43,6 +45,8 @@ import squidpony.squidcolor.SColor;
  * 
  */
 public class CombatHandler implements Serializable {
+    private static final Logger LOG = LogManager.getLogger(CombatHandler.class);
+    
 	private static final long serialVersionUID = 1L;
 
 	protected transient Game game = Game.current();
@@ -112,8 +116,8 @@ public class CombatHandler implements Serializable {
 		int defenderSuccesses = DiceRolls.roll(defendSuccessPool, defendWeaponTN);
 
 		int total = attackerSuccesses - defenderSuccesses;
-		Log.debug("S (A): " + attackerSuccesses + ", TN=" + attackWeaponTN + ", pool=" + attackSuccessPool);
-		Log.debug("S (D): " + defenderSuccesses + ", TN=" + defendWeaponTN + ", pool=" + defendSuccessPool);
+		LOG.debug("S (A): {}. TN = {}. pool = {}", attackerSuccesses, attackWeaponTN, attackSuccessPool);
+		LOG.debug("S (D): {}, TN = {}, pool = {}", defenderSuccesses, defendWeaponTN, defendSuccessPool);
 
 		logCombatMessage(attacker.doAction("rolls %d (%d) successes against %s: total %d (%s)",
 				attackerSuccesses,
@@ -226,8 +230,8 @@ public class CombatHandler implements Serializable {
 
 		}
 
-		Log.debug("Attacker reach: " + attackingReach);
-		Log.debug("Defender reach: " + defendingReach);
+		LOG.debug("Attacker reach: {}", attackingReach);
+		LOG.debug("Defender reach: {}", defendingReach);
 
 		logCombatMessage(String.format("%s has reach of %d, %s has reach of %d",
 				attacker.getMessageName(), attackingReach, actor.getMessageName(), defendingReach));

@@ -5,10 +5,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import roguelike.actors.Actor;
-import roguelike.util.Log;
 
 public class Equipment implements Serializable {
+    private static final Logger LOG = LogManager.getLogger(Equipment.class);
+    
 	private static final long serialVersionUID = 1006420730103267096L;
 
 	public enum ItemSlot {
@@ -84,7 +88,7 @@ public class Equipment implements Serializable {
 
 		Item existingItem = inventory.getItem(item.itemId());
 		if (existingItem == null) {
-			Log.debug("equipItem: Existing item=null, adding " + item.itemId());
+		    LOG.debug("equipItem: Existing item = null, adding {}", item.itemId());
 			inventory.add(item);
 		}
 		// TODO: add equipped indicator to items

@@ -2,11 +2,14 @@ package roguelike.ui.animations;
 
 import java.util.ArrayList;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import roguelike.ui.InputManager;
 import roguelike.ui.windows.TerminalBase;
-import roguelike.util.Log;
 
 public class AnimationManager {
+    private static final Logger LOG = LogManager.getLogger(AnimationManager.class);
 
 	private ArrayList<Animation> animations;
 	private boolean refresh;
@@ -24,7 +27,7 @@ public class AnimationManager {
 
 	public boolean shouldRefresh() {
 		if (refresh) {
-			Log.debug("AnimationManager refresh=true");
+			LOG.debug("AnimationManager refresh = true");
 			refresh = false;
 			return true;
 		}

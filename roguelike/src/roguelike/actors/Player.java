@@ -1,12 +1,16 @@
 package roguelike.actors;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import roguelike.actions.Action;
 import roguelike.actors.behaviors.PlayerInputBehavior;
 import roguelike.util.ActorUtils;
-import roguelike.util.Log;
 import squidpony.squidcolor.SColor;
 
 public class Player extends Actor {
+    private static final Logger LOG = LogManager.getLogger(Player.class);
+    
 	private static final long serialVersionUID = 1L;
 
 	private String characterName;
@@ -60,8 +64,8 @@ public class Player extends Actor {
 
 	@Override
 	public void onAttackedInternal(Actor attacker) {
-		Log.verboseDebug("Player attacked by " + attacker.getName());
-		Log.verboseDebug("AttackedBy count=" + attackedBy.size());
+		LOG.debug("Player attacked by {}", attacker.getName());
+		LOG.debug("AttackedBy count = {}", attackedBy.size());
 	}
 
 	@Override

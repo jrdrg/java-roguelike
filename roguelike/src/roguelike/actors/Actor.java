@@ -10,6 +10,9 @@ import java.util.List;
 import java.util.Stack;
 import java.util.UUID;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import roguelike.Game;
 import roguelike.actions.Action;
 import roguelike.actions.combat.CombatHandler;
@@ -21,11 +24,12 @@ import roguelike.maps.MapArea;
 import roguelike.maps.Tile;
 import roguelike.util.ActorUtils;
 import roguelike.util.Coordinate;
-import roguelike.util.Log;
 import squidpony.squidcolor.SColor;
 import squidpony.squidcolor.SColorFactory;
 
 public abstract class Actor implements Serializable {
+    private static final Logger LOG = LogManager.getLogger(Actor.class);
+    
 	private static final long serialVersionUID = 1L;
 
 	protected transient Game game = Game.current();
@@ -78,7 +82,7 @@ public abstract class Actor implements Serializable {
 		out.defaultWriteObject();
 
 		out.writeInt(color.getRGB());
-		Log.debug("writing actor: " + actorId);
+		LOG.debug("writing actor: {}", actorId);
 	}
 
 	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
@@ -87,8 +91,8 @@ public abstract class Actor implements Serializable {
 		game = Game.current();
 		color = SColorFactory.asSColor(in.readInt());
 
-		Log.debug("reading actor: " + actorId);
-		Log.debug("game=" + game.toString());
+		LOG.debug("reading actor: {}", actorId);
+		LOG.debug("game = {}", game.toString());
 
 		// attacked = new Stack<AttackAttempt>();
 		// attackedBy = new Stack<AttackAttempt>();
@@ -234,7 +238,7 @@ public abstract class Actor implements Serializable {
 
 		attackedThisRound = false;
 
-		Log.verboseDebug("Actor.finishTurn(): " + getName());
+		LOG.debug("Actor.finishTurn(): {}",getName());
 
 		applyConditions();
 

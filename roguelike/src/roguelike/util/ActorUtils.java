@@ -2,6 +2,9 @@ package roguelike.util;
 
 import java.awt.Point;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import roguelike.actors.Actor;
 import roguelike.maps.MapArea;
 import squidpony.squidgrid.los.BresenhamLOS;
@@ -9,48 +12,60 @@ import squidpony.squidgrid.los.LOSSolver;
 import squidpony.squidgrid.util.BasicRadiusStrategy;
 
 public class ActorUtils {
-	private static LOSSolver losSolver = new BresenhamLOS();
+    private static final Logger LOG = LogManager.getLogger(ActorUtils.class);
 
-	private ActorUtils() {
-	}
+    private static LOSSolver losSolver = new BresenhamLOS();
 
-	public static boolean canSee(Actor actor, Actor other, MapArea mapArea) {
-		Point position = actor.getPosition();
-		int startx = position.x, starty = position.y, targetx = other.getPosition().x, targety = other.getPosition().y;
-		float force = 1;
-		float decay = 1 / actor.getVisionRadius();
-		boolean visible = losSolver.isReachable(mapArea.getLightValues(), startx, starty, targetx, targety, force, decay, BasicRadiusStrategy.CIRCLE);
+    private ActorUtils() {
+    }
 
-		Log.verboseDebug(actor.getName() + " canSee " + other.getName() + "=" + visible);
+    public static boolean canSee(Actor actor, Actor other, MapArea mapArea) {
+        Point position = actor.getPosition();
 
-		return visible;
-	}
+        int startx = position.x;
+        int starty = position.y;
 
-	public static String makePlayerText(String text) {
-		String[] words = text.split(" ");
+        int targetx = other.getPosition().x;
+        int targety = other.getPosition().y;
 
-		if (words[0].equals("has")) {
-			words[0] = "have";
+        float force = 1;
+        float decay = 1f / actor.getVisionRadius();
 
-		} else if (words[0].endsWith("Es")) {
-			words[0] = words[0].substring(0, words[0].length() - 1);
+        boolean visible = losSolver.isReachable(mapArea.getLightValues(), startx, starty, targetx, targety, force, decay, BasicRadiusStrategy.CIRCLE);
 
-		} else if (words[0].endsWith("es")) {
-			words[0] = words[0].substring(0, words[0].length() - 2);
+        LOG.debug("{} can see {} = {}", actor.getName(), other.getName(), visible);
 
-		}
-		else if (words[0].endsWith("s")) {
-			words[0] = words[0].substring(0, words[0].length() - 1);
-		} else if (words[0].equals("'s")) {
-			words[0] = "r"; // xxx's = your
-		}
+        return visible;
+    }
 
-		StringBuilder builder = new StringBuilder();
-		for (String word : words) {
-			builder.append(" ");
-			builder.append(word);
-		}
+    public static String makePlayerText(String text) {
+        String[] words = text.split(" ");
 
-		return builder.toString().trim();
-	}
+        if ("has".equals(words[0])) {
+            words[0] = "have";
+
+        }
+        else if (words[0].endsWith("Es")) {
+            words[0] = words[0].substring(0, words[0].length() - 1);
+
+        }
+        else if (words[0].endsWith("es")) {
+            words[0] = words[0].substring(0, words[0].length() - 2);
+
+        }
+        else if (words[0].endsWith("s")) {
+            words[0] = words[0].substring(0, words[0].length() - 1);
+        }
+        else if ("s".equals(words[0])) {
+            words[0] = "r"; // xxx's = your
+        }
+
+        StringBuilder builder = new StringBuilder();
+        for (String word : words) {
+            builder.append(" ");
+            builder.append(word);
+        }
+
+        return builder.toString().trim();
+    }
 }

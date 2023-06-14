@@ -1,13 +1,16 @@
 package roguelike.actions;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import roguelike.actors.Actor;
 import roguelike.items.Item;
 import roguelike.screens.InventoryScreen;
 import roguelike.screens.Screen;
-import roguelike.util.Log;
 
 public class InventoryAction extends DialogInputRequiredAction<Item> {
-
+    private static final Logger LOG = LogManager.getLogger(InventoryAction.class);
+    
 	public InventoryAction(Actor actor) {
 		super(actor);
 
@@ -18,7 +21,7 @@ public class InventoryAction extends DialogInputRequiredAction<Item> {
 
 	@Override
 	protected ActionResult onPerform() {
-		Log.debug("InventoryAction");
+	    LOG.debug("InventoryAction");
 		return ActionResult.success();
 	}
 

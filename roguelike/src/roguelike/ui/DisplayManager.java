@@ -6,6 +6,9 @@ import java.io.InputStream;
 
 import javax.swing.JComponent;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import roguelike.screens.TitleScreen;
 import roguelike.ui.asciipanel.AsciiPanel;
 import roguelike.ui.windows.AsciiPanelTerminalView;
@@ -13,107 +16,110 @@ import roguelike.ui.windows.Terminal;
 import roguelike.ui.windows.TerminalBase;
 import roguelike.ui.windows.TerminalChangeNotification;
 import roguelike.util.CharEx;
-import roguelike.util.Log;
 
 public class DisplayManager {
-	// private final String FONT_NAME = "joystix monospace.ttf";
-	// private final String FONT_NAME = "Adore64.ttf";
-	// private final String FONT_NAME = "Commodore Pixelized v1.2.ttf";
-	private final String FONT_NAME = "Nouveau_IBM.ttf";
+    private static final Logger LOG = LogManager.getLogger(DisplayManager.class);
 
-	private final String BACKUP_FONT_NAME = "Lucidia";
+    // private final String FONT_NAME = "joystix monospace.ttf";
+    // private final String FONT_NAME = "Adore64.ttf";
+    // private final String FONT_NAME = "Commodore Pixelized v1.2.ttf";
+    private final String FONT_NAME = "Nouveau_IBM.ttf";
 
-	private Font font;
-	private JComponent displayPane;
-	private TerminalBase mainDisplay;
-	private int fontSize;
-	private int gridWidth;
-	private int gridHeight;
-	private boolean dirty;
+    private final String BACKUP_FONT_NAME = "Lucidia";
 
-	private AsciiPanel asciiPanel;
-	private AsciiPanelTerminalView terminalView;
+    private Font font;
+    private JComponent displayPane;
+    private TerminalBase mainDisplay;
+    private int fontSize;
+    private int gridWidth;
+    private int gridHeight;
+    private boolean dirty;
 
-	private static DisplayManager self;
+    private AsciiPanel asciiPanel;
+    private AsciiPanelTerminalView terminalView;
 
-	public DisplayManager(int fontSize) {
-		this.fontSize = fontSize;
+    private static DisplayManager self;
 
-		self = this;
-	}
+    public DisplayManager(int fontSize) {
+        this.fontSize = fontSize;
 
-	public static DisplayManager instance() {
-		return self;
-	}
+        self = this;
+    }
 
-	public Font screenFont() {
-		return this.font;
-	}
+    public static DisplayManager instance() {
+        return self;
+    }
 
-	public JComponent displayPane() {
-		return this.displayPane;
-	}
+    public Font screenFont() {
+        return this.font;
+    }
 
-	public void refresh() {
-		if (dirty) {
-			asciiPanel.repaint();
-			dirty = false;
-		}
-	}
+    public JComponent displayPane() {
+        return this.displayPane;
+    }
 
-	public void setDirty() {
-		dirty = true;
-	}
+    public void refresh() {
+        if (dirty) {
+            asciiPanel.repaint();
+            dirty = false;
+        }
+    }
 
-	public TerminalBase getTerminal() {
-		if (mainDisplay == null) {
-			mainDisplay = new Terminal(gridWidth, gridHeight,
-					new TerminalChangeNotification() {
+    public void setDirty() {
+        dirty = true;
+    }
 
-						@Override
-						public void onChanged(int x, int y, CharEx c) {
-							// dirty = true;
-						}
-					});
-		}
-		return mainDisplay;
-	}
+    public TerminalBase getTerminal() {
+        if (mainDisplay == null) {
+            mainDisplay = new Terminal(gridWidth, gridHeight, new TerminalChangeNotification() {
 
-	public AsciiPanelTerminalView getTerminalView() {
-		if (terminalView == null) {
-			terminalView = new AsciiPanelTerminalView(getTerminal(), asciiPanel);
-		}
-		return terminalView;
-	}
+                @Override
+                public void onChanged(int x, int y, CharEx c) {
+                    // dirty = true;
+                }
+            });
+        }
+        return mainDisplay;
+    }
 
-	public void init(int width, int height) {
-		Log.info("DisplayManager.init(" + width + ", " + height + ")");
-		font = getFont(FONT_NAME);
-		font = font.deriveFont((float) fontSize);
+    public AsciiPanelTerminalView getTerminalView() {
+        if (terminalView == null) {
+            terminalView = new AsciiPanelTerminalView(getTerminal(), asciiPanel);
+        }
+        return terminalView;
+    }
 
-		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-		ge.registerFont(font);
+    public void init(int width, int height) {
+        LOG.info("DisplayManager.init({}, {})", width, height);
+        font = getFont(FONT_NAME);
+        font = font.deriveFont((float) fontSize);
 
-		this.gridWidth = width;
-		this.gridHeight = height;
+        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+        ge.registerFont(font);
 
-		asciiPanel = new AsciiPanel(width, height);
-		displayPane = asciiPanel;
-	}
+        this.gridWidth = width;
+        this.gridHeight = height;
 
-	private Font getFont(String name) {
-		Font font = null;
-		String fName = "./assets/" + name;
-		try {
-			InputStream is = TitleScreen.class.getResourceAsStream("/resources/assets/" + name);
-			font = Font.createFont(Font.TRUETYPE_FONT, is);
+        asciiPanel = new AsciiPanel(width, height);
+        displayPane = asciiPanel;
+    }
 
-			System.out.println("Loaded " + fName);
-		} catch (Exception ex) {
-			ex.printStackTrace();
-			System.err.println(fName + " not loaded.  Using " + FONT_NAME + " font.");
-			font = new Font(BACKUP_FONT_NAME, Font.PLAIN, 24);
-		}
-		return font;
-	}
+    private Font getFont(String name) {
+        Font font = null;
+        String fName = "./assets/" + name;
+        try {
+            InputStream is = TitleScreen.class.getResourceAsStream("/resources/assets/" + name);
+            font = Font.createFont(Font.TRUETYPE_FONT, is);
+
+            System.out.println("Loaded " + fName);
+            LOG.info("Loaded {}", fName);
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+
+            LOG.error("{} not loaded; using {} font", fName, FONT_NAME);
+            font = new Font(BACKUP_FONT_NAME, Font.PLAIN, 24);
+        }
+        return font;
+    }
 }

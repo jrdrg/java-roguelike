@@ -4,6 +4,9 @@ import java.awt.Point;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import roguelike.Game;
 import roguelike.actions.Action;
 import roguelike.actions.WaitAction;
@@ -13,10 +16,11 @@ import roguelike.maps.AStarPathfinder;
 import roguelike.maps.MapArea;
 import roguelike.maps.Path;
 import roguelike.maps.Path.Step;
-import roguelike.util.Log;
 import squidpony.squidgrid.util.DirectionIntercardinal;
 
 public class SearchForPlayerBehavior extends EnemyBehavior {
+    private static final Logger LOG = LogManager.getLogger(SearchForPlayerBehavior.class);
+    
 	private static final long serialVersionUID = 1L;
 
 	private Point lastPlayerLocation;
@@ -78,14 +82,14 @@ public class SearchForPlayerBehavior extends EnemyBehavior {
 				}
 			}
 		}
-		Log.verboseDebug("Resting, no path to player...");
+		LOG.debug("Resting, no path to player...");
 		nextBehavior = new MoveToRandomPointBehavior(actor);
 		return new WaitAction(actor);
 	}
 
 	@Override
 	public void onAttacked(Actor attacker) {
-		Log.debug("SearchForPlayerBehavior: Switching to targeted attack behavior");
+	    LOG.debug("SearchForPlayerBehavior: Switching to targeted attack behavior");
 		nextBehavior = new TargetedAttackBehavior(actor, attacker);
 	}
 
@@ -100,7 +104,7 @@ public class SearchForPlayerBehavior extends EnemyBehavior {
 
 		if (actor.isAdjacentTo(player)) {
 
-			Log.debug("Attacking Player");
+		    LOG.debug("Attacking Player");
 			return new TargetedAttackBehavior(actor, player);
 		}
 

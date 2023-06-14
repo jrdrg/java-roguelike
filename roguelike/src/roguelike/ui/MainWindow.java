@@ -11,11 +11,14 @@ import javax.imageio.ImageIO;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import roguelike.screens.Screen;
 import roguelike.screens.TitleScreen;
-import roguelike.util.Log;
 
 public class MainWindow {
+    private static final Logger LOG = LogManager.getLogger(MainWindow.class);
 
 	public static final int screenWidth = 1200;
 	public static final int screenHeight = 690;
@@ -38,7 +41,7 @@ public class MainWindow {
 
 	public MainWindow() {
 
-		System.out.println("SKIP_TICKS: " + SKIP_TICKS);
+		LOG.debug("SKIP_TICKS: {}", SKIP_TICKS);
 		displayManager = new DisplayManager(fontSize);
 
 		initFrame();
@@ -71,7 +74,7 @@ public class MainWindow {
 					e.printStackTrace();
 				}
 			} else {
-				Log.warning("draw SLEEPTIME < 0: " + sleepTime + " drawTicks=" + drawTicks);
+				LOG.warn("draw SLEEPTIME < 0: {} drawTicks = {}", sleepTime, drawTicks);
 			}
 		}
 	}
@@ -80,14 +83,14 @@ public class MainWindow {
 		KeyMap defaultKeys = new KeyMap("Default");
 
 		defaultKeys
-				.bindKey(KeyEvent.VK_UP, InputCommand.UP)
-				.bindKey(KeyEvent.VK_DOWN, InputCommand.DOWN)
-				.bindKey(KeyEvent.VK_LEFT, InputCommand.LEFT)
-				.bindKey(KeyEvent.VK_RIGHT, InputCommand.RIGHT)
-				.bindKey(KeyEvent.VK_UP, true, InputCommand.UP_LEFT)
-				.bindKey(KeyEvent.VK_RIGHT, true, InputCommand.UP_RIGHT)
-				.bindKey(KeyEvent.VK_DOWN, true, InputCommand.DOWN_RIGHT)
-				.bindKey(KeyEvent.VK_LEFT, true, InputCommand.DOWN_LEFT)
+				.bindKey(KeyEvent.VK_NUMPAD8, InputCommand.UP)
+				.bindKey(KeyEvent.VK_NUMPAD2, InputCommand.DOWN)
+				.bindKey(KeyEvent.VK_NUMPAD4, InputCommand.LEFT)
+				.bindKey(KeyEvent.VK_NUMPAD6, InputCommand.RIGHT)
+				.bindKey(KeyEvent.VK_NUMPAD7, InputCommand.UP_LEFT)
+				.bindKey(KeyEvent.VK_NUMPAD9, InputCommand.UP_RIGHT)
+				.bindKey(KeyEvent.VK_NUMPAD3, InputCommand.DOWN_RIGHT)
+				.bindKey(KeyEvent.VK_NUMPAD1, InputCommand.DOWN_LEFT)
 
 				.bindKey(KeyEvent.VK_PERIOD, true, InputCommand.STAIRS_DOWN)
 				.bindKey(KeyEvent.VK_COMMA, true, InputCommand.STAIRS_UP)
@@ -136,7 +139,7 @@ public class MainWindow {
 		frame.setVisible(true);
 		frame.setResizable(false);
 
-		Log.info("Window size: " + frame.getSize().width + "x" + frame.getSize().height);
+		LOG.info("Window size: {} x {}", frame.getSize().width, frame.getSize().height);
 
 		hideMouseCursor();
 	}

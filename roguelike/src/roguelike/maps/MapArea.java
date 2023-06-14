@@ -7,6 +7,9 @@ import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import roguelike.Game;
 import roguelike.actors.Actor;
 import roguelike.actors.EnemyFactory;
@@ -15,11 +18,12 @@ import roguelike.items.Item;
 import roguelike.ui.windows.TerminalBase;
 import roguelike.util.Coordinate;
 import roguelike.util.CurrentItemTracker;
-import roguelike.util.Log;
 import squidpony.squidcolor.SColor;
 import squidpony.squidmath.RNG;
 
 public class MapArea implements Serializable {
+    private static final Logger LOG = LogManager.getLogger(MapArea.class);
+    
 	private static final long serialVersionUID = 1L;
 
 	private Tile[][] map;
@@ -52,7 +56,7 @@ public class MapArea implements Serializable {
 
 	private void readObject(ObjectInputStream in) throws ClassNotFoundException, IOException {
 		in.defaultReadObject();
-		Log.debug("Read map");
+		LOG.debug("Read map");
 	}
 
 	public int width() {
@@ -68,7 +72,7 @@ public class MapArea implements Serializable {
 	}
 
 	public void spawnMonsters() {
-		Log.verboseDebug("spawnMonsters");
+	    LOG.debug("spawnMonsters");
 		// int maxActors = 70;
 		int maxActors = 10;
 		if (actors.count() < maxActors && Game.current().random().nextInt(10) > 6) {
@@ -201,7 +205,7 @@ public class MapArea implements Serializable {
 	public boolean removeItem(Item item, int x, int y) {
 		Inventory items = getItemsAt(x, y);
 		if (!items.any()) {
-			Log.warning("Failed! no items at " + x + "," + y);
+		    LOG.warn("Failed! no items at {}, {}", x, y);
 			return false;
 		}
 		boolean removed = items.remove(item);
@@ -310,18 +314,18 @@ public class MapArea implements Serializable {
 	 *         actually has no actor, which probably indicates a bug)
 	 */
 	public boolean removeActor(Actor actor) {
-		Log.debug("Removing actor " + actor.getName());
+		LOG.debug("Removing actor {}", actor.getName());
 
 		Coordinate pos = actor.getPosition();
 		Tile tile = getTileAt(pos.x, pos.y);
 		if (tile.getActor() == null) {
-			Log.warning("Failed!  actor=" + actor.getName());
+			LOG.warn("Failed!  actor = {}", actor.getName());
 			return false;
 		}
-		Log.debug("Success!");
+		LOG.debug("Success!");
 
 		actors.remove(actor);
-		Log.debug("     > actors count: " + actors.getAll().size());
+		LOG.debug("     > actors count: {}", actors.getAll().size());
 		tile.setActor(null);
 		return true;
 	}

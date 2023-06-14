@@ -2,6 +2,9 @@ package roguelike.screens;
 
 import java.awt.event.KeyEvent;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import roguelike.Game;
 import roguelike.GameLoader;
 import roguelike.ui.DisplayManager;
@@ -9,10 +12,10 @@ import roguelike.ui.InputCommand;
 import roguelike.ui.InputManager;
 import roguelike.ui.KeyMap;
 import roguelike.ui.windows.TerminalBase;
-import roguelike.util.Log;
 import squidpony.squidcolor.SColor;
 
 public class TitleScreen extends Screen {
+    private static final Logger LOG = LogManager.getLogger(TitleScreen.class);
 
 	public static KeyMap KeyBindings = new KeyMap("Menu")
 			.bindKey(KeyEvent.VK_ENTER, InputCommand.CONFIRM)
@@ -29,7 +32,7 @@ public class TitleScreen extends Screen {
 
 		DisplayManager.instance().getTerminalView();
 
-		Log.debug("TitleScreen: terminal size " + terminal.size().width + "x" + terminal.size().height);
+		LOG.debug("TitleScreen: terminal size {} x {}", terminal.size().width, terminal.size().height);
 
 		this.terminal = terminal.withColor(SColor.WHITE, SColor.BLACK);
 

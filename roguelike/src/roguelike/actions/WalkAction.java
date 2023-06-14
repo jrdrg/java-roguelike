@@ -1,14 +1,17 @@
 package roguelike.actions;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import roguelike.actors.Actor;
 import roguelike.maps.Door;
 import roguelike.maps.MapArea;
 import roguelike.maps.Tile;
 import roguelike.util.Coordinate;
-import roguelike.util.Log;
 import squidpony.squidgrid.util.DirectionIntercardinal;
 
 public class WalkAction extends Action {
+    private static final Logger LOG = LogManager.getLogger(WalkAction.class);
 
 	private MapArea mapArea;
 	private DirectionIntercardinal direction;
@@ -28,7 +31,7 @@ public class WalkAction extends Action {
 	@Override
 	public ActionResult onPerform() {
 		if (!actor.isAlive()) {
-			Log.warning(">>> Actor is dead! " + actor.getName());
+			LOG.warn(">>> Actor is dead = {}", actor.getName());
 			return ActionResult.success().setMessage("Actor is dead");
 		}
 

@@ -5,6 +5,9 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import roguelike.Game;
 import roguelike.actions.Action;
 import roguelike.actions.WaitAction;
@@ -15,10 +18,11 @@ import roguelike.maps.AStarPathfinder;
 import roguelike.maps.MapArea;
 import roguelike.maps.Path;
 import roguelike.maps.Path.Step;
-import roguelike.util.Log;
 import squidpony.squidgrid.util.DirectionIntercardinal;
 
 public class MoveToRandomPointBehavior extends Behavior {
+    private static final Logger LOG = LogManager.getLogger(MoveToRandomPointBehavior.class);
+    
 	private static final long serialVersionUID = 1L;
 
 	transient AStarPathfinder pathfinder;
@@ -90,7 +94,7 @@ public class MoveToRandomPointBehavior extends Behavior {
 				if (pathToTarget != null)
 					pathToTarget.nextStep(); // since the first step is just the current position
 
-				Log.debug("CurrentTargetLocation: " + rndX + ", " + rndY + ", " + actor.getName() + " pos=" + position.x + ", " + position.y);
+				LOG.debug("CurrentTargetLocation: {}, {}, {} pos = {}, {}", rndX, rndY, actor.getName(), position.x, position.y);
 			}
 		}
 
@@ -112,12 +116,12 @@ public class MoveToRandomPointBehavior extends Behavior {
 						if (map.getTileAt(step.getX(), step.getY()).canPass())
 							return new WalkAction(actor, map, direction);
 						else
-							Log.warning("Invalid walk action!!!");
+							LOG.warn("Invalid walk action!!!");
 					}
 				}
 			}
 		}
-		Log.verboseDebug("Resting, no path to target point...");
+		LOG.debug("Resting, no path to target point...");
 		return new WaitAction(actor);
 	}
 
@@ -127,19 +131,19 @@ public class MoveToRandomPointBehavior extends Behavior {
 		AttackAttempt lastAttackedBy = actor.getLastAttackedBy();
 		if (lastAttackedBy != null && actor.isAdjacentTo(lastAttackedBy.getActor())) {
 
-			Log.debug("MoveToRandomPointBehavior: Switching to targeted attack behavior");
+		    LOG.debug("MoveToRandomPointBehavior: Switching to targeted attack behavior");
 			return new TargetedAttackBehavior(actor, lastAttackedBy.getActor());
 		}
 
 		Actor player = Game.current().getPlayer();
 		if (actor.isAdjacentTo(player)) {
 
-			Log.debug("Attacking Player");
+		    LOG.debug("Attacking Player");
 			return new TargetedAttackBehavior(actor, player);
 		}
 
 		if (actor.canSee(player, map)) {
-			Log.debug("MoveToRandomPointBehavior: switching to SearchForPlayerBehavior");
+		    LOG.debug("MoveToRandomPointBehavior: switching to SearchForPlayerBehavior");
 			return new SearchForPlayerBehavior(actor);
 		}
 

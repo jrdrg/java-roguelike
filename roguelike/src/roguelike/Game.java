@@ -7,6 +7,9 @@ import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.Queue;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import roguelike.actions.Action;
 import roguelike.actions.ActionResult;
 import roguelike.actors.Actor;
@@ -16,13 +19,13 @@ import roguelike.items.Inventory;
 import roguelike.maps.MapArea;
 import roguelike.ui.DisplayManager;
 import roguelike.util.Coordinate;
-import roguelike.util.Log;
 import squidpony.squidcolor.SColor;
 import squidpony.squidmath.RNG;
 
 /**
- * Setting - sword and sorcery version of 17th century caribbean/pirate setting. port towns, swashbucklers, black powder
- * weapons, jungle temples, fanatical cultists, lost treasures, etc
+ * Setting - sword and sorcery version of 17th century caribbean/pirate setting.
+ * port towns, swashbucklers, black powder weapons, jungle temples, fanatical
+ * cultists, lost treasures, etc
  * 
  * win condition - leaving the island alive with as much wealth as you can carry
  * 
@@ -30,292 +33,298 @@ import squidpony.squidmath.RNG;
  * 
  */
 public class Game implements Serializable {
-	private static final long serialVersionUID = 1L;
+    private static final Logger LOG = LogManager.getLogger(Game.class);
 
-	public final static int MAP_WIDTH = 83;
-	public final static int MAP_HEIGHT = 43;
+    private static final long serialVersionUID = 1L;
 
-	private static Game currentGame;
+    public final static int MAP_WIDTH = 83;
+    public final static int MAP_HEIGHT = 43;
 
-	private RNG rng;
-	private boolean running;
-	private boolean playerDead;
-	private Player player;
-	private MapArea currentMapArea;
-	private Queue<Action> queuedActions;
-	private TurnResult currentTurnResult;
+    private static Game currentGame;
 
-	Cursor activeCursor;
-	MessageLog messages;
+    private RNG rng;
+    private boolean running;
+    private boolean playerDead;
+    private Player player;
+    private MapArea currentMapArea;
+    private Queue<Action> queuedActions;
+    private TurnResult currentTurnResult;
 
-	/**
-	 * This should only be called by GameLoader
-	 * 
-	 * @param gameLoader
-	 */
-	Game() {
-		this.queuedActions = new LinkedList<Action>();
-		this.rng = GameLoader.getRandom();
+    Cursor activeCursor;
+    MessageLog messages;
 
-		currentGame = this;
-		Log.debug("Created Game");
+    /**
+     * This should only be called by GameLoader
+     * 
+     * @param gameLoader
+     */
+    Game() {
+        this.queuedActions = new LinkedList<Action>();
+        this.rng = GameLoader.getRandom();
 
-		this.messages = new MessageLog();
+        currentGame = this;
+        LOG.debug("Created Game");
 
-		this.player = GameLoader.createPlayer();
-	}
+        this.messages = new MessageLog();
 
-	private void readObject(ObjectInputStream in) throws ClassNotFoundException, IOException {
-		in.defaultReadObject();
-		currentGame = this;
-	}
+        this.player = GameLoader.createPlayer();
+    }
 
-	/**
-	 * Always returns the current game
-	 * 
-	 * @return
-	 */
-	public static Game current() {
-		return currentGame;
-	}
+    private void readObject(ObjectInputStream in) throws ClassNotFoundException, IOException {
+        in.defaultReadObject();
+        currentGame = this;
+    }
 
-	public MessageLog messages() {
-		return messages;
-	}
+    /**
+     * Always returns the current game
+     * 
+     * @return
+     */
+    public static Game current() {
+        return currentGame;
+    }
 
-	public RNG random() {
-		return rng;
-	}
+    public MessageLog messages() {
+        return messages;
+    }
 
-	public boolean isRunning() {
-		return running;
-	}
+    public RNG random() {
+        return rng;
+    }
 
-	public boolean isPlayerDead() {
-		if (playerDead) {
-			playerDead = false;
-			return true;
-		}
-		return false;
-	}
+    public boolean isRunning() {
+        return running;
+    }
 
-	public Player getPlayer() {
-		return player;
-	}
+    public boolean isPlayerDead() {
+        if (playerDead) {
+            playerDead = false;
+            return true;
+        }
+        return false;
+    }
 
-	public Coordinate getCenterScreenPosition() {
-		return player.position;
-	}
+    public Player getPlayer() {
+        return player;
+    }
 
-	public MapArea getCurrentMapArea() {
-		return currentMapArea;
-	}
+    public Coordinate getCenterScreenPosition() {
+        return player.position;
+    }
 
-	public void setCurrentMapArea(MapArea mapArea) {
-		if (mapArea == null)
-			return;
+    public MapArea getCurrentMapArea() {
+        return currentMapArea;
+    }
 
-		currentMapArea = mapArea;
-	}
+    public void setCurrentMapArea(MapArea mapArea) {
+        if (mapArea == null)
+            return;
 
-	public void initialize() {
-		Log.debug("Initializing Game");
+        currentMapArea = mapArea;
+    }
 
-		running = true;
-	}
+    public void initialize() {
+        LOG.debug("Initializing Game");
 
-	public TurnResult processTurn() {
-		if (running) {
-			currentTurnResult = onProcessing();
-			return currentTurnResult;
-		}
-		return TurnResult.reset(currentTurnResult, false);
-	}
+        running = true;
+    }
 
-	public void stopGame() {
-		running = false;
-	}
+    public TurnResult processTurn() {
+        if (running) {
+            currentTurnResult = onProcessing();
+            return currentTurnResult;
+        }
+        return TurnResult.reset(currentTurnResult, false);
+    }
 
-	public void reset() {
-		playerDead = true;
-	}
+    public void stopGame() {
+        running = false;
+    }
 
-	/**
-	 * Displays a message in the bottom pane of the UI
-	 * 
-	 * @param message
-	 */
-	public void displayMessage(String message) {
-		messages.add(message);
-	}
+    public void reset() {
+        playerDead = true;
+    }
 
-	public void displayMessage(String message, SColor color) {
-		messages.add(new MessageDisplayProperties(message, color));
-	}
+    /**
+     * Displays a message in the bottom pane of the UI
+     * 
+     * @param message
+     */
+    public void displayMessage(String message) {
+        messages.add(message);
+    }
 
-	public void addEvent(TurnEvent event) {
-		currentTurnResult.addEvent(event);
-	}
+    public void displayMessage(String message, SColor color) {
+        messages.add(new MessageDisplayProperties(message, color));
+    }
 
-	public void setCurrentlyLookingAt(Point point) {
-		setCurrentlyLookingAt(point, true);
-	}
+    public void addEvent(TurnEvent event) {
+        currentTurnResult.addEvent(event);
+    }
 
-	public void setCurrentlyLookingAt(Point point, boolean drawActor) {
-		currentTurnResult.setCurrentLook(point, drawActor);
-	}
+    public void setCurrentlyLookingAt(Point point) {
+        setCurrentlyLookingAt(point, true);
+    }
 
-	/**
-	 * Processes one turn
-	 * 
-	 * @return
-	 */
-	private TurnResult onProcessing() {
-		TurnResult turnResult = null;
+    public void setCurrentlyLookingAt(Point point, boolean drawActor) {
+        currentTurnResult.setCurrentLook(point, drawActor);
+    }
 
-		turnResult = TurnResult.reset(currentTurnResult, running);
-		currentTurnResult = turnResult;
+    /**
+     * Processes one turn
+     * 
+     * @return
+     */
+    private TurnResult onProcessing() {
+        TurnResult turnResult = null;
 
-		showItemsOnPlayerSquare();
+        turnResult = TurnResult.reset(currentTurnResult, running);
+        currentTurnResult = turnResult;
 
-		while (true) {
+        showItemsOnPlayerSquare();
 
-			while (!queuedActions.isEmpty()) {
-				if (executeQueuedActions(turnResult) != null) {
-					return turnResult;
-				}
-			}
+        while (true) {
 
-			while (queuedActions.isEmpty()) {
-				if (getCurrentActions(turnResult) != null) {
-					return turnResult;
-				}
-			}
+            while (!queuedActions.isEmpty()) {
+                if (executeQueuedActions(turnResult) != null) {
+                    return turnResult;
+                }
+            }
 
-			if (playerDead)
-				return turnResult;
+            while (queuedActions.isEmpty()) {
+                if (getCurrentActions(turnResult) != null) {
+                    return turnResult;
+                }
+            }
 
-		}
-	}
+            if (playerDead)
+                return turnResult;
 
-	/**
-	 * Queues an action for the current actor
-	 * 
-	 * @param turnResult
-	 * @return
-	 */
-	private TurnResult getCurrentActions(TurnResult turnResult) {
-		Actor actor = currentMapArea.getCurrentActor();
+        }
+    }
 
-		while (!actor.isAlive()) {
-			currentMapArea.nextActor("Attempting to act on dead actor: " + actor.getName());
-			actor = currentMapArea.getCurrentActor();
-		}
+    /**
+     * Queues an action for the current actor
+     * 
+     * @param turnResult
+     * @return
+     */
+    private TurnResult getCurrentActions(TurnResult turnResult) {
+        Actor actor = currentMapArea.getCurrentActor();
 
-		int speed = actor.effectiveSpeed(currentMapArea);
-		Energy energy = actor.energy();
+        while (!actor.isAlive()) {
+            currentMapArea.nextActor("Attempting to act on dead actor: " + actor.getName());
+            actor = currentMapArea.getCurrentActor();
+        }
 
-		if (energy.canAct() || energy.increase(speed)) {
-			Action action = actor.getNextAction();
-			if (action != null) {
-				queuedActions.add(action);
-			} else {
-				return turnResult;
-			}
-		} else { // advance to next actor
-			currentMapArea.nextActor("getCurrentActions, !canAct, queueSize=" + queuedActions.size());
+        int speed = actor.effectiveSpeed(currentMapArea);
+        Energy energy = actor.energy();
 
-			if (Player.isPlayer(actor)) {
-				// TODO: process things that happen every turn after player queues actions
-				Game.currentGame.currentMapArea.spawnMonsters();
-				Log.verboseDebug("Game: Queue length: " + queuedActions.size());
-			}
-		}
+        if (energy.canAct() || energy.increase(speed)) {
+            Action action = actor.getNextAction();
+            if (action != null) {
+                queuedActions.add(action);
+            }
+            else {
+                return turnResult;
+            }
+        }
+        else { // advance to next actor
+            currentMapArea.nextActor("getCurrentActions, !canAct, queueSize=" + queuedActions.size());
 
-		return null;
-	}
+            if (Player.isPlayer(actor)) {
+                // TODO: process things that happen every turn after player queues actions
+                Game.currentGame.currentMapArea.spawnMonsters();
+                LOG.debug("Game: Queue length: {}", queuedActions.size());
+            }
+        }
 
-	/**
-	 * Executes the current action in the queue
-	 * 
-	 * @param turnResult
-	 * @return
-	 */
-	private TurnResult executeQueuedActions(TurnResult turnResult) {
-		Action currentAction = queuedActions.remove();
+        return null;
+    }
 
-		// don't perform the action if the actor is dead
-		if (!currentAction.getActor().isAlive()) {
-			currentMapArea.nextActor("executeQueuedActions, currentAction actor !isAlive: " + currentAction.getActor().getName());
-			return turnResult;
-		}
+    /**
+     * Executes the current action in the queue
+     * 
+     * @param turnResult
+     * @return
+     */
+    private TurnResult executeQueuedActions(TurnResult turnResult) {
+        Action currentAction = queuedActions.remove();
 
-		ActionResult result = currentAction.perform();
-		messages.add(result.getMessage());
+        // don't perform the action if the actor is dead
+        if (!currentAction.getActor().isAlive()) {
+            currentMapArea.nextActor("executeQueuedActions, currentAction actor !isAlive: " + currentAction.getActor().getName());
+            return turnResult;
+        }
 
-		/*
-		 * if the result is completed we can proceed, else put it back on the queue
-		 */
-		if (result.isCompleted()) {
+        ActionResult result = currentAction.perform();
+        messages.add(result.getMessage());
 
-			while (result.getAlternateAction() != null) {
-				Action alternate = result.getAlternateAction();
-				result = alternate.perform();
-				messages.add(result.getMessage());
+        /*
+         * if the result is completed we can proceed, else put it back on the queue
+         */
+        if (result.isCompleted()) {
 
-				if (!result.isCompleted())
-					queuedActions.add(alternate);
-			}
+            while (result.getAlternateAction() != null) {
+                Action alternate = result.getAlternateAction();
+                result = alternate.perform();
+                messages.add(result.getMessage());
 
-			Actor currentActor = currentAction.getActor();
-			if (currentActor != null && !currentActor.energy().canAct()) {
+                if (!result.isCompleted())
+                    queuedActions.add(alternate);
+            }
 
-				if (result.isSuccess()) {
-					currentActor.finishTurn();
-					DisplayManager.instance().setDirty(); // make sure we show the result of the action
-				} else {
-					currentMapArea.nextActor("executeQueuedActions, !currentActor.canAct && !success");
-					return turnResult;
-				}
+            Actor currentActor = currentAction.getActor();
+            if (currentActor != null && !currentActor.energy().canAct()) {
 
-			} else {
+                if (result.isSuccess()) {
+                    currentActor.finishTurn();
+                    DisplayManager.instance().setDirty(); // make sure we show the result of the action
+                }
+                else {
+                    currentMapArea.nextActor("executeQueuedActions, !currentActor.canAct && !success");
+                    return turnResult;
+                }
 
-				Log.warning(String.format("Game: Actor=%s Alive=%s Action=%s", currentActor.getName(), currentActor.isAlive(), currentAction));
-				Log.warning("Game: Remaining energy: " + currentActor.energy().getCurrent() + " Result=" + result);
-				Log.warning("Game: M=" + result.getMessage() + ", S=" + result.isSuccess() + ", C=" + result.isCompleted());
+            }
+            else {
+                LOG.warn("Game: Actor = {} Alive = {} Action = {}", currentActor.getName(), currentActor.isAlive(), currentAction);
+                LOG.warn("Game: Remaining energy: {} Result = {}", currentActor.energy().getCurrent(), result);
+                LOG.warn("Game: M = {} S = {} C = {}", result.getMessage(), result.isSuccess(), result.isCompleted());
 
-				/*
-				 * bug fix for infinite loop with enemy pathfinding where they can't move to a square they want to and
-				 * fail the walk action
-				 */
-				if (!result.isSuccess())
-					currentMapArea.nextActor("executeQueueActions, can act but not success");
+                /*
+                 * bug fix for infinite loop with enemy pathfinding where they can't move to a
+                 * square they want to and fail the walk action
+                 */
+                if (!result.isSuccess())
+                    currentMapArea.nextActor("executeQueueActions, can act but not success");
 
-				return turnResult;
-			}
+                return turnResult;
+            }
 
-		} else { // incomplete action
+        }
+        else { // incomplete action
 
-			queuedActions.add(currentAction);
-		}
+            queuedActions.add(currentAction);
+        }
 
-		/* return when player's actions are performed so we can redraw */
-		if (Player.isPlayer(currentAction.getActor())) {
-			turnResult.playerActed();
-			return turnResult;
-		}
+        /* return when player's actions are performed so we can redraw */
+        if (Player.isPlayer(currentAction.getActor())) {
+            turnResult.playerActed();
+            return turnResult;
+        }
 
-		return null;
-	}
+        return null;
+    }
 
-	private void showItemsOnPlayerSquare() {
-		if (currentTurnResult.getCurrentLook().getFirst() != null)
-			return;
+    private void showItemsOnPlayerSquare() {
+        if (currentTurnResult.getCurrentLook().getFirst() != null)
+            return;
 
-		Coordinate playerPos = player.getPosition();
-		Inventory inventory = currentMapArea.getItemsAt(playerPos.x, playerPos.y);
-		if (inventory != null && inventory.any()) {
-			setCurrentlyLookingAt(playerPos, false);
-		}
-	}
+        Coordinate playerPos = player.getPosition();
+        Inventory inventory = currentMapArea.getItemsAt(playerPos.x, playerPos.y);
+        if (inventory != null && inventory.any()) {
+            setCurrentlyLookingAt(playerPos, false);
+        }
+    }
 }

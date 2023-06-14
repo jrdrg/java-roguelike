@@ -1,5 +1,8 @@
 package roguelike.actions;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import roguelike.Cursor;
 import roguelike.actors.Actor;
 import roguelike.maps.MapArea;
@@ -8,9 +11,9 @@ import roguelike.screens.Screen;
 import roguelike.ui.InputCommand;
 import roguelike.ui.LookCursor;
 import roguelike.ui.windows.TerminalBase;
-import roguelike.util.Log;
 
 public class LookAction extends CursorInputRequiredAction<InputCommand> {
+    private static final Logger LOG = LogManager.getLogger(LookAction.class);
 
 	public LookAction(Actor actor, MapArea mapArea) {
 		super(actor);
@@ -29,7 +32,7 @@ public class LookAction extends CursorInputRequiredAction<InputCommand> {
 
 	@Override
 	protected ActionResult onPerform() {
-		Log.debug("LookAction");
+		LOG.debug("LookAction");
 		return ActionResult.success();
 	}
 }

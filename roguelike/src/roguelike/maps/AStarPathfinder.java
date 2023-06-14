@@ -4,9 +4,13 @@ import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import roguelike.util.Log;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 
 public class AStarPathfinder {
+    private static final Logger LOG = LogManager.getLogger(AStarPathfinder.class);
+    
 	/** The set of nodes that have been searched through */
 	private ArrayList<Node> closed = new ArrayList<Node>();
 	/** The set of nodes that we do not yet consider fully searched */
@@ -51,7 +55,7 @@ public class AStarPathfinder {
 	 */
 	public Path findPath(MapArea map, int sx, int sy, int tx, int ty) {
 
-		Log.verboseDebug("Finding path from " + sx + "," + sy + " to " + tx + "," + ty);
+		LOG.debug("Finding path from {}, {} to {}, {}", sx, sy, tx, ty);
 
 		// easy first check, if the destination is blocked, we can't get there
 		// if (map.blocked(mover, tx, ty)) {

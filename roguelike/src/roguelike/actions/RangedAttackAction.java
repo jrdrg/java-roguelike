@@ -1,5 +1,8 @@
 package roguelike.actions;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import roguelike.CursorResult;
 import roguelike.actions.combat.Attack;
 import roguelike.actors.Actor;
@@ -7,7 +10,6 @@ import roguelike.items.RangedWeapon;
 import roguelike.maps.MapArea;
 import roguelike.ui.AttackCursor;
 import roguelike.ui.InputCommand;
-import roguelike.util.Log;
 import squidpony.squidgrid.util.BasicRadiusStrategy;
 
 /**
@@ -17,6 +19,7 @@ import squidpony.squidgrid.util.BasicRadiusStrategy;
  *
  */
 public class RangedAttackAction extends CursorInputRequiredAction<InputCommand> {
+    private static final Logger LOG = LogManager.getLogger(RangedAttackAction.class);
 
 	private MapArea mapArea;
 	private Actor target;
@@ -53,7 +56,7 @@ public class RangedAttackAction extends CursorInputRequiredAction<InputCommand> 
 
 	private ActionResult attackTarget() {
 		if (!actor.isAlive()) {
-			Log.warning(">>> onPerform() >>> Actor " + actor.getName() + " is dead!");
+			LOG.warn(">>> onPerform() >>> Actor {} is dead!", actor.getName());
 			return ActionResult.failure().setMessage("Actor " + actor.getName() + " is dead!");
 		}
 		if (!target.isAlive()) {

@@ -1,10 +1,13 @@
 package roguelike.actions;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import roguelike.actions.combat.Attack;
 import roguelike.actors.Actor;
-import roguelike.util.Log;
 
 public class AttackAction extends Action {
+    private static final Logger LOG = LogManager.getLogger(AttackAction.class);
 
 	private Actor target;
 
@@ -25,7 +28,7 @@ public class AttackAction extends Action {
 
 	private ActionResult attackTarget() {
 		if (!actor.isAlive()) {
-			Log.warning(">>> onPerform() >>> Actor " + actor.getName() + " is dead!");
+			LOG.warn(">>> onPerform() >>> Actor  = {} is dead.", actor.getName());
 			return ActionResult.failure().setMessage("Actor " + actor.getName() + " is dead!");
 		}
 		if (!target.isAlive()) {

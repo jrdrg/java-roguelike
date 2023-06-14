@@ -7,15 +7,19 @@ import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.Stack;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import roguelike.Game;
 import roguelike.util.CollectionUtils;
-import roguelike.util.Log;
 import roguelike.util.Symbol;
 import squidpony.squidcolor.SColor;
 import squidpony.squidgrid.util.DirectionCardinal;
 import squidpony.squidutility.ProbabilityTable;
 
 public class DungeonMapBuilder extends MapBuilderBase {
+    private static final Logger LOG = LogManager.getLogger(DungeonMapBuilder.class);
+    
 	private static final long serialVersionUID = 1L;
 
 	/**
@@ -206,7 +210,7 @@ public class DungeonMapBuilder extends MapBuilderBase {
 		int roomsGenerated = 0;
 		int maxRooms = 20;
 
-		Log.debug("Room count: " + rooms.size());
+		LOG.debug("Room count: {}", rooms.size());
 
 		for (int x = 0; x < maxRooms; x++) {
 
@@ -326,7 +330,7 @@ public class DungeonMapBuilder extends MapBuilderBase {
 		Point constrained = new Point(endPoint);
 		MapHelpers.constrainToRectangle(constrained, mapRect.width - 1, mapRect.height - 1);
 		if (!endPoint.equals(constrained)) {
-			Log.debug("cannot construct corridor");
+			LOG.debug("cannot construct corridor");
 			return null;
 		}
 		setTile(endPoint, Symbol.DUNGEON_FLOOR);
@@ -388,9 +392,9 @@ public class DungeonMapBuilder extends MapBuilderBase {
 				if (randomDoor != null) {
 					ConnectionPoint endPoint = buildCorridor(randomDoor, room, randomRoom.area);
 					if (endPoint == null)
-						Log.debug("connect to random room, null endpoint");
+						LOG.debug("connect to random room, null endpoint");
 					else
-						Log.debug("endPoint=" + endPoint);
+						LOG.debug("endPoint = {}", endPoint);
 					return true;
 				}
 			}
@@ -425,7 +429,7 @@ public class DungeonMapBuilder extends MapBuilderBase {
 	private void setDoor(ConnectionPoint doorPoint) {
 		// setTile(doorPoint, Symbol.DOOR);
 		map[doorPoint.x][doorPoint.y] = tb.buildTile(Symbol.DOOR);
-		Log.debug("Created door at " + doorPoint.x + ", " + doorPoint.y);
+		LOG.debug("Created door at {}, {}", doorPoint.x, doorPoint.y);
 		doorPoint.isDoor = true;
 	}
 

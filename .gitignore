@@ -4,3 +4,4 @@ roguelike/bin
 roguelike/saves
 *~
 *.log
+/.project

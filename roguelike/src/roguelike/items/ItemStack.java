@@ -7,11 +7,15 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import roguelike.actors.Actor;
-import roguelike.util.Log;
 import squidpony.squidutility.Pair;
 
 public class ItemStack extends Item {
+    private static final Logger LOG = LogManager.getLogger(ItemStack.class);
+    
 	private static final long serialVersionUID = -3935638455081216485L;
 
 	private List<Item> items;
@@ -46,7 +50,7 @@ public class ItemStack extends Item {
 
 			stacks.add(new ItemStack(key.toString(), groupedItems));
 		}
-		Log.debug("Item stack count: " + stacks.size());
+		LOG.debug("Item stack count: {}", stacks.size());
 		return stacks;
 	}
 
@@ -94,7 +98,7 @@ public class ItemStack extends Item {
 		for (Item i : items) {
 			if (i.isSameItem(otherId))
 				return true;
-			Log.debug("i.id=" + i.itemId() + ", other.id=" + otherId);
+			LOG.debug("i.id = {}, other.id = {}", i.itemId(), otherId);
 		}
 		return false;
 	}
